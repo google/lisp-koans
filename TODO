@@ -1,0 +1,6 @@
+*  replace koans/threads.lsp with a more general thread library
+*  make get-error-filename more maintainable
+*  make get-error-koan-name more maintainable
+*  make get-error-koan-status more maintainable
+
+
