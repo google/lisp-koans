@@ -143,8 +143,8 @@
 
 ; returns sign x
 (defun sign-of (x)
-  (if (< x 0) (return-from where-to-return -1))
-  (if (eq x 0) (return-from where-to-return 0))
+  (if (< x 0) (return-from sign-of -1))
+  (if (eq x 0) (return-from sign-of 0))
   1)
 
 (define-test test-return-from-function-early
