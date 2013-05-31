@@ -1,0 +1,29 @@
+(
+ :asserts
+ :nil-false-empty
+ :evaluation
+ :atoms-vs-lists
+ :special-forms
+ :lists
+ :arrays
+ :vectors
+ :multiple-values
+ :equality-distinctions
+ :hash-tables
+ :functions
+ :strings
+ :structures
+ :iteration
+ :mapcar-and-reduce
+ :control-statements
+ :condition-handlers
+ :loops
+ :triangle-project
+ :scoring-project
+ :type-checking
+ :clos
+ :dice-project
+ :macros
+ :scope-and-extent
+ :threads
+)
