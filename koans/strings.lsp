@@ -58,7 +58,7 @@
     "concatenating strings in lisp is a little cumbersome"
   (let ((a "this")
         (b "is")
-        (c "unwieldly"))
+        (c "unwieldy"))
     (assert-equal ___ (concatenate 'string a " " b " " c))))
 
 
