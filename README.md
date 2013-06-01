@@ -7,7 +7,7 @@ From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g
 
 Running on a fresh version should output the following:
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+```
 Thinking about ASSERTS
     ASSERT-TRUE has damaged your karma.
 
@@ -20,8 +20,7 @@ Please meditate on the following code:
    Current koan assert status is "(INCOMPLETE)"
 
 You are now 0/169 koans and 0/25 lessons away from reaching enlightenment
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
+```
 
 This indicates that the script has completed, and that the learner should look
 to asserts.lsp to locate and fix the problem.  The problem will be within 
@@ -38,7 +37,6 @@ in the blank (____) with appropriate lisp code to make the assert pass.
 In order to test code, or evaluate tests interactively, students may copy
 and paste code into the lisp command line REPL.
 
-
 Quoting the Ruby Koans instructions::
 -------------------------------------
 
@@ -49,7 +47,6 @@ better. In this case you will need to run the koan and see it fail (red), make
 the test pass (green), then take a moment and reflect upon the test to see what
 it is teaching you and improve the code to better communicate its
 intent (refactor)."
-
 
 Content
 -------
