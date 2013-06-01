@@ -40,8 +40,8 @@
 
 
 (define-test test-quoting-behavior
-    "Preceding a list with a quote (') will tell lisp not to evalute a list.
-     The quote special form suppresses normal evaluation, an instead returns
+    "Preceding a list with a quote (') will tell lisp not to evaluate a list.
+     The quote special form suppresses normal evaluation, and instead returns
      the literal list.
      Evaluating the form (+ 1 2) returns the number 3,
      but evaluating the form '(+ 1 2) returns the list (+ 1 2)"
