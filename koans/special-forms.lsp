@@ -26,7 +26,7 @@
 (defvar c 0)
 
 (define-test test-setf
-    "setf is used to assign values to symbols.  These symbols my refer to
+    "setf is used to assign values to symbols.  These symbols may refer to
      variables with lexical or dynamic scope."
   (setf my-name "David")
   (assert-equal my-name ____)
