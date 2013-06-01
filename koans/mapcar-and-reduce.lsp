@@ -74,7 +74,7 @@
 
 (define-test test-mapcar-and-reduce
     "mapcar and reduce are a powerful combination.
-     insert the correct function names, instead of INCORRECT-FUNCTION-X
+     insert the correct function names, instead of WRONG-FUNCTION-X
      to define an inner product."
   (defun inner (x y) 
     (reduce #'WRONG-FUNCTION-2 (mapcar #'WRONG-FUNCTION-3 x y)))
