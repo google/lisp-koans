@@ -65,7 +65,7 @@
 
 
 (define-test test-append
-    "append attatches one list ot the end of another."
+    "append attaches one list to the end of another."
   (assert-equal '(:a :b :c) (append '(:a :b) '(:c)))
 
   (let ((abc '(:a :b :c))
