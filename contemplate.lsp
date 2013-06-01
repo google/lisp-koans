@@ -164,7 +164,7 @@
         finally (return partial-sum)))
 
 (defun print-progress-message ()
-      (format t "You are now ~A/~A koans and ~A/~A lessons away from reaching enlightenment~%~%"
+      (format t "You are now ~A/~A koans and ~A/~A lessons closer to reaching enlightenment~%~%"
               (n-passed-koans-overall *collected-results*)
               *n-total-koans*
               (- (length *collected-results*) 1)
