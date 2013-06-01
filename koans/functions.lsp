@@ -81,7 +81,7 @@
 (defun func-with-key-params (&key a b)
   (list a b))
 
-(defun test-key-params ()
+(define-test test-key-params ()
   "Key params allow the user to specify params in any order"
    (assert-equal (func-with-key-params) ___)
    (assert-equal (func-with-key-params :a 11 :b 22) ___)
