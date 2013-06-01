@@ -16,7 +16,7 @@
 
 (define-test test-vector-types
   " #(x y z) defines a vector literal containing x y z"
-  (true-or-false ___ (typep #(1 11 111) 'vector))
+  (true-or-false? ___ (typep #(1 11 111) 'vector))
   (assert-equal ___ (aref #(1 11 111) 1)))
 
 
