@@ -14,7 +14,7 @@
 
 
 ;; based on python koans 'about_lists.py'
-;; based also on "Lisp 3rd addition" ch. 17. "List storage, surgery and reclamation"
+;; based also on "Lisp 3rd Edition" ch. 17. "List storage, surgery and reclamation"
 
 
 (define-test test-creating-lists
