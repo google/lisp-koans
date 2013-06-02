@@ -106,7 +106,7 @@
 ;; ----
 
 
-;; borrowed from common listp the language 5.2.2
+;; borrowed from common lisp the language 5.2.2
 (defun func-with-funky-parameters (a &rest x &key b (c a))
    (list a b c x))
 
