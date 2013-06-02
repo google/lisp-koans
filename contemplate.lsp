@@ -140,8 +140,12 @@
     (format t "   Current koan assert status is \"~A\"~%" (reverse koan-status))))
 
 (defun print-completion-message ()
-  (format t "That was the last one, well done!~%")
-  (format t "If you want more, take a look at extra-credit.lsp~%"))
+  (format t "**********************************************************~%")
+  (format t "That was the last one, well done!  ENLIGHTENMENT IS YOURS!~%")
+  (format t "**********************************************************~%~%")
+  (format t "If you demand greater challenge, take a look at extra-credit.lsp~%")
+  (format t "Or, let the student become the teacher:~%")
+  (format t "   Write and submit your own improvements to github.com/google/lisp-koans!~%"))
 
 (defun n-completed-koans (collected-results)
   (loop for kg in collected-results
