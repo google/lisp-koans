@@ -166,7 +166,7 @@
   This function will add n to its argument."
   (lambda (y) (+ x y)))
 
-(defun test-lexical-closure-over-adder ()
+(define-test test-lexical-closure-over-adder ()
   (let ((add-100 (adder 100))
         (add-500 (adder 500)))
   "add-100 and add-500 now refer to different bindings to x"
