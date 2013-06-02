@@ -19,7 +19,7 @@ Please meditate on the following code:
    Koan "ASSERT-TRUE"
    Current koan assert status is "(INCOMPLETE)"
 
-You are now 0/169 koans and 0/25 lessons away from reaching enlightenment
+You are now 0/169 koans and 0/25 lessons closer to reaching enlightenment
 ```
 
 This indicates that the script has completed, and that the learner should look
