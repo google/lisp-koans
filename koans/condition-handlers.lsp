@@ -69,7 +69,7 @@ error handling code from normal operational code."
   (assert-equal ___
                 (handler-case (my-divide 6 2)
                   (my-div-by-zero-error (condition) :zero-div-error)
-                  (my-non-number-args-error (condition) :bad-args))
+                  (my-non-number-args-error (condition) :bad-args)))
   (assert-equal ___
                 (handler-case (my-divide 6 0)
                   (my-div-by-zero-error (condition) :zero-div-error)
@@ -77,7 +77,7 @@ error handling code from normal operational code."
   (assert-equal ___
                 (handler-case (my-divide 6 "woops")
                   (my-div-by-zero-error (condition) :zero-div-error)
-                  (my-non-number-args-error (condition) :bad-args)))))
+                  (my-non-number-args-error (condition) :bad-args))))
 
 
 ;; ----
