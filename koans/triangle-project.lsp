@@ -15,7 +15,7 @@
 
 "you need to write the triangle method"
 
-(define-condition triangle-error  (error) (()))
+(define-condition triangle-error  (error) ())
 
 (defun triangle (a b c)
   :write-me)
