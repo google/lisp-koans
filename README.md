@@ -24,7 +24,7 @@ You are now 0/169 koans and 0/25 lessons closer to reaching enlightenment
 
 This indicates that the script has completed, and that the learner should look
 to asserts.lsp to locate and fix the problem.  The problem will be within 
-a define-test block such as
+a define-test expression such as
 
     (define-test assert-true
         "t is true.  Replace the blank with a t"
