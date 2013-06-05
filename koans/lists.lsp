@@ -24,7 +24,7 @@
     (setf fruits '(orange pomello clementine))
     (setf some-evens (list (* 2 1) (* 2 2) (* 2 3)))
     (assert-equal fruits ___)
-    (assert-equal ___ (length fruits))))
+    (assert-equal ___ (length some-evens))))
 
 
 (define-test test-list-cons
