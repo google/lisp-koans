@@ -55,4 +55,5 @@ The Common Lisp koans are based on the python koans and ruby koans projects.
 Additionally, many of the tests are based on new material that is special
 to Common Lisp.
 
-Note that the unit on threads uses an SBCL specific threading API.
+Note that the unit on threads uses an SBCL specific threading API.  A reader
+macro will remove this unit on Lisp implementations other than SBCL.
