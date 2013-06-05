@@ -190,6 +190,7 @@ assertion.")
 
 (defmethod print-failure :around (type form expected actual extras)
   "Failure header and footer output."
+  (declare (ignore expected actual))
   (format t "~& | Failed Form: ~S" form)
   (call-next-method)
   (when extras
@@ -198,22 +199,26 @@ assertion.")
   type)
 
 (defmethod print-failure (type form expected actual extras)
+  (declare (ignore type form extras))
   (format t "~& | Expected ~{~S~^; ~} " expected)
   (format t "~<~% | ~:;but saw ~{~S~^; ~}~>" actual))
 
 (defmethod print-failure ((type (eql :error))
                           form expected actual extras)
+  (declare (ignore form extras))
   (format t "~& | ~@[Should have signalled ~{~S~^; ~} but saw~]"
           expected)
   (format t " ~{~S~^; ~}" actual))
 
 (defmethod print-failure ((type (eql :macro))
                           form expected actual extras)
+  (declare (ignore form extras))
   (format t "~& | Should have expanded to ~{~S~^; ~} " expected)
   (format t "~<~%~:;but saw ~{~S~^; ~}~>" actual))
 
 (defmethod print-failure ((type (eql :output))
                           form expected actual extras)
+  (declare (ignore form extras))
   (format t "~& | Should have printed ~{~S~^; ~} " expected)
   (format t "~<~%~:;but saw ~{~S~^; ~}~>" actual))
 
@@ -474,6 +479,7 @@ assertion.")
 
 (defmethod test-passed-p ((type (eql :error)) expected actual test)
   "Return the result of the error assertion."
+  (declare (ignore test))
   (or
    (eql (car actual) (car expected))
    (typep (car actual) (car expected))))
@@ -486,10 +492,12 @@ assertion.")
 
 (defmethod test-passed-p ((type (eql :macro)) expected actual test)
   "Return the result of the macro expansion."
+  (declare (ignore test))
   (equal (car actual) (car expected)))
 
 (defmethod test-passed-p ((type (eql :output)) expected actual test)
   "Return the result of the printed output."
+  (declare (ignore test))
   (string=
    (string-trim '(#\newline #\return #\space) (car actual))
    (car expected)))
@@ -501,6 +509,7 @@ assertion.")
 
 (defmethod test-passed-p ((type (eql :result)) expected actual test)
   "Return the result of the assertion."
+  (declare (ignore test))
   (logically-equal (car actual) (car expected)))
 
 (defun form-contains-one-of-p (form symbol-list)
