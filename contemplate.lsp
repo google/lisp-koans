@@ -21,7 +21,7 @@
 (defpackage :lisp-koans
   (:use :common-lisp)
   (:use :lisp-unit)
-  (:use :sb-ext))
+  #+sbcl (:use :sb-ext))
 
 (in-package :lisp-koans)
 
@@ -53,8 +53,9 @@
   (let ((koan-file-name (concatenate 'string (string-downcase (string koan-group-name)) ".lsp")))
     (if *dp-loading* (format t "start loading ~A ~%" koan-file-name))
     (in-package :lisp-koans)
-    (make-package koan-group-name
-        :use '(:common-lisp :lisp-unit :sb-ext))
+    (unless (find-package koan-group-name)
+      (make-package koan-group-name
+                    :use '(:common-lisp :lisp-unit #+sbcl :sb-ext)))
     (setf *package* (find-package koan-group-name))
     (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
     (incf *n-total-koans* (length (list-tests)))
