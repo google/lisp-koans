@@ -9,7 +9,7 @@ Running on a fresh version should output the following:
 
 ```
 Thinking about ASSERTS
-    ASSERT-TRUE has damaged your karma.
+    ASSERT-TRUE requires more meditation.
 
 You have not yet reached enlightenment ...
   A koan is incomplete.
