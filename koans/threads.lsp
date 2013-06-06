@@ -328,7 +328,3 @@
       (bordeaux-threads:join-thread eater-thread)))
   (assert-equal (aref *orchard-log* 0) ____)
   (assert-equal (aref *orchard-log* 1) ____))
-
-
-
-
