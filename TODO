@@ -2,5 +2,6 @@
 *  make get-error-filename more maintainable
 *  make get-error-koan-name more maintainable
 *  make get-error-koan-status more maintainable
+*  improve error reporting from "a koan threw an error" to something more helpful
 
 
