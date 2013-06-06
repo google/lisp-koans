@@ -85,7 +85,7 @@
                      (second k-result))))
     (if all-pass-p
         (format t "~A has expanded your awareness.~%" koan-name)
-        (format t "~A has damaged your karma.~%" koan-name))))
+        (format t "~A requires more meditation.~%" koan-name))))
 
 (defun print-koan-group-progress (kg-name kg-results)
   (format t "~%Thinking about ~A~%" kg-name)
