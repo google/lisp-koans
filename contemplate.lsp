@@ -17,6 +17,7 @@
 
 ;; lisp-unit defines the modules for loading / executing koans
 (load "lisp-unit.lsp")
+(require :bordeaux-threads)
 
 (defpackage :lisp-koans
   (:use :common-lisp)

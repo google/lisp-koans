@@ -243,7 +243,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setf *g* 0)
-(defvar *gs-mutex* (bordeaux-threads:make-lock :name "g's lock"))
+(defvar *gs-mutex* (bordeaux-threads:make-lock "g's lock"))
 
 (defun protected-increments-g (&optional (n 0.1))
   "Surround all references to *g* within the with-lock-held form."
@@ -298,7 +298,7 @@
                           :name "apples condition variable"))
 (defvar *orchard-log* (make-array 10))
 (defvar *next-log-idx* 0)
-(defvar *orchard-log-mutex* (bordeaux-threads:make-lock :name "orchard log mutex"))
+(defvar *orchard-log-mutex* (bordeaux-threads:make-lock "orchard log mutex"))
 
 (defun add-to-log (item)
   (bordeaux-threads:with-lock-held (*orchard-log-mutex*)
