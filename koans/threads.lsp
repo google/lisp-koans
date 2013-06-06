@@ -12,16 +12,16 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
-;; NOTE: This koan group uses language features specific to sbcl, that are 
-;; not part of the Common Lisp specification.  If you are not using sbcl, 
-;; feel free to skip this group by removing it from '.koans'
+;; NOTE: This koan group uses language features specific to bordeaux-threads,
+;; that are not part of the Common Lisp specification. Feel free to skip this
+;; group by removing it from '.koans'
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Making threads with bordeaux-threads:make-thread  ;;
 ;; Joining threads with bordeaux-threads:join-thread ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; sb-thread takes a -function- as a parameter.
+;; make-thread takes a -function- as a parameter.
 ;; This function will be executed in a separate thread.
 
 ;; Since the execution order of separate threads is not guaranteed,
@@ -64,9 +64,9 @@
                   ____)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Sending arguments to the thread function: ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Simulate sending arguments to the thread function: ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun returns-hello-name (name)
   (format nil "Hello, ~a" name))
@@ -74,21 +74,20 @@
 (defun double-wrap-list (x y z)
   (list (list x y z)))
 
-;; Create a thread which will print out "Hello -Name-" using
-;; the named write-hello-name function.   Arguments are handed
-;; to threads as a list, unless there is just a single argument
-;; then it does not need to be wrapped in a list.
+;; Create a thread which will print out "Hello -Name-" using the named
+;; write-hello-name function.  We cannot pass a function taking argument
+;; directly to make-thread, so we must pass a lambda that will funcall the
+;; function with the argument values.
 
 (define-test test-sending-arguments-to-thread
-    (assert-equal "Hello, Buster" 
-                  (sb-thread:join-thread
-                   (sb-thread:make-thread 'returns-hello-name
-                                          :arguments "Buster")))
-    (assert-equal ____
-                  (sb-thread:join-thread
-                   (sb-thread:make-thread 'double-wrap-list
-                                          :arguments '(3 4 5)))))
-
+  (assert-equal "Hello, Buster" 
+                (bordeaux-threads:join-thread
+                 (bordeaux-threads:make-thread 
+                  (lambda () (funcall #'returns-hello-name "Buster")))))
+  (assert-equal ____
+                (bordeaux-threads:join-thread
+                 (bordeaux-threads:make-thread 
+                  (lambda () (funcall #'double-wrap-list 3 4 5))))))
 
 ;; ----
 
@@ -122,12 +121,15 @@
     "same program as above, executed in threads.  Sleeps are simultaneous"
   (setf *accum* 0)
   (setf *before-time-millisec* (get-internal-real-time))
-  (let ((thread-1 (sb-thread:make-thread 'accum-after-time :arguments '(0.3 1)))
-        (thread-2 (sb-thread:make-thread 'accum-after-time :arguments '(0.2 2)))
-        (thread-3 (sb-thread:make-thread 'accum-after-time :arguments '(0.1 4))))
-    (sb-thread:join-thread thread-1)
-    (sb-thread:join-thread thread-2)
-    (sb-thread:join-thread thread-3))
+  (let ((thread-1 (bordeaux-threads:make-thread 
+                   (lambda () (funcall 'accum-after-time 0.3 1))))
+        (thread-2 (bordeaux-threads:make-thread
+                   (lambda () (funcall 'accum-after-time 0.2 2))))
+        (thread-3 (bordeaux-threads:make-thread
+                   (lambda () (funcall 'accum-after-time 0.1 4)))))
+    (bordeaux-threads:join-thread thread-1)
+    (bordeaux-threads:join-thread thread-2)
+    (bordeaux-threads:join-thread thread-3))
   (setf *after-time-millisec* (get-internal-real-time))
   (true-or-false? ___ (> (duration-ms) 200))
   (true-or-false? ___  (< (duration-ms) 400))
@@ -260,28 +262,40 @@
     (bordeaux-threads:join-thread thread-3)
     (assert-equal *g* ___)))
 
-;;;;;;;;;;;;;;;;
-;; Semaphores ;;
-;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Condition variables ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Incrementing a semaphore is an atomic operation.
-(defvar *g-semaphore* (sb-thread:make-semaphore :name "g" :count 0))
+(setf *g* 0)
+(defvar *g-condvar* (bordeaux-threads:make-condition-variable :name "g's condition variable"))
 
-(defun semaphore-increments-g ()
-  (sb-thread:signal-semaphore *g-semaphore*))
+(defun condvar-increments-g ()
+  (bordeaux-threads:with-lock-held (*gs-mutex*)
+    (incf *g*)
+    (bordeaux-threads:condition-notify *g-condvar*)))
 
-(define-test test-increment-semaphore
-    (assert-equal 0 (sb-thread:semaphore-count *g-semaphore*))
-  (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 1"))
-  (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 2"))
-  (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 3"))
-  (assert-equal ___ (sb-thread:semaphore-count *g-semaphore*)))
+(define-test test-increment-with-condvar
+  (bordeaux-threads:with-lock-held (*gs-mutex*)
+    (assert-equal 0 *g*))
+  
+  (bordeaux-threads:join-thread 
+   (bordeaux-threads:make-thread 'condvar-increments-g :name "S incrementor 1"))
+  (bordeaux-threads:join-thread 
+   (bordeaux-threads:make-thread 'condvar-increments-g :name "S incrementor 2"))
+  (bordeaux-threads:join-thread 
+   (bordeaux-threads:make-thread 'condvar-increments-g :name "S incrementor 3"))
+  
+  (bordeaux-threads:with-lock-held (*gs-mutex*)
+    (bordeaux-threads:condition-wait *g-condvar* *gs-mutex*)
+    (assert-equal ___ *g*)))
 
 
-;; Semaphores can be used to manage resource allocation, and to trigger
-;; threads to run when the semaphore value is above zero.
+;; Condition variables can be used to manage resource allocation, and to
+;; trigger threads to run when a varialbe's value is above zero.
 
-(defvar *apples* (sb-thread:make-semaphore :name "how many apples" :count 0))
+(defvar *apples* 0)
+(defvar *apples-condvar* (bordeaux-threads:make-condition-variable 
+                          :name "apples condition variable"))
 (defvar *orchard-log* (make-array 10))
 (defvar *next-log-idx* 0)
 (defvar *orchard-log-mutex* (bordeaux-threads:make-lock :name "orchard log mutex"))
@@ -292,16 +306,20 @@
     (incf *next-log-idx*)))
 
 (defun apple-eater ()
-  (sb-thread:wait-on-semaphore *apples*)
-  (add-to-log "apple eaten."))
+  (bordeaux-threads:with-lock-held (*orchard-log-mutex*)
+    (bordeaux-threads:condition-wait *apples-condvar* *orchard-log-mutex*)
+    (add-to-log "apple eaten.")))
 
 (defun apple-grower ()
   (sleep 0.1)
   (add-to-log "apple grown.")
-  (sb-thread:signal-semaphore *apples*))
+  (bordeaux-threads:with-lock-held (*orchard-log-mutex*)
+    (incf *apples*)
+    (bordeaux-threads:condition-notify *apples-condvar*)))
 
 (defun num-apples ()
-  (sb-thread:semaphore-count *apples*))
+  (bordeaux-threads:with-lock-held (*orchard-log-mutex*)
+    *apples*))
 
 (define-test test-orchard-simulation
     (assert-equal (num-apples) ___)
