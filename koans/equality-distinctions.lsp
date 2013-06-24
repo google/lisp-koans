@@ -79,3 +79,15 @@
    (true-or-false? ___ (= 99.0 99 99.000))
    (true-or-false? ___ (= 0 1 -1))
    (true-or-false? ___ (= (/ 2 3) (/ 6 9) (/ 86 129))))
+
+; EQ, EQL, EQUAL, and EQUALP are general equality predicates.
+; Additionally, Lisp also provides the type-specific predicates.
+; For example, STRING= and STRING-EQUAL are predicates for strings.
+(define-test test-string-equal
+  "string-equal is just like string= except that differences in case are ignored."
+  (true-or-false? ___ (string= "Foo" "Foo"))
+  (true-or-false? ___ (string= "Foo" "FOO"))
+  (true-or-false? ___ (string= "together" "frog" :start1 1 :end1 3 :start2 2))
+  (true-or-false? ___ (string-equal "Foo" "FOO"))
+  (true-or-false? ___ (string-equal "Foo" "FOO")))
+  (true-or-false? ___ (string-equal "together" "FROG" :start1 1 :end1 3 :start2 2))
