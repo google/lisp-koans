@@ -17,11 +17,12 @@
 
 ;; lisp-unit defines the modules for loading / executing koans
 (load "lisp-unit.lsp")
+(require :bordeaux-threads)
 
 (defpackage :lisp-koans
   (:use :common-lisp)
   (:use :lisp-unit)
-  #+sbcl (:use :sb-ext))
+  (:use :bordeaux-threads))
 
 (in-package :lisp-koans)
 
@@ -55,7 +56,7 @@
     (in-package :lisp-koans)
     (unless (find-package koan-group-name)
       (make-package koan-group-name
-                    :use '(:common-lisp :lisp-unit #+sbcl :sb-ext)))
+                    :use '(:common-lisp :lisp-unit :bordeaux-threads)))
     (setf *package* (find-package koan-group-name))
     (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
     (incf *n-total-koans* (length (list-tests)))
