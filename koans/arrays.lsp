@@ -29,18 +29,21 @@
             (setf (aref chess-board x y) :white)
             )))
     (assert-true (typep chess-board 'array))
-    (assert-equal (aref chess-board 0 0) ___)
-    (assert-equal (aref chess-board 2 3) ___)
+    (assert-equal (aref chess-board 0 0) :black)
+    (assert-equal (aref chess-board 2 3) :white)
     "array-rank returns the number of dimensions of the array"
-    (assert-equal ___ (array-rank chess-board))
+    (assert-equal 2 (array-rank chess-board))
     "array-dimensions returns a list of the cardinality of the array dims"
-    (assert-equal ___ (array-dimensions chess-board))
-    (assert-equal ___ (array-total-size chess-board))))
+    (assert-equal '(8 8) (array-dimensions chess-board))
+    (assert-equal 64 (array-total-size chess-board))))
 
 (define-test test-make-your-own-array
     "make your own array that meets the specifications below."
   (let ((color-cube nil))
     "you may need to modify your array after you make it"
+    (setf color-cube (make-array '(3 3 3)))
+    (setf (aref color-cube 0 1 2) :red)
+    (setf (aref color-cube 2 1 0) :white)
     (if (typep color-cube '(simple-array T (3 3 3)))
         (progn
           (assert-equal 3 (array-rank color-cube))
@@ -58,14 +61,14 @@
     (assert-equal (array-dimensions x) '(2 2))
     (adjust-array x '(3 4))
     (assert-equal (array-dimensions x) '(3 4))
-    (assert-equal (aref x 2 3) ____)))
+    (assert-equal (aref x 2 3) 0)))
 
 
 (define-test test-make-array-from-list
   (let ((x))
     (setf x (make-array '(4) :initial-contents '(:one :two :three :four)))
-    (assert-equal (array-dimensions x) ____)
-    (assert-equal ____ (aref x 0))))
+    (assert-equal (array-dimensions x) '(4))
+    (assert-equal :one (aref x 0))))
 
 
 (define-test test-row-major-index
@@ -75,5 +78,5 @@
     (setf my-array (make-array '(2 2 2 2)))
     (dotimes (i (* 2 2 2 2))
       (setf (row-major-aref my-array i) i))
-    (assert-equal (aref my-array 0 0 0 0) ____)
-    (assert-equal (aref my-array 1 1 1 1) ____)))
+    (assert-equal (aref my-array 0 0 0 0) 0)
+    (assert-equal (aref my-array 1 1 1 1) 15)))
