@@ -36,7 +36,7 @@
   (assert-equal 1 (hash-table-count table-of-cube-roots))
 
   (setf (gethash 8 table-of-cube-roots) 2)
-  (setf (gethash -27 table-of-cube-roots) -3)
+  (setf (gethash -3 table-of-cube-roots) -27)
   (assert-equal nil (gethash -3 table-of-cube-roots))
   (assert-equal 3 (hash-table-count table-of-cube-roots))
 
