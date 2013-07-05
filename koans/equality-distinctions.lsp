@@ -85,9 +85,9 @@
 ; For example, STRING= and STRING-EQUAL are predicates for strings.
 (define-test test-string-equal
   "string-equal is just like string= except that differences in case are ignored."
-  (true-or-false? ___ (string= "Foo" "Foo"))
-  (true-or-false? ___ (string= "Foo" "FOO"))
-  (true-or-false? ___ (string= "together" "frog" :start1 1 :end1 3 :start2 2))
-  (true-or-false? ___ (string-equal "Foo" "FOO"))
-  (true-or-false? ___ (string-equal "Foo" "FOO")))
-  (true-or-false? ___ (string-equal "together" "FROG" :start1 1 :end1 3 :start2 2))
+  (true-or-false? t (string= "Foo" "Foo"))
+  (true-or-false? nil (string= "Foo" "FOO"))
+  (true-or-false? t (string= "together" "frog" :start1 1 :end1 3 :start2 2))
+  (true-or-false? t (string-equal "Foo" "FOO"))
+  (true-or-false? t (string-equal "Foo" "FOO")))
+  (true-or-false? t (string-equal "together" "FROG" :start1 1 :end1 3 :start2 2))

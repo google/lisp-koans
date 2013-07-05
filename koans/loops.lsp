@@ -145,7 +145,7 @@
     (let ((loop-return
            (loop for x in '(1 1 2 3 5 8 13)
                  when (evenp x) sum x)))
-      (assert-equal loop-return ____)))
+      (assert-equal loop-return 10)))
 
 
 (defun greater-than-10-p (x)
@@ -155,11 +155,11 @@
     (let ((loop-return
            (loop for x in '(1 1 2 3 5 8 13)
                  when (greater-than-10-p x) sum x)))
-      (assert-equal loop-return ____)))
+      (assert-equal loop-return 13)))
 
 
 (define-test test-conditional-with-lambda
     (let ((loop-return
            (loop for x in '(1 1 2 3 5 8 13)
                  when ((lambda (z) (equal 1 (mod z 3))) x) sum x)))
-      (assert-equal loop-return ____)))
+      (assert-equal loop-return 15)))

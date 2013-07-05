@@ -37,7 +37,7 @@
 
   (setf (gethash 8 table-of-cube-roots) 2)
   (setf (gethash -3 table-of-cube-roots) -27)
-  (assert-equal nil (gethash -3 table-of-cube-roots))
+  (assert-equal -27 (gethash -3 table-of-cube-roots))
   (assert-equal 3 (hash-table-count table-of-cube-roots))
 
   "accessing unset keys returns nil"
