@@ -45,8 +45,8 @@
      the literal list.
      Evaluating the form (+ 1 2) returns the number 3,
      but evaluating the form '(+ 1 2) returns the list (+ 1 2)"
-  (assert-equal ____ (+ 1 2))
-  (assert-equal ____ '(+ 1 2))
+  (assert-equal ___ (+ 1 2))
+  (assert-equal ___ '(+ 1 2))
   "'LISTP' is a predicate which returns true if the argument is a list"
   " the '(CONTENTS) form defines a list literal containing CONTENTS"
   (assert-equal ___ (listp '(1 2 3)))

@@ -16,7 +16,7 @@
 (define-test test-list-or-atom
     "Lists in lisp are forms beginning and ending with rounded parentheses.
      Atoms are symbols, numbers, or other forms usually separated by
-     white-space or parentheses.  The function 'listp' will return true iff
+     white-space or parentheses.  The function 'listp' will return true if
      the input is a list.  The function 'atom' will return true iff the
      input is an atom."
   (true-or-false? ___ (listp '(1 2 3)))
