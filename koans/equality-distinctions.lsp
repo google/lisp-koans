@@ -89,5 +89,4 @@
   (true-or-false? ___ (string= "Foo" "FOO"))
   (true-or-false? ___ (string= "together" "frog" :start1 1 :end1 3 :start2 2))
   (true-or-false? ___ (string-equal "Foo" "FOO"))
-  (true-or-false? ___ (string-equal "Foo" "FOO"))
   (true-or-false? ___ (string-equal "together" "FROG" :start1 1 :end1 3 :start2 2)))
