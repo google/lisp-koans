@@ -1,0 +1,15 @@
+#!/bin/sh
+
+escape=$(echo | tr '\n' '\033')
+green="${escape}[32m"
+red="${escape}[31m"
+reset="${escape}[0m"
+
+cd ${KOAN_DIR:-~/lisp-koans}
+sbcl --script contemplate.lsp | sed \
+	-e "s/\(.*awareness\.\)/$green\1$reset/g" \
+	-e "s/\(.*meditation\.\)/$red\1$reset/g" \
+	-e "s/\(.*incorrect.\)/$red\1$reset/g" \
+	-e "/Current koan/N" \
+	-e "s/\(\"[^\"]*\"\)/$red\1$reset/g"
+
