@@ -25,5 +25,5 @@
  :dice-project
  :macros
  :scope-and-extent
- #+sbcl :threads
+ #+sb-thread :threads
 )
