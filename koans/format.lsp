@@ -13,71 +13,79 @@
 ;;   limitations under the License.
 
 
-;; format is lisp's counterpart to the c function printf. Refer to
+;; FORMAT is lisp's counterpart to the c function printf. Refer to
 ;; http://www.gigamonkeys.com/book/a-few-format-recipes.html for more
 ;; on this topic.
 
-(define-test test-double-quoted-strings-are-strings
-    (let ((my-string "do or do not"))
-      (true-or-false? ___ (typep my-string 'string))
-      "strings are the same thing as vectors of characters"
-      (true-or-false? ___ (typep my-string 'array))
-      (assert-equal (aref "meat" 2) (aref "fiesta" 5))
-      "strings are not integers :p"
-      (true-or-false? ___ (typep my-string 'integer))))
+
+;; FORMAT takes two fixed parameters. The first one specifies an
+;; output stream that the result goes to, and if left as nil, FORMAT
+;; will return the output as a string instead. The second parameter
+;; specifies the format, where format specifier will be replaced by
+;; formatting the rest of the parameters.
 
 
-(define-test test-multi-line-strings-are-strings
-    (let ((my-string "this is
-                      a multi
-                      line string"))
-      (true-or-false? ___ (typep my-string 'string))))
+(define-test test-format-with-plain-text
+    "If there is no format sepcifier, FORMAT just return the string
+itself."
+  (assert-equal "this is plain text." (format nil "this is plain text.")))
+
+(define-test test-format-with-general-specifier
+    "~a is a general specifier that translate to the print form of a
+    parameter."
+  (assert-equal "42" (format nil "~a" 42))
+  (assert-equal "C" (format nil "~a" #\C))
+  (assert-equal "galaxy far far away" (format nil "~a" "galaxy far far away"))
+  ;; ~a can also translate to list
+  ;; and parameters to FORMAT are passed by value
+  (assert-equal "(/ 8 (- 3 (/ 8 3))) evaluates to 24"
+		(format nil "~a evaluates to ~a"
+			'(/ 8 (- 3 (/ 8 3)))
+			(/ 8 (- 3 (/ 8 3))))))
+
+(define-test some-fancy-specifiers
+    "format enclosed by ~{ and ~} applies to every element in a list."
+    (assert-equal "[1][2][3][4]" 
+		  (format nil "~{[~a]~}" '(1 2 3 4)))
+    ;; ~^ within the ~{ ~} stops processing the last element in the list.
+    (assert-equal "1|2|3|4|" (format nil "~{~a|~}" '(1 2 3 4)))
+    (assert-equal "1|2|3|4" (format nil "~{~a~^|~}" '(1 2 3 4)))
+    ;; ~r reads the interger 
+    (assert-equal "forty-two" (format nil "~r" 42))
+    ;; put them all together
+    (assert-equal "one,two,three,four" 
+		  (format nil "~{~r~^,~}" '(1 2 3 4))))
+
+;; ----
+
+(defun make-matrix (n)
+  (format nil "write your format here"
+	  (loop for i below n
+	     collect (loop for j below n
+			collect #\*))))
+
+(define-test format-a-matrix
+    (assert-equal (make-matrix 1)
+		  "*")
+    (assert-equal (make-matrix 2)
+"* *
+* *")
+    (assert-equal (make-matrix 4)
+"* * * *
+* * * *
+* * * *
+* * * *"))
+  
 
 
-(define-test test-escape-quotes
-    (let ((my-string "this string has one of these \" in it"))
-      (true-or-false? ___ (typep my-string 'string))))
 
 
-; This test from common lisp cookbook
-(define-test test-substrings
-    "since strings are sequences, you may use subseq"
-  (let ((my-string "Groucho Marx"))
-    (assert-equal "Marx" (subseq my-string 8))
-    (assert-equal (subseq my-string 0 7) ____)
-    (assert-equal (subseq my-string 1 5) ____)))
-
-(define-test test-accessing-individual-characters
-  "char literals look like this"
-  (true-or-false? ___ (typep #\a 'character))
-  (true-or-false? ___ (typep "A" 'character))
-  (true-or-false? ___ (typep #\a 'string))
-  "char is used to access individual characters"
-  (let ((my-string "Cookie Monster"))
-    (assert-equal (char my-string 0) #\C)
-    (assert-equal (char my-string 3) #\k)
-    (assert-equal (char my-string 7) ___)))
 
 
-(define-test test-concatenating-strings
-    "concatenating strings in lisp is a little cumbersome"
-  (let ((a "this")
-        (b "is")
-        (c "unwieldy"))
-    (assert-equal ___ (concatenate 'string a " " b " " c))))
+
+		
 
 
-(define-test test-searching-for-characters
-    "you can use position to detect characters in strings
-     (or elements of sequences)"
-  (assert-equal ___ (position #\b "abc"))
-  (assert-equal ___ (position #\c "abc"))
-  (assert-equal ___ (find #\d "abc")))
 
-
-(define-test test-finding-substrings
-    "search finds subsequences"
-  (let ((title "A supposedly fun thing I'll never do again"))
-    (assert-equal 2 (search "supposedly" title))
-    (assert-equal 12 (search "CHANGETHISWORD" title))))
+  
 
