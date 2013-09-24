@@ -176,8 +176,9 @@
 (define-test test-macroexpand-1
     "MACROEXPAND-1 takes the (quoted) macro invocation form, and
 returns the (quoted) lisp form of the expanded code."
-  (assert-equal ___ (compound-call-1 1+ 1+ (* 7 7)))
-  (assert-equal ___ (macroexpand-1 '(compound-call-1 1+ 1+ (* 7 7)))))
+  (assert-equal 51 (compound-call-1 1+ 1+ (* 7 7)))
+  (assert-equal '(1+ (1+ (* 7 7))) 
+		(macroexpand-1 '(compound-call-1 1+ 1+ (* 7 7)))))
 
 
 
@@ -188,10 +189,8 @@ returns the (quoted) lisp form of the expanded code."
 (defmacro compound-call (&rest args)
   "This macro works in a similar way to compound-call-1, except that
 it does not have a limit on the number of functions being compounded."
-  (if (= (length args) 1) 
-      `,(car args)
-      ;; FILL IN THE ELSE CLAUSE
-      ))
+  (if (= (length args) 1) `,(car args)
+      `(,(car args) (compound-call ,@(cdr args)))))
 
 (define-test test-compound-call
     "macroexpand-1 expands the macro invocation EXACTLY ONCE."
@@ -215,5 +214,7 @@ it does not have a limit on the number of functions being compounded."
 
 (define-test test-hierarchical-backtick-form
     "MACROEXPAND-1 can be extremly helpful here."
-  (assert-equal ___
+  (assert-equal '((the-ultimate spider-man)
+		  (the-ultimate hulk)
+		  (the-ultimate captain-america))
 		(prefix-word-list the-ultimate spider-man hulk captain-america)))
