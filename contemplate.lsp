@@ -15,6 +15,14 @@
 
 (in-package :cl-user)
 
+;; Though Clozure / CCL runs lisp-koans on the command line using 
+;; "ccl -l contemplate.lsp", the following lines are needed to 
+;; meditate on the koans within the CCL IDE.
+;; (The :hemlock is used to distiguish between ccl commandline and the IDE)
+#+(and :ccl :hemlock)
+(setf *default-pathname-defaults* (directory-namestring *load-pathname*))
+
+
 ;; lisp-unit defines the modules for loading / executing koans
 (load "lisp-unit.lsp")
 
