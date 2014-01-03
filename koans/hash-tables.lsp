@@ -31,8 +31,8 @@
   (let ((table-of-cube-roots (make-hash-table)))
 
   "assign the key-value pair 1->'uno'"
-  (setf (gethash 1 table-of-cube-roots) 1)
-  (assert-equal 1 (gethash 1 table-of-cube-roots))
+  (setf (gethash 1 table-of-cube-roots) "uno")
+  (assert-equal "uno" (gethash 1 table-of-cube-roots))
   (assert-equal 1 (hash-table-count table-of-cube-roots))
 
   (setf (gethash 8 table-of-cube-roots) 2)
