@@ -57,8 +57,7 @@
     (assert-equal (aref x 1 0) 5)
     (assert-equal (array-dimensions x) '(2 2))
     (adjust-array x '(3 4))
-    (assert-equal (array-dimensions x) '(3 4))
-    (assert-equal (aref x 2 3) ____)))
+    (assert-equal (array-dimensions x) '(3 4))))
 
 
 (define-test test-make-array-from-list
