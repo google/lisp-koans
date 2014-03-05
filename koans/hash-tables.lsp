@@ -89,10 +89,10 @@
           (expected (make-hash-table :test #'equal)))
       (setf (gethash "one" babel-fish) "uno")
       (setf (gethash "two" babel-fish) "dos")
-      (setf (gethash "one" expected) "ein")
+      (setf (gethash "one" expected) "eins")
       (setf (gethash "two" expected) "zwei")
 
-      (setf (gethash "one" babel-fish) "ein")
+      (setf (gethash "one" babel-fish) "eins")
       (setf (gethash "two" babel-fish) ____)
 
       (assert-true (equalp babel-fish expected))))
