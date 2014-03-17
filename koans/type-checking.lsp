@@ -46,7 +46,7 @@
    ;; Integers are either fixnum or bignum.
    ;; The boundary between fixnum and bignum is given by the constant:
    ;;   most-positive-fixnum
-   (assert-true (typep 1234567890123456789 'fixnum))
+   (assert-true (typep 1 'fixnum))
    (assert-true (typep 12345678901234567890 'bignum))
    (true-or-false? ___ (typep most-positive-fixnum 'fixnum))
    (true-or-false? ___ (typep (+ 1 most-positive-fixnum) 'fixnum)))
@@ -62,7 +62,7 @@
 
 
 (define-test test-some-types-are-lists
-   (assert-true(typep (make-array 0 :element-type 'integer) '(SIMPLE-VECTOR 0)))
+   (assert-true (typep (make-array 0 :element-type 'integer) '(SIMPLE-VECTOR 0)))
    (true-or-false? ____ (typep (make-array '(3 3) :element-type 'integer) '(SIMPLE-ARRAY T (3 3)))))
 
 
