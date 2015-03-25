@@ -39,7 +39,7 @@
 
 (define-test test-backtick-form
     "backtick (`) form is much like single-quote (') form, except that subforms
-     preceded by a comma (,) are evaluated, rather then left as literals"
+     preceded by a comma (,) are evaluated, rather than left as literals"
   (let ((num 5)
         (word 'dolphin))
     (true-or-false? ___  (equal '(1 3 5) `(1 3 5)))
