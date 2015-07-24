@@ -15,7 +15,7 @@
 
 ; Concept: What do you do to go through the lisp koans?  You fill in
 ; the blanks, or otherwise fix the lisp code so that the
-; code within the 'define-koan' blocks passes.
+; code within the 'define-test' blocks passes.
 
 
 ; In common lisp, "True" and "False" are represented by "t" and "nil".
