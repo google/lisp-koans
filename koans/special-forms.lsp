@@ -94,25 +94,52 @@
     (assert-equal b 200)
     (assert-equal c (+ a (/ b a)))))
 
+(define-test test-case
+    "the case form is like the C switch statement: it
+    compares an input with a set of values and evaluates an
+    expression once a match is found"
+  (setf a 4)
+  (setf b
+        (case a (4 :four)
+                (5 :five)
+                ;; t specifies default behavior
+                (t :unknown)))
+  (assert-equal ____ b)
+  "case can also check if a list of values contains
+   the input"
+  (setf c
+        (case a (5 :five)
+                ((3 4) :three-or-four)))
+  (assert-equal ____ c))
+
+(defun cartoon-dads (input)
+    "you should be able to complete this case statement"
+  (case input (:this-one-doesnt-happen :fancy-cat)
+              (t :unknown)))
+
+(define-test test-your-own-case-statement
+    "fix this by completing the 'cartoon-dads' function above"
+  (assert-equal (cartoon-dads :bart) :homer)
+  (assert-equal (cartoon-dads :stewie) :peter)
+  (assert-equal (cartoon-dads :stan) :randy)
+  (assert-equal (cartoon-dads :space-ghost) :unknown))
+
+(define-test test-limits-of-case
+    "case is not suitable for all kinds of values, because
+     it uses the function eql for comparisons. We will explore 
+     the implications of this in the equality-distinctions lesson"
+  (let* ((name "John")
+         (lastname (case name ("John" "Doe")
+                              ("Max" "Mustermann")
+                              (t "Anonymous"))))
+  (assert-equal ____ lastname)))
 
 (define-test test-cond
-    "the cond form is like the c switch statement"
+    "cond is the general purpose form for checking multiple
+     conditions, until a condition is met"
   (setf a 4)
   (setf c
         (cond ((> a 0) :positive)
               ((< a 0) :negative)
               (t :zero)))
   (assert-equal ____ c))
-
-
-(defun cartoon-dads (input)
-  " you should be able to complete this cond statement"
-  (cond ((equal input :this-one-doesnt-happen) :fancy-cat)
-        (t :unknown)))
-
-(define-test test-your-own-cond-statement
-    "fix this by completing the 'cartoon-dads' function above"
-  (assert-equal (cartoon-dads :bart) :homer)
-  (assert-equal (cartoon-dads :stewie) :peter)
-  (assert-equal (cartoon-dads :stan) :randy)
-  (assert-equal (cartoon-dads :space-ghost) :unknown))
