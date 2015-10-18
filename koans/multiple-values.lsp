@@ -36,7 +36,7 @@ This is distinct from returning a list or structure of values."
       (assert-equal x ___)
       (setf x (multiple-value-list (next-fib 2 3)))
       (assert-equal x ___)
-      "multiple value bind binds the variables in the first form
+      "multiple-value-bind binds the variables in the first form
        to the outputs of the second form.  And then returns the output
        of the third form using those bindings"
       (setf y (multiple-value-bind (b c) (next-fib 3 5) (* b c)))
