@@ -89,7 +89,7 @@
 
 
 (defun vowelp (c)
-  "returns true iff c is a vowel"
+  "returns true if c is a vowel"
   (find c "AEIOUaeiou"))
 
 (defun vowels-to-xs (my-string)
