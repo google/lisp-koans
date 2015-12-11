@@ -112,9 +112,9 @@
 
 
 (define-test test-guess-that-type!
-    (let ((x ____))
+    (let ((x (type-of ____)))
       (assert-true (subtypep  x '(SIMPLE-ARRAY T (* 3 *))))
       (assert-true (subtypep  x '(SIMPLE-ARRAY T (5 * *))))
       (assert-true (subtypep  x '(SIMPLE-ARRAY ARRAY *)))
       (assert-true (typep (make-array '(5 3 9) :element-type 'STRING ) x))
-      (assert-true (typep (make-array '(5 3 33) :element-type 'VECTOR ) x))))
+      (assert-true (typep (make-array '(5 3 9) :element-type 'VECTOR ) x))))
