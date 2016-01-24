@@ -35,7 +35,7 @@
      the #') to take the 'transpose'."
   (defun WRONG-FUNCTION-1 (&rest rest) '())
   (defun transpose (L) (apply #'mapcar (cons #'WRONG-FUNCTION-1 L)))
-    (assert-equal '((1 4 7)
+  (assert-equal '((1 4 7)
                   (2 5 8) 
                   (3 6 9)) 
                 (transpose '((1 2 3) 
@@ -45,7 +45,7 @@
                   ("making" "me" "thirsty"))
                 (transpose '(("these" "making")
                              ("pretzels" "me")
-                            ("are" "thirsty")))))
+                             ("are" "thirsty")))))
 
 
 (define-test test-reduce-basics
