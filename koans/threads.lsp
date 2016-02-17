@@ -74,8 +74,8 @@
 (defun double-wrap-list (x y z)
   (list (list x y z)))
 
-;; Create a thread which will print out "Hello -Name-" using
-;; the named write-hello-name function.   Arguments are handed
+;; Create a thread which will return "Hello -Name-" using
+;; the named returns-hello-name function.   Arguments are handed
 ;; to threads as a list, unless there is just a single argument
 ;; then it does not need to be wrapped in a list.
 
