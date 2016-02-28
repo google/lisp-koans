@@ -17,7 +17,7 @@
 ;; This set of koans will introduce a few of the most common ones
 
 
-;; Dolist evaluates a form for every element om a list.
+;; Dolist evaluates a form for every element of a list.
 
 (defvar some-primes '(10301 11311 19991 999565999))
 
@@ -26,7 +26,7 @@
       variable in turn"
   (let ((how-many-in-list 0)
         (biggest-in-list (first some-primes)))
-    "this dolist loops over the some-primes, defined above"
+    "this dolist loops over some-primes, defined above"
     (dolist (one-prime some-primes)
       (if (> one-prime biggest-in-list)
           (setf biggest-in-list one-prime))
@@ -34,7 +34,7 @@
     (assert-equal ___ how-many-in-list)
     (assert-equal ___ biggest-in-list))
   (let ((sum 0))
-    "write your own do-list here to calculate the sum of some-primes"
+    "write your own dolist here to calculate the sum of some-primes"
     "you may be interested in investigating the 'incf' function"
     ;(dolist ... )
     (assert-equal 999607602 sum)))
@@ -79,7 +79,7 @@
 
 
 (define-test test-mapcar
-    "mapcar takes a list an a function.  It returns a new list
+    "mapcar takes a list and a function.  It returns a new list
      with the function applied to each element of the input"
   (let ((mc-result (mapcar #'evenp '(1 2 3 4 5))))
     (assert-equal mc-result ____)))
