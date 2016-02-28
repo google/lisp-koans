@@ -119,7 +119,7 @@
 (define-test test-make-your-own-hash-table
     "make a hash table that meets the following conditions"
   (let ((colors (make-hash-table))
-        (values (make-hash-table)))
+        values)
 
     (assert-equal (hash-table-count colors) 4)
     (setf values (list (gethash "blue" colors)
