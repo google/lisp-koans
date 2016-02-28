@@ -56,23 +56,4 @@ itself."
     (assert-equal "one,two,three,four" 
 		  (format nil "~{~r~^,~}" '(1 2 3 4))))
 
-;; ----
-
-(defun make-matrix (n)
-  (format nil "write your format here"
-	  (loop for i below n
-	     collect (loop for j below n
-			collect #\*))))
-
-(define-test format-a-matrix
-    (assert-equal (make-matrix 1)
-		  "*")
-    (assert-equal (make-matrix 2)
-"* *
-* *")
-    (assert-equal (make-matrix 4)
-"* * * *
-* * * *
-* * * *
-* * * *"))
 

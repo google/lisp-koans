@@ -24,14 +24,13 @@
 ;; specifies the format, where format specifier will be replaced by
 ;; formatting the rest of the parameters.
 
-
 (define-test test-format-with-plain-text
-    "If there is no format sepcifier, FORMAT just return the string
+  "If there is no format sepcifier, FORMAT just return the string
 itself."
   (assert-equal ___ (format nil "this is plain text.")))
 
 (define-test test-format-with-general-specifier
-    "~a is a general specifier that translate to the print form of a
+  "~a is a general specifier that translate to the print form of a
     parameter."
   (assert-equal ___ (format nil "~a" 42))
   (assert-equal ___ (format nil "~a" #\C))
@@ -44,37 +43,17 @@ itself."
 			(/ 8 (- 3 (/ 8 3))))))
 
 (define-test some-fancy-specifiers
-    "format enclosed by ~{ and ~} applies to every element in a list."
-    (assert-equal ___
-		  (format nil "~{[~a]~}" '(1 2 3 4)))
-    ;; ~^ within the ~{ ~} stops processing the last element in the list.
-    (assert-equal "1|2|3|4|" (format nil ___ '(1 2 3 4)))
-    (assert-equal ___ (format nil "~{~a~^|~}" '(1 2 3 4)))
-    ;; ~r reads the interger 
-    (assert-equal ___ (format nil "~r" 42))
-    ;; put them all together
-    (assert-equal ___
-		  (format nil "~{~r~^,~}" '(1 2 3 4))))
-
-;; ----
-
-(defun make-matrix (n)
-  (format nil "write your format here"
-	  (loop for i below n
-	     collect (loop for j below n
-			collect #\*))))
-
-(define-test format-a-matrix
-    (assert-equal (make-matrix 1)
-		  "*")
-    (assert-equal (make-matrix 2)
-"* *
-* *")
-    (assert-equal (make-matrix 4)
-"* * * *
-* * * *
-* * * *
-* * * *"))
+  "format enclosed by ~{ and ~} applies to every element in a list."
+  (assert-equal ___
+		(format nil "~{[~a]~}" '(1 2 3 4)))
+  ;; ~^ within the ~{ ~} stops processing the last element in the list.
+  (assert-equal "1|2|3|4|" (format nil ___ '(1 2 3 4)))
+  (assert-equal ___ (format nil "~{~a~^|~}" '(1 2 3 4)))
+  ;; ~r reads the interger 
+  (assert-equal ___ (format nil "~r" 42))
+  ;; put them all together
+  (assert-equal ___
+		(format nil "~{~r~^,~}" '(1 2 3 4))))
   
 
 

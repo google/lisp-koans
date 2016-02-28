@@ -1,5 +1,4 @@
 (
- :format
  :asserts
  :nil-false-empty
  :evaluation
@@ -21,6 +20,7 @@
  :loops
  :triangle-project
  :scoring-project
+ :format
  :type-checking
  :clos
  :dice-project
