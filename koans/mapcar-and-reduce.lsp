@@ -31,8 +31,8 @@
 
 
 (define-test test-transpose-using-mapcar
-    "Replace WRONG-FUNCTION with the correct function (don't forget
-     the #') to take the 'transpose'."
+    "Replace the usage of WRONG-FUNCTION in 'transpose' with the
+     correct lisp function (don't forget the #')."
   (defun WRONG-FUNCTION-1 (&rest rest) '())
   (defun transpose (L) (apply #'mapcar (cons #'WRONG-FUNCTION-1 L)))
   (assert-equal '((1 4 7)
