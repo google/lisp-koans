@@ -25,12 +25,12 @@
 ;; formatting the rest of the parameters.
 
 (define-test test-format-with-plain-text
-  "If there is no format sepcifier, FORMAT just return the string
-itself."
+  "If there is no format specifier, FORMAT just returns the string
+   itself."
   (assert-equal ___ (format nil "this is plain text.")))
 
 (define-test test-format-with-general-specifier
-  "~a is a general specifier that translate to the print form of a
+  "~a is a general specifier that translates to the print form of a
     parameter."
   (assert-equal ___ (format nil "~a" 42))
   (assert-equal ___ (format nil "~a" #\C))
@@ -38,33 +38,19 @@ itself."
   ;; ~a can also translate to list
   ;; and parameters to FORMAT are passed by value
   (assert-equal ___
-		(format nil "~a evaluates to ~a"
-			'(/ 8 (- 3 (/ 8 3)))
-			(/ 8 (- 3 (/ 8 3))))))
+                (format nil "~a evaluates to ~a"
+                        '(/ 8 (- 3 (/ 8 3)))
+                        (/ 8 (- 3 (/ 8 3))))))
 
 (define-test some-fancy-specifiers
   "format enclosed by ~{ and ~} applies to every element in a list."
   (assert-equal ___
-		(format nil "~{[~a]~}" '(1 2 3 4)))
+                (format nil "~{[~a]~}" '(1 2 3 4)))
   ;; ~^ within the ~{ ~} stops processing the last element in the list.
   (assert-equal "1|2|3|4|" (format nil ___ '(1 2 3 4)))
   (assert-equal ___ (format nil "~{~a~^|~}" '(1 2 3 4)))
-  ;; ~r reads the interger 
+  ;; ~r reads the integer
   (assert-equal ___ (format nil "~r" 42))
   ;; put them all together
   (assert-equal ___
-		(format nil "~{~r~^,~}" '(1 2 3 4))))
-  
-
-
-
-
-
-
-
-		
-
-
-
-  
-
+                (format nil "~{~r~^,~}" '(1 2 3 4))))
