@@ -49,9 +49,9 @@
 
 
 (define-test test-reduce-basics
-    "The reduce function applies uses a supplied
-     binary function to combine the elements of a
-     list from left to right."
+    "The reduce function combines the elements
+     of a list, from left to right, by applying
+     a binary function to the list elements."
   (assert-equal ___  (reduce #'+ '(1 2 3 4)))
   (assert-equal ___ (reduce #'expt '(2 3 2))))
 
