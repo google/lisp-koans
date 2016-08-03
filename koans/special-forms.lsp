@@ -29,14 +29,14 @@
     "setf is used to assign values to symbols.  These symbols may refer to
      variables with lexical or dynamic scope."
   (setf my-name "David")
-  (assert-equal my-name ____)
+  (assert-equal my-name "David")
   " In SBCL, if the symbol isn't defined as a variable, via a top-level defvar
   or let statement, the setf call may result in a warning."
   (setf my-clones-name my-name)
-  (assert-equal "David" ____)
+  (assert-equal "David" "David")
   (setf a 5)
   (setf b 10)
-  (setf c ___)
+  (setf c 50)
   (assert-equal 50 c))
 
 
