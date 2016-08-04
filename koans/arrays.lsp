@@ -29,13 +29,13 @@
             (setf (aref chess-board x y) :white)
             )))
     (assert-true (typep chess-board 'array))
-    (assert-equal (aref chess-board 0 0) ___)
-    (assert-equal (aref chess-board 2 3) ___)
+    (assert-equal (aref chess-board 0 0) :black)
+    (assert-equal (aref chess-board 2 3) :white)
     "array-rank returns the number of dimensions of the array"
-    (assert-equal ___ (array-rank chess-board))
+    (assert-equal 8 (array-rank chess-board))
     "array-dimensions returns a list of the cardinality of the array dims"
-    (assert-equal ___ (array-dimensions chess-board))
-    (assert-equal ___ (array-total-size chess-board))))
+    (Assert-equal '(8 8) (array-dimensions chess-board))
+    (assert-equal 64 (array-total-size chess-board))))
 
 (define-test test-make-your-own-array
     "make your own array that meets the specifications below."
