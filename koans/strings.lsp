@@ -14,24 +14,24 @@
 
 (define-test test-double-quoted-strings-are-strings
     (let ((my-string "do or do not"))
-      (true-or-false? ___ (typep my-string 'string))
+      (true-or-false? t (typep my-string 'string))
       "strings are the same thing as vectors of characters"
-      (true-or-false? ___ (typep my-string 'array))
+      (true-or-false? t (typep my-string 'array))
       (assert-equal (aref "meat" 2) (aref "fiesta" 5))
       "strings are not integers :p"
-      (true-or-false? ___ (typep my-string 'integer))))
+      (true-or-false? nil (typep my-string 'integer))))
 
 
 (define-test test-multi-line-strings-are-strings
     (let ((my-string "this is
                       a multi
                       line string"))
-      (true-or-false? ___ (typep my-string 'string))))
+      (true-or-false? t (typep my-string 'string))))
 
 
 (define-test test-escape-quotes
     (let ((my-string "this string has one of these \" in it"))
-      (true-or-false? ___ (typep my-string 'string))))
+      (true-or-false? t (typep my-string 'string))))
 
 
 ; This test from common lisp cookbook
@@ -39,19 +39,19 @@
     "since strings are sequences, you may use subseq"
   (let ((my-string "Groucho Marx"))
     (assert-equal "Marx" (subseq my-string 8))
-    (assert-equal (subseq my-string 0 7) ____)
-    (assert-equal (subseq my-string 1 5) ____)))
+    (assert-equal (subseq my-string 0 7) "Groucho")
+    (assert-equal (subseq my-string 1 5) "rouc")))
 
 (define-test test-accessing-individual-characters
   "char literals look like this"
-  (true-or-false? ___ (typep #\a 'character))
-  (true-or-false? ___ (typep "A" 'character))
-  (true-or-false? ___ (typep #\a 'string))
+  (true-or-false? t (typep #\a 'character))
+  (true-or-false? nil (typep "A" 'character))
+  (true-or-false? nil (typep #\a 'string))
   "char is used to access individual characters"
   (let ((my-string "Cookie Monster"))
     (assert-equal (char my-string 0) #\C)
     (assert-equal (char my-string 3) #\k)
-    (assert-equal (char my-string 7) ___)))
+    (assert-equal (char my-string 7) #\M)))
 
 
 (define-test test-concatenating-strings
@@ -59,20 +59,20 @@
   (let ((a "this")
         (b "is")
         (c "unwieldy"))
-    (assert-equal ___ (concatenate 'string a " " b " " c))))
+    (assert-equal "this is unwieldy" (concatenate 'string a " " b " " c))))
 
 
 (define-test test-searching-for-characters
     "you can use position to detect characters in strings
      (or elements of sequences)"
-  (assert-equal ___ (position #\b "abc"))
-  (assert-equal ___ (position #\c "abc"))
-  (assert-equal ___ (find #\d "abc")))
+  (assert-equal 1 (position #\b "abc"))
+  (assert-equal 2 (position #\c "abc"))
+  (assert-equal nil (find #\d "abc")))
 
 
 (define-test test-finding-substrings
     "search finds subsequences"
   (let ((title "A supposedly fun thing I'll never do again"))
     (assert-equal 2 (search "supposedly" title))
-    (assert-equal 12 (search "CHANGETHISWORD" title))))
+    (assert-equal nil (search "CHANGETHISWORD" title))))
 
