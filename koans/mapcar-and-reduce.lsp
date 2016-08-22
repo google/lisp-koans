@@ -16,8 +16,8 @@
     "We can apply a function to each member
      of a list using mapcar."
   (defun times-two (x) (* x 2))
-  (assert-equal ____ (mapcar #'times-two '(1 2 3)))
-  (assert-equal ____ (mapcar #'first '((3 2 1) 
+  (assert-equal '(2 4 6) (mapcar #'times-two '(1 2 3)))
+  (assert-equal '(3 "little" "pigs") (mapcar #'first '((3 2 1) 
                                       ("little" "small" "tiny") 
                                       ("pigs" "hogs" "swine")))))
 
