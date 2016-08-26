@@ -112,15 +112,15 @@ http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node312.html"
 
 
 (define-test test-errors-have-slots
-    (assert-equal ____
+    (assert-equal :TIMESTAMP-LOGLINE-TYPE
                   (handler-case (get-logline-type "TIMESTAMP y13m01d03")
                     (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
-    (assert-equal ____
+    (assert-equal :http-logline-type
                   (handler-case (get-logline-type "HTTP access 128.0.0.100")
                     (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
-    (assert-equal ____
+    (assert-equal '(:unknown-token-reason "bogus logline")
                   (handler-case (get-logline-type "bogus logline")
                     (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
-    (assert-equal ____
+    (assert-equal '(:bad-type-reason 5555)
                   (handler-case (get-logline-type 5555)
                     (logline-parse-error (condition) (list (reason condition) (original-line condition))))))
