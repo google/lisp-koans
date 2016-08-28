@@ -21,7 +21,7 @@
               nil)))
 
 (define-test test-shadowing-a-variable
-  (assert-equal ___ (shadow-z 1)))
+  (assert-equal '(1 2) (shadow-z 1)))
 
 
 (defun code-block-01 ()
@@ -38,10 +38,10 @@
     (return-from outer 'valve)))
 
 (define-test test-code-block-01
-  (assert-equal ___ (code-block-01)))
+  (assert-equal 4 (code-block-01)))
 
 (define-test test-code-block-02
-  (assert-equal ___ (code-block-02)))
+  (assert-equal 'space (code-block-02)))
 
 
 ;; About closures and the distinction of lexical and dynamic bindings
@@ -54,14 +54,14 @@
 ;; then invoke f to see which value of x is returned.
 
 (define-test test-lexical-bindings-may-be-shadowed
-  (assert-eq ___ (let ((f (let ((x 10))
+  (assert-eq 10 (let ((f (let ((x 10))
                  (lambda () x))))  ; <-- x bound lexically
     (let ((x 20))          ; form 2
       (funcall f)))))
 
 
 (define-test test-special-bindings-look-back-on-execution-path
-  (assert-eq ___ (let ((f (let ((x 10))
+  (assert-eq 20 (let ((f (let ((x 10))
              (declare (special x))
              (lambda () x))))      ; <-- x bound dynamically
     (let ((x 20))          ; form 2

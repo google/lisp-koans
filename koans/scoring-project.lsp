@@ -49,9 +49,126 @@
 ;
 ; Your goal is to write the score method.
 
-(defun score (dice)
-  ; You need to write this method
-)
+;(defun score (dice)
+;; 
+;)
+
+;; ;; 做法一
+;; ;; 版本1remove-once
+;; (defun remove-once-version1 (e lst)
+;;   (remove-once-g e '() lst))
+
+;; (defun remove-once-g (e alist dlist)
+;;   (if (null dlist)
+;;       alist
+;;       (if (= e (car dlist))
+;; 	  (append alist (cdr dlist))
+;; 	  (remove-once-g e (append alist (list (car dlist))) (cdr dlist)))))
+
+;; ;; 版本2remove-once
+;; ;; TODO
+
+;; (defun three-ones-rule (dice)
+;;   (let ((count 0)
+;; 	(score 0)
+;; 	(r-dice dice))
+;;     (dolist (i dice)
+;;       (when (and (= i 1) (< count 3))
+;; 	(setq count (+ 1 count))
+;; 	(setq r-dice (remove-once-version1 1 r-dice))))
+;;     (if (= 3 count)
+;; 	(progn (setq score 1000) (values score r-dice count))
+;; 	(values 0 dice count))))
+
+;; ;; 放弃这种繁琐的做法
+;; ;(defun three-other-than-ones-rule (dice)
+;; ;  (let ((count 0)
+;; ;	(index 0))
+;; ;    (if 
+;; ;
+
+
+;; 做法二
+(defun count-elements (lst)
+  (count-elements-d (make-hash-table) lst))
+(defun count-elements-d (hash lst)
+  (if (null lst)
+      hash
+      (let ((key-count (gethash (car lst) hash)))
+	(if key-count
+	    (setf (gethash (car lst) hash) (1+ key-count))
+	    (setf (gethash (car lst) hash) 1))
+	(count-elements-d hash (cdr lst)))))
+
+(defun print-hash (hash)
+  (loop for k being the hash-keys in hash
+     using (hash-value v)
+     do (print (list k v))))
+
+(defun score (dice)  ; 假设dice最长是5
+  (let ((hash-t (count-elements dice))
+	(score 0))
+    (loop for k being the hash-keys in hash-t
+       using (hash-value v)
+       when (> v 3) do (
+			cond
+			 ((= k 1) (= 4 v) (setq score (+ 1100 score)))
+			 ((= k 1) (= 5 v) (setq score (+ 1200 score)))
+			 ((= k 5) (= 4 v) (setq score (+ 550 score)))
+			 ((= k 5) (= 5 v) (setq score (+ 600 score)))
+			 (t (setq score (* 100 k))))
+       when (and (= k 1) (= v 3)) do (setq score (+ 1000 score))
+       when (and (not (equal k 1)) (= v 3)) do (setq score (+ (* 100 k) score))
+       when (and (= k 1) (< v 3)) do (setq score (+ (* 100 v)score))
+       when (and (= k 5) (< v 3)) do (setq score (+ (* 50 v)score)))
+    score))
+
+;; (defun test-loop (l)
+;;   (loop for k being the hash-keys in l
+;;      using (hash-value v)
+;;      when (equal k "h") do (setq k "avd")
+;;        finally return "as"))
+
+;; (defun score (dice)
+;;   (loop for x in dice
+;;      when (= 1 x) count x into count-1
+;;      when (= 5 x) count x into count-5
+;;        finally (return (list count-1 count-5))))
+       
+
+
+
+;; ;; 其他人的答案
+;; (defun count-dice (dice)
+;;     (loop for die in dice
+;;           counting (= 1 die) into ones
+;;           counting (= 2 die) into twos
+;;           counting (= 3 die) into threes
+;;           counting (= 4 die) into fours
+;;           counting (= 5 die) into fives
+;;           counting (= 6 die) into sixes
+;;           finally (return (list ones twos threes fours fives sixes))))
+
+;; (defun score-count (num cnt)
+;;     (cond ((= num 1) (+ (* (truncate cnt 3) 1000) 
+;;                         (* (mod cnt 3) 100)))
+;;           ((= num 5) (+ (* (* (truncate cnt 3) 100) num) 
+;;                         (* (mod cnt 3) 50)))
+;;           (t            (* (* (truncate cnt 3) 100) num))))
+
+;; (defvar counted-dice)
+;; (defun score (dice)
+;;   (if (null dice) (return-from score 0))
+;;   (setq counted-dice (count-dice dice))
+;;   (loop for num from 1 to 6
+;;         for cnt in counted-dice
+;;         sum (score-count num cnt)))
+
+
+	   
+	
+	
+
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
