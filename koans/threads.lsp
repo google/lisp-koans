@@ -82,11 +82,11 @@
 (define-test test-sending-arguments-to-thread
     (assert-equal "Hello, Buster" 
                   (sb-thread:join-thread
-                   (sb-thread:make-thread 'returns-hello-name
+                   (sb-thread:make-thread #'returns-hello-name
                                           :arguments "Buster")))
     (assert-equal ____
                   (sb-thread:join-thread
-                   (sb-thread:make-thread 'double-wrap-list
+                   (sb-thread:make-thread #'double-wrap-list
                                           :arguments '(3 4 5)))))
 
 
@@ -122,9 +122,9 @@
     "same program as above, executed in threads.  Sleeps are simultaneous"
   (setf *accum* 0)
   (setf *before-time-millisec* (get-internal-real-time))
-  (let ((thread-1 (sb-thread:make-thread 'accum-after-time :arguments '(0.3 1)))
-        (thread-2 (sb-thread:make-thread 'accum-after-time :arguments '(0.2 2)))
-        (thread-3 (sb-thread:make-thread 'accum-after-time :arguments '(0.1 4))))
+  (let ((thread-1 (sb-thread:make-thread #'accum-after-time :arguments '(0.3 1)))
+        (thread-2 (sb-thread:make-thread #'accum-after-time :arguments '(0.2 2)))
+        (thread-3 (sb-thread:make-thread #'accum-after-time :arguments '(0.1 4))))
     (sb-thread:join-thread thread-1)
     (sb-thread:join-thread thread-2)
     (sb-thread:join-thread thread-3))
@@ -192,12 +192,12 @@
 (define-test test-threads-dont-get-bindings
     "bindings are not inherited across threads"
   (let ((thread-ret-val (sb-thread:join-thread
-                         (sb-thread:make-thread 'returns-v))))
+                         (sb-thread:make-thread #'returns-v))))
     (assert-equal thread-ret-val ____))
   (let ((*v* "LEXICAL BOUND VALUE"))
     (assert-equal *v* ____)
     (let ((thread-ret-val (sb-thread:join-thread
-                           (sb-thread:make-thread 'returns-v))))
+                           (sb-thread:make-thread #'returns-v))))
       (assert-equal thread-ret-val ____))))
 
 
@@ -226,9 +226,9 @@
 
 (define-test test-parallel-wait-and-increment
     (setf *g* 0)
-  (let ((thread-1 (sb-thread:make-thread 'waits-and-increments-g))
-        (thread-2 (sb-thread:make-thread 'waits-and-increments-g))
-        (thread-3 (sb-thread:make-thread 'waits-and-increments-g)))
+  (let ((thread-1 (sb-thread:make-thread #'waits-and-increments-g))
+        (thread-2 (sb-thread:make-thread #'waits-and-increments-g))
+        (thread-3 (sb-thread:make-thread #'waits-and-increments-g)))
     (sb-thread:join-thread thread-1)
     (sb-thread:join-thread thread-2)
     (sb-thread:join-thread thread-3)
@@ -252,9 +252,9 @@
 
 (define-test test-parallel-wait-and-increment-with-mutex
     (setf *g* 0)
-  (let ((thread-1 (sb-thread:make-thread 'protected-increments-g))
-        (thread-2 (sb-thread:make-thread 'protected-increments-g))
-        (thread-3 (sb-thread:make-thread 'protected-increments-g)))
+  (let ((thread-1 (sb-thread:make-thread #'protected-increments-g))
+        (thread-2 (sb-thread:make-thread #'protected-increments-g))
+        (thread-3 (sb-thread:make-thread #'protected-increments-g)))
     (sb-thread:join-thread thread-1)
     (sb-thread:join-thread thread-2)
     (sb-thread:join-thread thread-3)
@@ -272,9 +272,9 @@
 
 (define-test test-increment-semaphore
     (assert-equal 0 (sb-thread:semaphore-count *g-semaphore*))
-  (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 1"))
-  (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 2"))
-  (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 3"))
+  (sb-thread:join-thread (sb-thread:make-thread #'semaphore-increments-g :name "S incrementor 1"))
+  (sb-thread:join-thread (sb-thread:make-thread #'semaphore-increments-g :name "S incrementor 2"))
+  (sb-thread:join-thread (sb-thread:make-thread #'semaphore-increments-g :name "S incrementor 3"))
   (assert-equal ___ (sb-thread:semaphore-count *g-semaphore*)))
 
 
@@ -305,8 +305,8 @@
 
 (define-test test-orchard-simulation
     (assert-equal (num-apples) ___)
-  (let ((eater-thread (sb-thread:make-thread 'apple-eater :name "apple eater thread")))
-    (let ((grower-thread (sb-thread:make-thread 'apple-grower :name "apple grower thread")))
+  (let ((eater-thread (sb-thread:make-thread #'apple-eater :name "apple eater thread")))
+    (let ((grower-thread (sb-thread:make-thread #'apple-grower :name "apple grower thread")))
       (sb-thread:join-thread eater-thread)))
   (assert-equal (aref *orchard-log* 0) ____)
   (assert-equal (aref *orchard-log* 1) ____))
