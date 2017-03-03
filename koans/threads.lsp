@@ -12,8 +12,8 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
-;; NOTE: This koan group uses language features specific to sbcl, that are 
-;; not part of the Common Lisp specification.  If you are not using sbcl, 
+;; NOTE: This koan group uses language features specific to sbcl, that are
+;; not part of the Common Lisp specification.  If you are not using sbcl,
 ;; feel free to skip this group by removing it from '.koans'
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,7 +80,7 @@
 ;; then it does not need to be wrapped in a list.
 
 (define-test test-sending-arguments-to-thread
-    (assert-equal "Hello, Buster" 
+    (assert-equal "Hello, Buster"
                   (sb-thread:join-thread
                    (sb-thread:make-thread 'returns-hello-name
                                           :arguments "Buster")))

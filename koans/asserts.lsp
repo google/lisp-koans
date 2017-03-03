@@ -39,7 +39,7 @@
     (assert-equal ___ "hello world"))
 
 (define-test test-true-or-false
-    "sometimes you will be asked to evaluate whether statements 
+    "sometimes you will be asked to evaluate whether statements
      are true (t) or false (nil)"
     (true-or-false? ___ (equal 34 34))
     (true-or-false? ___ (equal 19 78)))

@@ -15,8 +15,8 @@
 
 (in-package :cl-user)
 
-;; Though Clozure / CCL runs lisp-koans on the command line using 
-;; "ccl -l contemplate.lsp", the following lines are needed to 
+;; Though Clozure / CCL runs lisp-koans on the command line using
+;; "ccl -l contemplate.lsp", the following lines are needed to
 ;; meditate on the koans within the CCL IDE.
 ;; (The :hemlock is used to distiguish between ccl commandline and the IDE)
 #+(and :ccl :hemlock)
@@ -54,17 +54,21 @@
 ;; Functions for loading koans ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun package-name-from-group-name (group-name)
+  (format nil "COM.GOOGLE.LISP-KOANS.KOANS.~:@(~A~)" group-name))
+
 (defun load-koan-group-named (koan-group-name)
   ;; Creates a package for the koan-group based on koan-group-name.
   ;; Loads a lisp file at *koan-dir-name* / koan-group-name .lsp
   ;; Adds all the koans from that file to the package.
-  (let ((koan-file-name (concatenate 'string (string-downcase (string koan-group-name)) ".lsp")))
+  (let* ((koan-file-name    (concatenate 'string (string-downcase (string koan-group-name)) ".lsp"))
+         (koan-package-name (package-name-from-group-name koan-group-name)))
     (if *dp-loading* (format t "start loading ~A ~%" koan-file-name))
     (in-package :lisp-koans)
-    (unless (find-package koan-group-name)
-      (make-package koan-group-name
+    (unless (find-package koan-package-name)
+      (make-package koan-package-name
                     :use '(:common-lisp :lisp-unit #+sbcl :sb-ext)))
-    (setf *package* (find-package koan-group-name))
+    (setf *package* (find-package koan-package-name))
     (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
     (incf *n-total-koans* (length (list-tests)))
     (in-package :lisp-koans)
@@ -80,7 +84,7 @@
   ;; Executes the koan group, using run-koans defined in lisp-unit
   ;; returning a test-results object.
   (if *dp-loading* (format t "start running ~A ~%" koan-group-name))
-  (run-koans koan-group-name))
+  (run-koans (package-name-from-group-name koan-group-name)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions for printing progress ;;

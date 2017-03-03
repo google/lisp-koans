@@ -126,7 +126,7 @@
 
 (define-test test-limits-of-case
     "case is not suitable for all kinds of values, because
-     it uses the function eql for comparisons. We will explore 
+     it uses the function eql for comparisons. We will explore
      the implications of this in the equality-distinctions lesson"
   (let* ((name "John")
          (lastname (case name ("John" "Doe")
