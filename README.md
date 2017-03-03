@@ -23,14 +23,14 @@ You are now 0/169 koans and 0/25 lessons closer to reaching enlightenment
 ```
 
 This indicates that the script has completed, and that the learner should look
-to asserts.lsp to locate and fix the problem.  The problem will be within 
+to asserts.lsp to locate and fix the problem.  The problem will be within
 a define-test expression such as
 
     (define-test assert-true
         "t is true.  Replace the blank with a t"
         (assert-true ___))
 
-In this case, the test is incomplete, and the student should fill 
+In this case, the test is incomplete, and the student should fill
 in the blank (____) with appropriate lisp code to make the assert pass.
 
 
@@ -40,7 +40,7 @@ and paste code into the lisp command line REPL.
 Quoting the Ruby Koans instructions::
 -------------------------------------
 
-   "In test-driven development the mantra has always been, red, green, 
+   "In test-driven development the mantra has always been, red, green,
 refactor. Write a failing test and run it (red), make the test pass (green),
 then refactor it (that is look at the code and see if you can make it any
 better). In this case you will need to run the koan and see it fail (red), make

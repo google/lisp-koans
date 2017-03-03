@@ -17,8 +17,8 @@
      of a list using mapcar."
   (defun times-two (x) (* x 2))
   (assert-equal ____ (mapcar #'times-two '(1 2 3)))
-  (assert-equal ____ (mapcar #'first '((3 2 1) 
-                                      ("little" "small" "tiny") 
+  (assert-equal ____ (mapcar #'first '((3 2 1)
+                                      ("little" "small" "tiny")
                                       ("pigs" "hogs" "swine")))))
 
 
@@ -36,10 +36,10 @@
   (defun WRONG-FUNCTION-1 (&rest rest) '())
   (defun transpose (L) (apply #'mapcar (cons #'WRONG-FUNCTION-1 L)))
   (assert-equal '((1 4 7)
-                  (2 5 8) 
-                  (3 6 9)) 
-                (transpose '((1 2 3) 
-                             (4 5 6) 
+                  (2 5 8)
+                  (3 6 9))
+                (transpose '((1 2 3)
+                             (4 5 6)
                              (7 8 9))))
   (assert-equal '(("these" "pretzels" "are")
                   ("making" "me" "thirsty"))
@@ -76,7 +76,7 @@
     "mapcar and reduce are a powerful combination.
      insert the correct function names, instead of WRONG-FUNCTION-X
      to define an inner product."
-  (defun inner (x y) 
+  (defun inner (x y)
     (reduce #'WRONG-FUNCTION-2 (mapcar #'WRONG-FUNCTION-3 x y)))
   (assert-equal 32 (inner '(1 2 3) '(4 5 6)))
   (assert-equal 310 (inner '(10 20 30) '(4 3 7))))

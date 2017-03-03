@@ -15,8 +15,8 @@
 
 (in-package :cl-user)
 
-;; Though Clozure / CCL runs lisp-koans on the command line using 
-;; "ccl -l contemplate.lsp", the following lines are needed to 
+;; Though Clozure / CCL runs lisp-koans on the command line using
+;; "ccl -l contemplate.lsp", the following lines are needed to
 ;; meditate on the koans within the CCL IDE.
 ;; (The :hemlock is used to distiguish between ccl commandline and the IDE)
 #+(and :ccl :hemlock)

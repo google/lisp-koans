@@ -15,7 +15,7 @@
 
 (defun shadow-z (z)
 ;; reuses the symbol name z to build a return value
-;; returns a list like (value-of-z, 2) 
+;; returns a list like (value-of-z, 2)
   (cons z
         (cons (let ((z 2)) z)
               nil)))
