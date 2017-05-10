@@ -13,7 +13,7 @@
 ;;   limitations under the License.
 
 
-"you need to write the triangle method"
+;; You need to write the triangle method.
 
 (define-condition triangle-error  (error) ())
 
@@ -22,25 +22,25 @@
 
 
 (define-test test-equilateral-triangles-have-equal-sides
-    (assert-equal :equilateral (triangle 2 2 2))
-    (assert-equal :equilateral (triangle 10 10 10)))
+  (assert-equal :equilateral (triangle 2 2 2))
+  (assert-equal :equilateral (triangle 10 10 10)))
 
 
 (define-test test-isosceles-triangles-have-two-equal-sides
-    (assert-equal :isosceles (triangle 3 4 4))
-    (assert-equal :isosceles (triangle 4 3 4))
-    (assert-equal :isosceles (triangle 4 4 3))
-    (assert-equal :isosceles (triangle 10 10 2)))
+  (assert-equal :isosceles (triangle 3 4 4))
+  (assert-equal :isosceles (triangle 4 3 4))
+  (assert-equal :isosceles (triangle 4 4 3))
+  (assert-equal :isosceles (triangle 10 10 2)))
 
 
 (define-test test-scalene-triangles-have-no-equal-sides
-    (assert-equal :scalene (triangle 3 4 5))
-    (assert-equal :scalene (triangle 10 11 12))
-    (assert-equal :scalene (triangle 5 4 2)))
+  (assert-equal :scalene (triangle 3 4 5))
+  (assert-equal :scalene (triangle 10 11 12))
+  (assert-equal :scalene (triangle 5 4 2)))
 
 
 (define-test test-illegal-triangles-throw-exceptions
-    (assert-error 'triangle-error (triangle 0 0 0))
-    (assert-error 'triangle-error (triangle 3 4 -5))
-    (assert-error 'triangle-error (triangle 1 1 3))
-    (assert-error 'triangle-error (triangle 2 4 2)))
+  (assert-error 'triangle-error (triangle 0 0 0))
+  (assert-error 'triangle-error (triangle 3 4 -5))
+  (assert-error 'triangle-error (triangle 1 1 3))
+  (assert-error 'triangle-error (triangle 2 4 2)))

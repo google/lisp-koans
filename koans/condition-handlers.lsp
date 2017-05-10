@@ -13,16 +13,16 @@
 ;;   limitations under the License.
 
 
-"Common lisp conditions are much like CLOS classes.
-They are used to handle exceptional situations, and separate
-error handling code from normal operational code."
+; Common lisp conditions are much like CLOS classes.
+; They are used to handle exceptional situations, and separate
+; error handling code from normal operational code.
 
 (define-condition minimal-error-cond (error) ())
 (define-condition minimal-warning-cond (warning) ())
 
 
 (define-test test-conditions-derive-from-types
-    "conditions inherit from base types"
+    "Conditions inherit from base types."
   (true-or-false? ___ (typep (make-condition 'minimal-error-cond)
                              'minimal-error-cond))
 
@@ -57,14 +57,14 @@ error handling code from normal operational code."
       (/ num denom)))
 
 (define-test assert-error-thrown
-    "assert-error checks that the right error is thrown"
+    "ASSERT-ERROR checks that the right error is thrown."
   (assert-equal 3 (my-divide 6 2))
   (assert-error 'my-div-by-zero-error (my-divide 6 0))
   (assert-error ____ (my-divide 6 "zero")))
 
 
 (define-test test-handle-errors
-    "the handler case is like a case statement which can capture errors
+    "HANDLER-CASE is like a CASE statement which can capture errors
      and warnings, and execute appropriate forms in those conditions."
   (assert-equal ___
                 (handler-case (my-divide 6 2)
@@ -82,45 +82,44 @@ error handling code from normal operational code."
 
 ;; ----
 
-"conditions, as CLOS objects, can have slots, some of which have special
-meanings.  Common Lisp the Language Chapter 29 for more details.
-http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node312.html"
+; Conditions, as CLOS objects, can have slots, some of which have special
+; meanings.  Common Lisp the Language Chapter 29 for more details.
+; http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node312.html
 
 ; This error condition is more than a signal.  It carries data in two slots.
-; the "original-line" slot and the "reason" slot.  Both slots have a defined
-; :initarg, which they will use to set themselves, if available.  If not,
-; they have a default form (:initform).  They also both provide reader functions
+; the ORIGINAL-LINE slot and the REASON slot.  Both slots have a defined
+; :INITARG, which they will use to set themselves, if available.  If not,
+; they have a default form (:INITFORM).  They also both provide reader
+; functions.
 
 (define-condition logline-parse-error (error)
   ((original-line :initarg :original-line :initform "line not given" :reader original-line)
    (reason :initarg :reason :initform "no-reason" :reader reason)))
 
-
-;; This function is designed to take loglines, and report what type they are.
-;; It can also throw errors, like div-by-zero above, but the errors now carry some
-;;  additional information carried within the error itself.
-
+  ; This function is designed to take loglines, and report what type they are.
+  ; It can also throw errors, like DIV-BY-ZERO above, but the errors now carry some
+  ; additional information carried within the error itself.
 (defun get-logline-type (in-line)
   (if (not (typep in-line 'string))
-      ;; if the in-line isn't a string, throw a logline-parse-error, and set the :reason and :original-line
-      (error 'logline-parse-error :original-line in-line :reason :bad-type-reason))
+      ; If the IN-LINE isn't a string, throw a LOGLINE-PARSE-ERROR, and set the :REASON and :ORIGINAL-LINE
+    (error 'logline-parse-error :original-line in-line :reason :bad-type-reason))
   (cond
     ((equal 0 (search "TIMESTAMP" in-line)) :timestamp-logline-type)
     ((if (equal 0 (search "HTTP" in-line)) :http-logline-type))
-    ;; if we don't recognize the first token,  throw a logline-parse-error, and set the :reason and :original-line
+      ; If we don't recognize the first token,  throw a LOGLINE-PARSE-ERROR, and set the :REASON and :ORIGINAL-LINE
     (t (error 'logline-parse-error :original-line in-line :reason :unknown-token-reason))))
 
 
 (define-test test-errors-have-slots
-    (assert-equal ____
-                  (handler-case (get-logline-type "TIMESTAMP y13m01d03")
-                    (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
-    (assert-equal ____
-                  (handler-case (get-logline-type "HTTP access 128.0.0.100")
-                    (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
-    (assert-equal ____
-                  (handler-case (get-logline-type "bogus logline")
-                    (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
-    (assert-equal ____
-                  (handler-case (get-logline-type 5555)
-                    (logline-parse-error (condition) (list (reason condition) (original-line condition))))))
+  (assert-equal ____
+                (handler-case (get-logline-type "TIMESTAMP y13m01d03")
+                  (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
+  (assert-equal ____
+                (handler-case (get-logline-type "HTTP access 128.0.0.100")
+                  (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
+  (assert-equal ____
+                (handler-case (get-logline-type "bogus logline")
+                  (logline-parse-error (condition) (list (reason condition) (original-line condition)))))
+  (assert-equal ____
+                (handler-case (get-logline-type 5555)
+                  (logline-parse-error (condition) (list (reason condition) (original-line condition))))))

@@ -16,16 +16,15 @@
 ;; not part of the Common Lisp specification.  If you are not using sbcl,
 ;; feel free to skip this group by removing it from '.koans'
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Making threads with sb-thread:make-thread  ;;
-;; Joining threads with sb-thread:join-thread ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Making threads with SB-THREAD:MAKE-THREAD.  ;
+; Joining threads with SB-THREAD:JOIN-THREAD. ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; sb-thread takes a -function- as a parameter.
-;; This function will be executed in a separate thread.
-
-;; Since the execution order of separate threads is not guaranteed,
-;; we must -join- the threads in order to make our assertions.
+; SB-THREAD takes a -function- as a parameter.
+; This function will be executed in a separate thread.
+; Since the execution order of separate threads is not guaranteed,
+; we must -join- the threads in order to make our assertions.
 
 (defvar *greeting* "no greeting")
 
@@ -34,7 +33,7 @@
 
 (define-test test-hello-world-thread
     "Create a thread which returns 'hello world', then ends.
-    using a lambda as the supplied function to execute."
+     using a LAMBDA as the supplied function to execute."
   (assert-equal *greeting* "no greeting")
   (let ((greeting-thread
          (sb-thread:make-thread
@@ -48,7 +47,7 @@
 
 
 (define-test test-join-thread-return-value
-    "the return value of the thread is passed in sb-thread:join-thread"
+    "The return value of the thread is passed in SB-THREAD:JOIN-THREAD."
   (let ((my-thread (sb-thread:make-thread
                     (lambda () (* 11 99)))))
     (assert-equal ____ (sb-thread:join-thread my-thread))))
@@ -64,9 +63,9 @@
                   ____)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Sending arguments to the thread function: ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Sending arguments to the THREAD function. ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun returns-hello-name (name)
   (format nil "Hello, ~a" name))
@@ -74,20 +73,20 @@
 (defun double-wrap-list (x y z)
   (list (list x y z)))
 
-;; Create a thread which will return "Hello -Name-" using
-;; the named returns-hello-name function.   Arguments are handed
-;; to threads as a list, unless there is just a single argument
-;; then it does not need to be wrapped in a list.
+; Create a thread which will return "Hello -Name-" using
+; the named RETURNS-HELLO-NAME function.   Arguments are handed
+; to threads as a list, unless there is just a single argument
+; then it does not need to be wrapped in a list.
 
 (define-test test-sending-arguments-to-thread
-    (assert-equal "Hello, Buster"
-                  (sb-thread:join-thread
-                   (sb-thread:make-thread 'returns-hello-name
-                                          :arguments "Buster")))
-    (assert-equal ____
-                  (sb-thread:join-thread
-                   (sb-thread:make-thread 'double-wrap-list
-                                          :arguments '(3 4 5)))))
+  (assert-equal "Hello, Buster"
+                (sb-thread:join-thread
+                 (sb-thread:make-thread 'returns-hello-name
+                                        :arguments "Buster")))
+  (assert-equal ____
+                (sb-thread:join-thread
+                 (sb-thread:make-thread 'double-wrap-list
+                                        :arguments '(3 4 5)))))
 
 
 ;; ----
@@ -95,19 +94,19 @@
 (defvar *accum* 0)
 
 (defun accum-after-time (time arg1)
-    "sleeps for time seconds and then adds arg1 to *accum*"
+    "Sleeps for TIME seconds and then adds ARG1 to *ACCUM*."
   (sleep time)
   (incf *accum* arg1))
 
 (defvar *before-time-millisec* 0)
 (defvar *after-time-millisec* 0)
 
-;; cheap and dirty time measuring function
+  ; Cheap and dirty time measuring function.
 (defun duration-ms ()
   (- *after-time-millisec* *before-time-millisec*))
 
 (define-test test-run-in-series
-    "get internal real time returns a time stamp in milliseconds"
+    "GET-INTERNAL-REAL-TIME returns a timestamp in milliseconds."
   (setf *accum* 0)
   (setf *before-time-millisec* (get-internal-real-time))
   (accum-after-time 0.3 1)
@@ -119,7 +118,7 @@
   (assert-equal *accum* ___))
 
 (define-test test-run-in-parallel
-    "same program as above, executed in threads.  Sleeps are simultaneous"
+    "Same program as above, executed in threads.  SLEEPs are simultaneous."
   (setf *accum* 0)
   (setf *before-time-millisec* (get-internal-real-time))
   (let ((thread-1 (sb-thread:make-thread 'accum-after-time :arguments '(0.3 1)))
@@ -134,39 +133,39 @@
   (assert-equal *accum* ___))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; killing renegade threads            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Killing renegade threads.           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (defun spawn-looping-thread (name)
-  "create a never-ending looping thread with a given name"
+    "Create a never-ending looping thread with a given name."
   (sb-thread:make-thread (lambda () (loop)) :name name))
 
 (defvar *top-thread* sb-thread:*current-thread*)
 (defun main-thread-p (thread) (eq thread *top-thread*))
 
 (defun kill-thread-if-not-main (thread)
-" kills a given thread, unless the thread is the main thread.
- returns nil if thread is main.
- returns a 'terminated~' string otherwise"
+    "Kills a given thread, unless the thread is the main thread.
+     Returns NIL if thread is main.
+     Returns a 'terminated ~' string otherwise."
   (unless (main-thread-p thread)
     (sb-thread:terminate-thread thread)
     (concatenate 'string "terminated " (sb-thread:thread-name thread))))
 
 (defun kill-spawned-threads ()
-  "kill all lisp threads except the main thread."
+    "Kill all Lisp threads except the main thread."
   (map 'list 'kill-thread-if-not-main (sb-thread:list-all-threads)))
 
 (defun spawn-three-loopers ()
-  "Spawn three run-aways."
+    "Spawn three run-aways."
   (progn
     (spawn-looping-thread "looper one")
     (spawn-looping-thread "looper two")
     (spawn-looping-thread "looper three")))
 
 (define-test test-counting-and-killing-threads
-    "list-all-threads makes a list of all running threads in this lisp.  The sleep
+    "LIST-ALL-THREADS makes a list of all running threads in this Lisp.  The SLEEP
      calls are necessary, as killed threads are not instantly removed from the
      list of all running threads."
   (assert-equal ___ (length (sb-thread:list-all-threads)))
@@ -180,9 +179,9 @@
   (assert-equal ___ (length (sb-thread:list-all-threads))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; bindings are not inherited across threads ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Bindings are not inherited across threads. ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar *v* 0)
 
@@ -190,7 +189,7 @@
   *v*)
 
 (define-test test-threads-dont-get-bindings
-    "bindings are not inherited across threads"
+    "Bindings are not inherited across threads."
   (let ((thread-ret-val (sb-thread:join-thread
                          (sb-thread:make-thread 'returns-v))))
     (assert-equal thread-ret-val ____))
@@ -201,22 +200,22 @@
       (assert-equal thread-ret-val ____))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; global state (special vars) are ;;
-;; shared across threads           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Global state (special vars) are ;
+; shared across threads.          ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar *g* 0)
 
 (defun waits-and-increments-g (&optional (n 0.2))
-  "sets *g* to 1 + the value of *g* n seconds ago"
+    "Sets *G* to 1 + the value of *G* N seconds ago."
   (let ((my-remembered-g *g*))
     (sleep n)
     (setq *g* (+ 1 my-remembered-g))))
 
 (define-test test-serial-wait-and-increment
- "incrementing *g* three times and expecting
-  the final value to be three works."
+    "Incrementing *G* three times and expecting
+     the final value to be three works."
   (setf *g* 0)
   (waits-and-increments-g)
   (waits-and-increments-g)
@@ -225,7 +224,7 @@
 
 
 (define-test test-parallel-wait-and-increment
-    (setf *g* 0)
+  (setf *g* 0)
   (let ((thread-1 (sb-thread:make-thread 'waits-and-increments-g))
         (thread-2 (sb-thread:make-thread 'waits-and-increments-g))
         (thread-3 (sb-thread:make-thread 'waits-and-increments-g)))
@@ -244,14 +243,14 @@
 (defvar *gs-mutex* (sb-thread:make-mutex :name "g's lock"))
 
 (defun protected-increments-g (&optional (n 0.1))
-  "Surround all references to *g* within the with-mutex form."
+    "Surround all references to *G* within the WITH-MUTEX form."
   (sb-thread:with-mutex (*gs-mutex*)
     (let ((my-remembered-g *g*))
       (sleep n)
       (setq *g* (+ 1 my-remembered-g)))))
 
 (define-test test-parallel-wait-and-increment-with-mutex
-    (setf *g* 0)
+  (setf *g* 0)
   (let ((thread-1 (sb-thread:make-thread 'protected-increments-g))
         (thread-2 (sb-thread:make-thread 'protected-increments-g))
         (thread-3 (sb-thread:make-thread 'protected-increments-g)))
@@ -260,26 +259,26 @@
     (sb-thread:join-thread thread-3)
     (assert-equal *g* ___)))
 
-;;;;;;;;;;;;;;;;
-;; Semaphores ;;
-;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;
+; Semaphores. ;
+;;;;;;;;;;;;;;;
 
-;; Incrementing a semaphore is an atomic operation.
+  ; Incrementing a semaphore is an atomic operation.
 (defvar *g-semaphore* (sb-thread:make-semaphore :name "g" :count 0))
 
 (defun semaphore-increments-g ()
   (sb-thread:signal-semaphore *g-semaphore*))
 
 (define-test test-increment-semaphore
-    (assert-equal 0 (sb-thread:semaphore-count *g-semaphore*))
+  (assert-equal 0 (sb-thread:semaphore-count *g-semaphore*))
   (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 1"))
   (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 2"))
   (sb-thread:join-thread (sb-thread:make-thread 'semaphore-increments-g :name "S incrementor 3"))
   (assert-equal ___ (sb-thread:semaphore-count *g-semaphore*)))
 
 
-;; Semaphores can be used to manage resource allocation, and to trigger
-;; threads to run when the semaphore value is above zero.
+; Semaphores can be used to manage resource allocation, and to trigger
+; threads to run when the semaphore value is above zero.
 
 (defvar *apples* (sb-thread:make-semaphore :name "how many apples" :count 0))
 (defvar *orchard-log* (make-array 10))
@@ -310,7 +309,3 @@
       (sb-thread:join-thread eater-thread)))
   (assert-equal (aref *orchard-log* 0) ____)
   (assert-equal (aref *orchard-log* 1) ____))
-
-
-
-

@@ -14,8 +14,8 @@
 
 
 (defun shadow-z (z)
-;; reuses the symbol name z to build a return value
-;; returns a list like (value-of-z, 2)
+    ; Reuses the symbol name Z to build a return value.
+    ; Returns a list like (value-of-Z, 2).
   (cons z
         (cons (let ((z 2)) z)
               nil)))
@@ -25,7 +25,7 @@
 
 
 (defun code-block-01 ()
-;; illustrates a basic property of code-blocks
+    ; Illustrates a basic property of code-blocks.
   (block here
     (return-from here 4)
     5))
@@ -44,26 +44,25 @@
   (assert-equal ___ (code-block-02)))
 
 
-;; About closures and the distinction of lexical and dynamic bindings
+; About closures and the distinction of lexical and dynamic bindings.
 
-;; this recipe from stackoverflow
+;; This recipe is from stackoverflow
 ;; http://stackoverflow.com/questions/463463/dynamic-and-lexical-variables-in-common-lisp
-; (print "no special x: a typical closure.")
+;;  (print "no special x: a typical closure.")
 
-;; bind f to a function which depends on a local variable x
-;; then invoke f to see which value of x is returned.
-
+  ; Bind F to a FUNCTION which depends on a local variable X
+  ; then invoke F to see which value of X is returned.
 (define-test test-lexical-bindings-may-be-shadowed
   (assert-eq ___ (let ((f (let ((x 10))
-                 (lambda () x))))  ; <-- x bound lexically
-    (let ((x 20))          ; form 2
+                 (lambda () x))))  ; <-- X bound lexically
+    (let ((x 20))          ; Form 2
       (funcall f)))))
 
 
 (define-test test-special-bindings-look-back-on-execution-path
   (assert-eq ___ (let ((f (let ((x 10))
              (declare (special x))
-             (lambda () x))))      ; <-- x bound dynamically
-    (let ((x 20))          ; form 2
+             (lambda () x))))      ; <-- X bound dynamically
+    (let ((x 20))          ; Form 2
       (declare (special x))
     (funcall f)))))

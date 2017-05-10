@@ -13,12 +13,11 @@
 ;;   limitations under the License.
 
 
-;; based on python koans 'about_lists.py'
-;; based also on "Lisp 3rd Edition" ch. 17. "List storage, surgery and reclamation"
-
+;; Based on python koans 'about_lists.py'.
+;; Based also on "Lisp 3rd Edition" ch. 17. "List storage, surgery and reclamation".
 
 (define-test test-creating-lists
-    "lists can be created using the quote form, or the 'list' function"
+    "Lists can be created using the QUOTE form, or the LIST function."
   (let ((fruits nil)
         (some-evens nil))
     (setf fruits '(orange pomello clementine))
@@ -28,44 +27,44 @@
 
 
 (define-test test-list-cons
-    "cons CONStructs new lists, by prefixing some list with
-     a new element like (cons new-element some-list)"
-    (let ((nums nil))
-      (setf nums (cons :one nums))
-      (assert-equal '(:one) nums)
+    "CONS *cons*tructs new lists, by prefixing some list with
+     a new element like (CONS NEW-ELEMENT SOME-LIST)."
+  (let ((nums nil))
+    (setf nums (cons :one nums))
+    (assert-equal '(:one) nums)
 
-      (setf nums (cons :two nums))
-      (assert-equal ___ nums)
+    (setf nums (cons :two nums))
+    (assert-equal ___ nums)
 
-      "lists can contain anything, even mixtures of different things"
-      (setf nums (cons 333 nums))
-      (assert-equal ___ nums)
+      "Lists can contain anything, even mixtures of different things."
+    (setf nums (cons 333 nums))
+    (assert-equal ___ nums)
 
-      "lists can of course contain lists"
-      (setf nums (cons '("the" "rest") nums))
-      (assert-equal ___ nums)))
+      "Lists can of course contain lists."
+    (setf nums (cons '("the" "rest") nums))
+    (assert-equal ___ nums)))
 
 
 (define-test test-push-pop
-    (let ((stack '(10 20 30 40))
-          (firstval nil))
-      "push adds an element to the beginning of a list referred to by some symbol"
-      (push "last" stack)
-      (assert-equal '("last" 10 20 30 40) stack)
+  (let ((stack '(10 20 30 40))
+        (firstval nil))
+      "PUSH adds an element to the beginning of a list referred to by some symbol."
+    (push "last" stack)
+    (assert-equal '("last" 10 20 30 40) stack)
 
-       "pop is the opposite of push.
-       It removes and returns the first element of a list"
-      (setf firstval (pop stack))
-      (assert-equal "last" firstval)
-      (assert-equal '(10 20 30 40) stack)
+      "POP is the opposite of PUSH.
+       It removes and returns the first element of a list."
+    (setf firstval (pop stack))
+    (assert-equal "last" firstval)
+    (assert-equal '(10 20 30 40) stack)
 
-      (setf firstval (pop stack))
-      (assert-equal ___ firstval)
-      (assert-equal ___ stack)))
+    (setf firstval (pop stack))
+    (assert-equal ___ firstval)
+    (assert-equal ___ stack)))
 
 
 (define-test test-append
-    "append attaches one list to the end of another."
+    "APPEND attaches one list to the end of another."
   (assert-equal '(:a :b :c) (append '(:a :b) '(:c)))
 
   (let ((abc '(:a :b :c))
@@ -78,32 +77,32 @@
 
 
 (define-test test-accessing-list-elements
-    (let ((noms '("peanut" "butter" "and" "jelly")))
-      (assert-equal "peanut" (first noms))
-      (assert-equal ___ (second noms))
-      (assert-equal ___ (fourth noms))
-      "last returns a singleton list of the final element"
-      (assert-equal ___ (last noms))
-      (assert-equal "butter" (nth 1 noms)) ; k 1
-      (assert-equal ___ (nth 0 noms))
-      (assert-equal ___ (nth 2 noms))
-      "'elt' is similar to 'nth', with the arguments reversed"
-      (assert-equal ___ (elt noms 2))))
+  (let ((noms '("peanut" "butter" "and" "jelly")))
+    (assert-equal "peanut" (first noms))
+    (assert-equal ___ (second noms))
+    (assert-equal ___ (fourth noms))
+      "LAST returns a singleton list of the final element."
+    (assert-equal ___ (last noms))
+    (assert-equal "butter" (nth 1 noms)) ; k 1
+    (assert-equal ___ (nth 0 noms))
+    (assert-equal ___ (nth 2 noms))
+      "ELT is similar to NTH, with the arguments reversed."
+    (assert-equal ___ (elt noms 2))))
 
 
 (define-test test-slicing-lists
-    (let ((noms '("peanut" "butter" "and" "jelly")))
-      (assert-equal ___ (subseq noms 0 1))
-      (assert-equal ___ (subseq noms 0 2))
-      (assert-equal ___ (subseq noms 2 2))
-      (assert-equal ___ (subseq noms 2))))
+  (let ((noms '("peanut" "butter" "and" "jelly")))
+    (assert-equal ___ (subseq noms 0 1))
+    (assert-equal ___ (subseq noms 0 2))
+    (assert-equal ___ (subseq noms 2 2))
+    (assert-equal ___ (subseq noms 2))))
 
 
 (define-test test-list-breakdown
-    "car (aka. 'first') returns the first value in a list"
+    "CAR (aka. FIRST) returns the first value in a list."
   (assert-equal ___ (car '(1 2 3)))
   (assert-equal ___ (car nil))
-    "cdr (aka. 'rest') refers to the remainder of the list,
-     after the first element"
+    "CDR (aka. REST) returns the remainder of the list,
+     after the first element."
   (assert-equal ___ (cdr '(1 2 3)))
   (assert-equal ___ (cdr nil)))

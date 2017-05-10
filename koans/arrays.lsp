@@ -13,15 +13,14 @@
 ;;   limitations under the License.
 
 
-;; see http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node157.html
-
+;; See http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node157.html
 
 (define-test test-basic-array-stuff
-    " the first block of code defines an 8x8 array, then fills
-      the elements with a checkerboard pattern"
+    "The first block of code defines an 8x8 array, then fills
+     the elements with a checkerboard pattern."
   (let ((chess-board))
     (setf chess-board (make-array '(8 8)))
-    "this dotimes is an iterator which loops x over integers 0 to 7"
+      "This DOTIMES is an iterator which loops X over integers 0 to 7."
     (dotimes (x 8)
       (dotimes (y 8)
         (if (evenp (+ x y))
@@ -31,16 +30,17 @@
     (assert-true (typep chess-board 'array))
     (assert-equal (aref chess-board 0 0) ___)
     (assert-equal (aref chess-board 2 3) ___)
-    "array-rank returns the number of dimensions of the array"
+      "ARRAY-RANK returns the number of dimensions of the array."
     (assert-equal ___ (array-rank chess-board))
-    "array-dimensions returns a list of the cardinality of the array dims"
+      "ARRAY-DIMENSIONS returns a list of the cardinality of the array
+       dimensions."
     (assert-equal ___ (array-dimensions chess-board))
     (assert-equal ___ (array-total-size chess-board))))
 
 (define-test test-make-your-own-array
-    "make your own array that meets the specifications below."
+    "Make your own array that meets the specifications below."
   (let ((color-cube nil))
-    "you may need to modify your array after you make it"
+      "You may need to modify your array after you make it."
     (if (typep color-cube '(simple-array T (3 3 3)))
         (progn
           (assert-equal 3 (array-rank color-cube))
@@ -52,7 +52,7 @@
 
 
 (define-test test-adjustable-array
-    "one may build arrays that can change size"
+    "One may build arrays that can change size."
   (let ((x (make-array '(2 2) :initial-element 5 :adjustable t)))
     (assert-equal (aref x 1 0) ____)
     (assert-equal (array-dimensions x) ____)
@@ -68,8 +68,8 @@
 
 
 (define-test test-row-major-index
-    "row major indexing is a way to access elements with a single integer,
-     rather than a list of integers"
+    "Row major indexing is a way to access elements with a single integer,
+     rather than a list of integers."
   (let ((my-array nil))
     (setf my-array (make-array '(2 2 2 2)))
     (dotimes (i (* 2 2 2 2))

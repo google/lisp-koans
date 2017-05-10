@@ -45,9 +45,11 @@ This indicates that the script has completed, and that the learner should look
 to asserts.lsp to locate and fix the problem.  The problem will be within
 a define-test expression such as
 
-    (define-test assert-true
-        "t is true.  Replace the blank with a t"
-        (assert-true ___))
+```lisp
+(define-test assert-true
+    "t is true.  Replace the blank with a t"
+    (assert-true ___))
+```
 
 In this case, the test is incomplete, and the student should fill
 in the blank (____) with appropriate lisp code to make the assert pass.
@@ -70,7 +72,17 @@ intent (refactor)."
 
 The Common Lisp koans are based on the python koans and ruby koans projects.
 Additionally, many of the tests are based on new material that is special
-to Common Lisp.
+to Common Lisp. All Common Lisp compilers treat symbols case-insensitively and
+most will capitalize results when outputting them in the REPL. In keeping with
+this idiom (to encourage familiarity so the REPL will seem less intimidating),
+and to make reading docstrings easier without excessive "quoting" of symbols,
+variable-names, function-names, etc are capitalized in docstrings and comments
+ like this:
+
+```lisp
+; Use SETF to assign 10 to the X symbol.
+(setf x 10)
+```
 
 Note that the unit on threads uses an SBCL specific threading API.  A reader
 macro will remove this unit on Lisp implementations other than SBCL.

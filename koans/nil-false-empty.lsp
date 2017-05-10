@@ -13,9 +13,9 @@
 ;;   limitations under the License.
 
 (define-test test-t-and-nil-are-opposites
-    "not is a function which returns the boolean opposite of its argument"
-   (true-or-false? ___ (not nil))
-   (true-or-false? ___ (not t)))
+    "NOT is a function which returns the boolean opposite of its argument."
+  (true-or-false? ___ (not nil))
+  (true-or-false? ___ (not t)))
 
 
 (define-test test-nil-and-empty-list-are-the-same-thing
@@ -24,32 +24,32 @@
 
 
 (define-test test-lots-of-things-are-true
-   " every value, other than nil, is boolean true"
-   (true-or-false? ___ 5)
-   (true-or-false? ___ (not 5))
-   (true-or-false? ___ "A String")
-   "only nil is nil.  Everything else is effectively true."
-   "the empty string"
-   (true-or-false? ___ "")
-   "a list containing a nil"
-   (true-or-false? ___ '(nil))
-   "an array with no elements"
-   (true-or-false? ___ (make-array '(0)))
-   "the number zero"
-   (true-or-false? ___ 0))
+    "Every value, other than NIL, is boolean true."
+  (true-or-false? ___ 5)
+  (true-or-false? ___ (not 5))
+  (true-or-false? ___ "A String")
+    "Only NIL is NIL.  Everything else is effectively true."
+    "The empty string."
+  (true-or-false? ___ "")
+    "A list containing a NIL."
+  (true-or-false? ___ '(nil))
+    "An array with no elements."
+  (true-or-false? ___ (make-array '(0)))
+    "The number zero."
+  (true-or-false? ___ 0))
 
 
 (define-test test-and
-   "and can take multiple arguments"
-   (true-or-false? ___ (and t t t t t))
-   (true-or-false? ___ (and t t nil t t))
-   "if no nils, and returns the last value"
-   (assert-equal ___ (and t t t t t 5)))
+    "AND can take multiple arguments."
+  (true-or-false? ___ (and t t t t t))
+  (true-or-false? ___ (and t t nil t t))
+    "If no NILs, AND returns the last value."
+  (assert-equal ___ (and t t t t t 5)))
 
 
 (define-test test-or
-   "or can also take multiple arguments"
-   (true-or-false? ____  (or nil nil nil t nil))
-   "or returns the first non nil value, or nil if there are none."
-   (assert-equal ____ (or nil nil nil))
-   (assert-equal ____ (or 1 2 3 4 5)))
+    "OR can also take multiple arguments."
+  (true-or-false? ____  (or nil nil nil t nil))
+    "OR returns the first non-NIL value, or NIL if there are none."
+  (assert-equal ____ (or nil nil nil))
+  (assert-equal ____ (or 1 2 3 4 5)))

@@ -13,20 +13,17 @@
 ;;   limitations under the License.
 
 
-;; There are many options for iteration in lisp.
-;; This set of koans will introduce a few of the most common ones
-
-
-;; Dolist evaluates a form for every element of a list.
+; There are many options for iteration in Lisp.
+; This set of koans will introduce a few of the most common ones.
 
 (defvar some-primes '(10301 11311 19991 999565999))
 
 (define-test test-dolist
-    "'dolist' iterates over values in a list, binding each value to a lexical
-      variable in turn"
+    "DOLIST iterates over values in a list, evaluating a form for
+     each and binding it to a lexical variable."
   (let ((how-many-in-list 0)
         (biggest-in-list (first some-primes)))
-    "this dolist loops over some-primes, defined above"
+      "This DOLIST loops over some-primes, defined above."
     (dolist (one-prime some-primes)
       (if (> one-prime biggest-in-list)
           (setf biggest-in-list one-prime))
@@ -34,33 +31,33 @@
     (assert-equal ___ how-many-in-list)
     (assert-equal ___ biggest-in-list))
   (let ((sum 0))
-    "write your own dolist here to calculate the sum of some-primes"
-    "you may be interested in investigating the 'incf' function"
+      "Write your own DOLIST here to calculate the sum of SOME-PRIMES.
+       You may be interested in investigating the INCF function."
     ;(dolist ... )
     (assert-equal 999607602 sum)))
 
 
 (define-test test-dolist-with-return
-    "Dolist can accept a return variable, which will be the return value
+    "DOLIST can accept a return variable, which will be the return value
      upon completion of the iteration."
-    (let ((my-list '(1 2 3 4))
-          (my-return))
-      (dolist (x my-list my-return)
-        (push (* x x) my-return))
-      (assert-equal ____ my-return)))
+  (let ((my-list '(1 2 3 4))
+        (my-return))
+    (dolist (x my-list my-return)
+      (push (* x x) my-return))
+    (assert-equal ____ my-return)))
 
 
 (define-test test-dotimes
-    "'dotimes' iterates over the integers from 0 to (limit - 1),
-      binding them in order to your selected symbol."
-    (let ((out-list nil))
-      (dotimes (y 3) (push y out-list))
-      (assert-equal out-list ___)))
+    "DOTIMES iterates over the integers from 0 to (limit - 1),
+     binding them in order to your selected symbol."
+  (let ((out-list nil))
+    (dotimes (y 3) (push y out-list))
+    (assert-equal out-list ___)))
 
 
 (defvar *x* "global")
 (define-test test-dotimes-binding
-    "dotimes establishes a local lexical binding which may shadow
+    "DOTIMES establishes a local lexical binding which may shadow
      a global value."
   (dotimes (*x* 4)
     (true-or-false? ___ (equal "global" *x*)))
@@ -68,19 +65,19 @@
 
 
 (define-test test-loop-until-return
-    "Loop loops forever, unless some return condition is executed.
-     Note that the loop macro includes many additional options,
+    "LOOP loops forever, unless some return condition is executed.
+     Note that the LOOP macro includes many additional options,
      which will be covered in a future koan."
-    (let ((loop-counter 0))
-      (loop
-        (incf loop-counter)
-        (if (>= loop-counter 100) (return loop-counter)))
-      (assert-equal ___ loop-counter)))
+  (let ((loop-counter 0))
+    (loop
+      (incf loop-counter)
+      (if (>= loop-counter 100) (return loop-counter)))
+    (assert-equal ___ loop-counter)))
 
 
 (define-test test-mapcar
-    "mapcar takes a list and a function.  It returns a new list
-     with the function applied to each element of the input"
+    "MAPCAR takes a list and a function.  It returns a new list
+     with the function applied to each element of the input."
   (let ((mc-result (mapcar #'evenp '(1 2 3 4 5))))
     (assert-equal mc-result ____)))
 
@@ -89,11 +86,11 @@
 
 
 (defun vowelp (c)
-  "returns true if c is a vowel"
+    "Returns true if C is a vowel."
   (find c "AEIOUaeiou"))
 
 (defun vowels-to-xs (my-string)
-  "converts all vowels in a string to the character 'x'"
+    "Converts all vowels in a string to the character 'x'."
   (coerce
    (loop for c across my-string
          with new-c
@@ -102,7 +99,7 @@
    'string))
 
 (define-test test-mapcar-with-defun
-  "mapcar is a convenient way to apply a function to a collection"
+    "MAPCAR is a convenient way to apply a function to a collection."
   (assert-equal (vowels-to-xs "Astronomy") "xstrxnxmy")
   (let* ((subjects '("Astronomy" "Biology" "Chemistry" "Linguistics"))
          (mc-result (mapcar #'vowels-to-xs subjects)))
@@ -112,5 +109,5 @@
 ;; ----
 
 (define-test test-mapcar-with-lambda
-    (let ((mc-result (mapcar (lambda (x) (mod x 10)) '(21 152 403 14))))
-      (assert-equal mc-result ____)))
+  (let ((mc-result (mapcar (lambda (x) (mod x 10)) '(21 152 403 14))))
+    (assert-equal mc-result ____)))

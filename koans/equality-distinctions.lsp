@@ -12,11 +12,12 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
-;; the most common equality predicates are eq, eql, equal and equalp
-;; eq is similar to comparing c pointers
+; The most common equality predicates are EQ, EQL, EQUAL and EQUALP.
+; EQ is similar to comparing c pointers.
+
 (define-test test-eq
-    "(eq x y) is true if and only if x and y are the same identical object
-     eq is like comparing pointers in c.  If the values are EQ, any non-nil
+    "(EQ X Y) is true if and only if X and Y are the same identical object,
+     EQ is like comparing pointers in c.  If the values are EQ, any non-NIL
      value may be returned."
   (true-or-false? ___ (eq 'a 'a))
   (true-or-false? ___ (eq 3 3.0))
@@ -26,10 +27,9 @@
   (true-or-false? ___ (eq "FOO" "Foo")))
 
 (define-test test-eql
-    "(eql x y) is true if (eq x y)
-     also it is true if x and y are numeric of the same type
-     and represent the same number.
-     (eql x y) also if x and y are the same characters."
+    "(EQL X Y) is true if (EQ X Y), or
+     X and Y are numeric of the same type and represent the same number, or
+     X and Y are the same characters."
    (true-or-false? ___ (eql 'a 'a))
    (true-or-false? ___ (eql 3 3))
    (true-or-false? ___ (eql 3 3.0))
@@ -41,9 +41,9 @@
    (true-or-false? ___ (eql "FOO" "Foo")))
 
 (define-test test-equal
-    "(equal x y) is true if (eql x y), or
-     x and y are lists with equal elements, or
-     x and y character or bit arrays with equal elements"
+    "(EQUAL X Y) is true if (EQL X Y), or
+     X and Y are lists with equal elements, or
+     X and Y are character or bit arrays with equal elements."
    (true-or-false? ___ (equal 'a 'a))
    (true-or-false? ___ (equal 3 3))
    (true-or-false? ___ (equal 3 3.0))
@@ -56,10 +56,10 @@
    (true-or-false? ___ (equal "FOO" "Foo")))
 
 (define-test test-equalp
-    "(equalp x y) if (equal x y) or
-     if x and y are strings with the same characters (case independent).
-     if x and y are arrays with the same dimensions and equal elements
-     if x and y are numeric of different types but one may be upgraded to
+    "(EQUALP X Y) if (EQUAL X Y), or
+     if X and Y are strings with the same characters (case independent), or
+     if X and Y are arrays with the same dimensions and equal elements, or
+     if X and Y are numeric of different types but one may be upgraded to
      the other type without loss and still exhibit equality."
    (true-or-false? ___ (equalp 'a 'a))
    (true-or-false? ___ (equalp 3 3))
@@ -73,18 +73,17 @@
    (true-or-false? ___ (equalp "FOO" "Foo")))
 
 (define-test test-numeric-equal
-    "(= x y) is only for numerics
-     and can take multiple arguments
-     if x or y is not numeric there will be a compiler error."
+    "(= X Y) is only for numerics and can take multiple arguments.
+     If X or Y is not numeric there will be a compiler error."
    (true-or-false? ___ (= 99.0 99 99.000))
    (true-or-false? ___ (= 0 1 -1))
    (true-or-false? ___ (= (/ 2 3) (/ 6 9) (/ 86 129))))
 
-; EQ, EQL, EQUAL, and EQUALP are general equality predicates.
-; Additionally, Lisp also provides the type-specific predicates.
-; For example, STRING= and STRING-EQUAL are predicates for strings.
+  ; EQ, EQL, EQUAL, and EQUALP are general equality predicates.
+  ; Additionally, Lisp also provides the type-specific predicates.
+  ; For example, STRING= and STRING-EQUAL are predicates for strings.
 (define-test test-string-equal
-  "string-equal is just like string= except that differences in case are ignored."
+    "STRING-EQUAL is just like STRING= except that differences in case are ignored."
   (true-or-false? ___ (string= "Foo" "Foo"))
   (true-or-false? ___ (string= "Foo" "FOO"))
   (true-or-false? ___ (string= "together" "frog" :start1 1 :end1 3 :start2 2))

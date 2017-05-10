@@ -13,11 +13,10 @@
 ;;   limitations under the License.
 
 
-; based on python koans: about_dictionaries.py
-
+;; Based on python koans: about_dictionaries.py
 
 (define-test test-create-hash-table
-    "make hash table with make-hash-table"
+    "Make hash table with MAKE-HASH-TABLE."
   (let ((my-hash-table))
     (setf my-hash-table (make-hash-table))
     (true-or-false? ___ (typep my-hash-table 'hash-table))
@@ -27,10 +26,10 @@
 
 
 (define-test test-hash-table-access
-    "gethash is for accessing hash tables"
+    "GETHASH is for accessing hash tables."
   (let ((table-of-cube-roots (make-hash-table)))
 
-  "assign the key-value pair 1->'uno'"
+    "Assign the key-value pair 1->'uno'."
   (setf (gethash 1 table-of-cube-roots) "uno")
   (assert-equal "uno" (gethash 1 table-of-cube-roots))
   (assert-equal 1 (hash-table-count table-of-cube-roots))
@@ -40,23 +39,23 @@
   (assert-equal ___ (gethash -3 table-of-cube-roots))
   (assert-equal ___ (hash-table-count table-of-cube-roots))
 
-  "accessing unset keys returns nil"
+    "Accessing unset keys returns NIL."
   (assert-equal ___ (gethash 125 table-of-cube-roots))))
 
 
 (define-test test-hash-key-equality
-    "hash tables need to know how to tell if two keys are equivalent.
+    "Hash tables need to know how to tell if two keys are equivalent.
      The programmer must be careful to know which equality predicate is right."
   (let ((hash-table-eq nil)
         (hash-table-equal nil)
         (hash-table-default nil))
 
-    "define three hash tables, with different equality tests"
+      "Define three hash tables, with different equality tests."
     (setf hash-table-eq (make-hash-table :test #'eq))
     (setf hash-table-equal (make-hash-table :test #'equal))
     (setf hash-table-default (make-hash-table))
 
-    "add the same string twice, to each"
+      "Add the same string twice, to each."
     (setf (gethash "one" hash-table-eq) "uno")
     (setf (gethash "one" hash-table-eq) "uno")
 
@@ -66,7 +65,7 @@
     (setf (gethash "one" hash-table-default) "uno")
     (setf (gethash "one" hash-table-default) "uno")
 
-    "count how many unique key-value pairs in each"
+      "Count how many unique key-value pairs in each."
     (assert-equal ___ (hash-table-count hash-table-eq))
     (assert-equal ___ (hash-table-count hash-table-equal))
     (assert-equal ___ (hash-table-count hash-table-default))))
@@ -99,25 +98,25 @@
 
 
 (define-test test-hash-key-membership
-    "hash tables use multiple value return to tell you if the key exists"
-    (let ((prev-pres (make-hash-table :test #'equal))
-          (value-and-exists nil))
-      (setf (gethash "Obama" prev-pres) "Bush")
-      (setf (gethash "Lincoln" prev-pres) "Buchanan")
-      (setf (gethash "Washington" prev-pres) nil)
+    "Hash tables use multiple value return to tell you if the key exists."
+  (let ((prev-pres (make-hash-table :test #'equal))
+        (value-and-exists nil))
+    (setf (gethash "Obama" prev-pres) "Bush")
+    (setf (gethash "Lincoln" prev-pres) "Buchanan")
+    (setf (gethash "Washington" prev-pres) nil)
 
-      (setf value-and-exists (multiple-value-list (gethash "Obama" prev-pres)))
-      (assert-equal value-and-exists '("Bush" t))
-      (setf value-and-exists (multiple-value-list (gethash "Lincoln" prev-pres)))
-      (assert-equal value-and-exists ____)
-      (setf value-and-exists (multiple-value-list (gethash "Washington" prev-pres)))
-      (assert-equal value-and-exists ____)
-      (setf value-and-exists (multiple-value-list (gethash "Franklin" prev-pres)))
-      (assert-equal value-and-exists ____)))
+    (setf value-and-exists (multiple-value-list (gethash "Obama" prev-pres)))
+    (assert-equal value-and-exists '("Bush" t))
+    (setf value-and-exists (multiple-value-list (gethash "Lincoln" prev-pres)))
+    (assert-equal value-and-exists ____)
+    (setf value-and-exists (multiple-value-list (gethash "Washington" prev-pres)))
+    (assert-equal value-and-exists ____)
+    (setf value-and-exists (multiple-value-list (gethash "Franklin" prev-pres)))
+    (assert-equal value-and-exists ____)))
 
 
 (define-test test-make-your-own-hash-table
-    "make a hash table that meets the following conditions"
+    "Make a hash table that meets the following conditions."
   (let ((colors (make-hash-table))
         values)
 
