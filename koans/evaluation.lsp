@@ -47,8 +47,8 @@
      but evaluating the form '(+ 1 2) returns the list (+ 1 2)"
   (assert-equal ____ (+ 1 2))
   (assert-equal ____ '(+ 1 2))
-  "'LISTP' is a predicate which returns true if the argument is a list"
-  " the '(CONTENTS) form defines a list literal containing CONTENTS"
+  "'LISTP' is a predicate which returns true if the argument is a list
+   the '(CONTENTS) form defines a list literal containing CONTENTS"
   (assert-equal ___ (listp '(1 2 3)))
   (assert-equal ___ (listp 100))
   (assert-equal ___ (listp "Word to your moms I came to drop bombs"))

@@ -34,8 +34,8 @@
     (assert-equal ___ how-many-in-list)
     (assert-equal ___ biggest-in-list))
   (let ((sum 0))
-    "write your own dolist here to calculate the sum of some-primes"
-    "you may be interested in investigating the 'incf' function"
+    "write your own dolist here to calculate the sum of some-primes
+     you may be interested in investigating the 'incf' function"
     ;(dolist ... )
     (assert-equal 999607602 sum)))
 
