@@ -6,7 +6,7 @@ From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g
     abcl --noinform --noinit --load contemplate.lsp --eval '(quit)'
     ccl -n -l contemplate.lsp -e '(quit)'
     clisp -q -norc -ansi contemplate.lsp
-    ecl --norc --load contemplate.lsp --eval '(quit)'
+    ecl -norc -load contemplate.lsp -eval '(quit)'
     sbcl --script contemplate.lsp
 
 Running on a fresh version should output the following:
