@@ -15,8 +15,9 @@ From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g
 ### Watching the Koans
 
 On Linux systems, the shell script `meditate.sh` can be used to
-automatically 'contemplate.lsp', providing immediate feedback on
-changes to the koans. From a terminal, change into the lisp-koans:
+automatically evaluate 'contemplate.lsp' whenever the koan files are
+modified, providing immediate feedback on changes to the koans. From a
+terminal:
 
     $ cd lisp-koans
     $ sh meditate.sh
