@@ -1,5 +1,8 @@
-Getting Started
----------------
+# Lisp Koans
+
+## Getting Started
+
+### One-time Method
 
 From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g.
 
@@ -8,6 +11,18 @@ From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g
     clisp -q -norc -ansi contemplate.lsp
     ecl -norc -load contemplate.lsp -eval '(quit)'
     sbcl --script contemplate.lsp
+
+### Watching the Koans
+
+On Linux systems, the shell script `meditate.sh` can be used to
+automatically evaluate 'contemplate.lsp' whenever the koan files are
+modified, providing immediate feedback on changes to the koans. From a
+terminal:
+
+    $ cd lisp-koans
+    $ sh meditate.sh
+
+## Results of Contemplation
 
 Running on a fresh version should output the following:
 
@@ -41,8 +56,7 @@ in the blank (____) with appropriate lisp code to make the assert pass.
 In order to test code, or evaluate tests interactively, students may copy
 and paste code into the lisp command line REPL.
 
-Quoting the Ruby Koans instructions::
--------------------------------------
+## Quoting the Ruby Koans instructions
 
    "In test-driven development the mantra has always been, red, green,
 refactor. Write a failing test and run it (red), make the test pass (green),
@@ -52,8 +66,7 @@ the test pass (green), then take a moment and reflect upon the test to see what
 it is teaching you and improve the code to better communicate its
 intent (refactor)."
 
-Content
--------
+## Content
 
 The Common Lisp koans are based on the python koans and ruby koans projects.
 Additionally, many of the tests are based on new material that is special
