@@ -44,4 +44,3 @@
     (true-or-false? t (equal 34 34))
     (true-or-false? nil (equal 19 78)))
 
- 
