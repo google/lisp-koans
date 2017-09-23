@@ -29,14 +29,14 @@
     "setf is used to assign values to symbols.  These symbols may refer to
      variables with lexical or dynamic scope."
   (setf my-name "David")
-  (assert-equal my-name ____)
+  (assert-equal my-name "David")
   " In SBCL, if the symbol isn't defined as a variable, via a top-level defvar
   or let statement, the setf call may result in a warning."
   (setf my-clones-name my-name)
-  (assert-equal "David" ____)
+  (assert-equal "David" my-clones-name)
   (setf a 5)
   (setf b 10)
-  (setf c ___)
+  (setf c (* a b))
   (assert-equal 50 c))
 
 
@@ -46,20 +46,20 @@
      lexical form.  After which, the previous value, if it exists, is visible again."
   (setf a 10)
   (setf b 20)
-  (assert-equal a ___)
-  (assert-equal b ___)
+  (assert-equal a 10)
+  (assert-equal b 20)
   (let ((a 1111)
         (b 2222))
-    (assert-equal a ___)
-    (assert-equal b ___))
-  (assert-equal a ___)
-  (assert-equal b ___))
+    (assert-equal a 1111)
+    (assert-equal b 2222))
+  (assert-equal a 10)
+  (assert-equal b 20))
 
 
 (define-test test-let-default-value
     "let vars have a default value"
     (let ((x))
-      (assert-equal ___ x)))
+      (assert-equal nil x)))
 
 (define-test test-let-bindings-are-parallel
     "When defining the bindings in the let form, later bindings may not depend
@@ -67,15 +67,15 @@
   (setf a 100)
   (let ((a 5)
         (b (* 10 a)))
-    (assert-equal b ___)))
+    (assert-equal b 1000)))
 
 (define-test test-let*-bindings-are-series
     "let* is like let, but successive bindings may use values of previous ones"
   (setf a 100)
   (let* ((a 5)
          (b (* 10 a)))
-    (assert-equal b ___))
-  (assert-equal a ___))
+    (assert-equal b 50))
+  (assert-equal a 100))
 
 
 (define-test write-your-own-let-statement
@@ -83,15 +83,15 @@
   (setf a 100)
   (setf b 23)
   (setf c 456)
-  (let ((a __)
-        (b __)
-        (c __))
+  (let ((a 100)
+        (b 200)
+        (c "Jellyfish"))
     (assert-equal a 100)
     (assert-equal b 200)
     (assert-equal c "Jellyfish"))
-  (let* ((a __)
-         ;; add more here
-         )
+  (let* ((a 121)
+         (b 200)
+         (c (+ a (/ b a))))
     (assert-equal a 121)
     (assert-equal b 200)
     (assert-equal c (+ a (/ b a)))))
@@ -106,17 +106,21 @@
                 (5 :five)
                 ;; t specifies default behavior
                 (t :unknown)))
-  (assert-equal ____ b)
+  (assert-equal :four b)
   "case can also check if a list of values contains
    the input"
   (setf c
         (case a (5 :five)
                 ((3 4) :three-or-four)))
-  (assert-equal ____ c))
+  (assert-equal :three-or-four c))
 
 (defun cartoon-dads (input)
     "you should be able to complete this case statement"
-  (case input (:this-one-doesnt-happen :fancy-cat)
+    (case input (:this-one-doesnt-happen :fancy-cat)
+          (:bart :homer)
+          (:stewie :peter)
+          (:stan :randy)
+          (:space-ghost :unknown)
               (t :unknown)))
 
 (define-test test-your-own-case-statement
@@ -134,7 +138,7 @@
          (lastname (case name ("John" "Doe")
                               ("Max" "Mustermann")
                               (t "Anonymous"))))
-  (assert-equal ____ lastname)))
+  (assert-equal "Doe" lastname)))
 
 (define-test test-cond
     "cond is the general purpose form for checking multiple
@@ -144,4 +148,4 @@
         (cond ((> a 0) :positive)
               ((< a 0) :negative)
               (t :zero)))
-  (assert-equal ____ c))
+  (assert-equal :positive c))
