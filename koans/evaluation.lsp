@@ -22,21 +22,21 @@
      with the function name the first element of that list."
 
   "in these examples, the function names are +, -, and *"
-  (assert-equal ___ (+ 2 3))
-  (assert-equal ___ (- 1 3))
-  (assert-equal ___ (* 7 4))
+  (assert-equal 5 (+ 2 3))
+  (assert-equal -2 (- 1 3))
+  (assert-equal 28 (* 7 4))
   "'>' and '=' are the boolean functions (predicates) 'greater-than' and
    'equal to'"
-  (assert-equal ___ (> 100 4))
-  (assert-equal ___ (= 3 3))
+  (assert-equal t (> 100 4))
+  (assert-equal t (= 3 3))
   "'NUMBERP' is a predicate which returns true if the argument is a number"
-  (assert-equal ___ (numberp 5))
-  (assert-equal ___ (numberp "five")))
+  (assert-equal t (numberp 5))
+  (assert-equal nil (numberp "five")))
 
 
 (define-test test-evaluation-order
     "Arguments to functions are evaluated before the function"
-  (assert-equal ___ (* (+ 1 2) (- 13 10))))
+  (assert-equal 9 (* (+ 1 2) (- 13 10))))
 
 
 (define-test test-quoting-behavior
@@ -45,17 +45,17 @@
      the literal list.
      Evaluating the form (+ 1 2) returns the number 3,
      but evaluating the form '(+ 1 2) returns the list (+ 1 2)"
-  (assert-equal ____ (+ 1 2))
-  (assert-equal ____ '(+ 1 2))
+  (assert-equal 3 (+ 1 2))
+  (assert-equal '(+ 1 2) '(+ 1 2))
   "'LISTP' is a predicate which returns true if the argument is a list"
   " the '(CONTENTS) form defines a list literal containing CONTENTS"
-  (assert-equal ___ (listp '(1 2 3)))
-  (assert-equal ___ (listp 100))
-  (assert-equal ___ (listp "Word to your moms I came to drop bombs"))
-  (assert-equal ___ (listp nil))
-  (assert-equal ___ (listp (+ 1 2)))
-  (assert-equal ___ (listp '(+ 1 2)))
+  (assert-equal t (listp '(1 2 3)))
+  (assert-equal nil (listp 100))
+  (assert-equal nil (listp "Word to your moms I came to drop bombs"))
+  (assert-equal t (listp nil))
+  (assert-equal nil (listp (+ 1 2)))
+  (assert-equal t (listp '(+ 1 2)))
   "equalp is an equality predicate"
-  (assert-equal ___ (equalp 3 (+ 1 2)))
+  (assert-equal t (equalp 3 (+ 1 2)))
   "the '(xyz ghi) syntax is syntactic sugar for the (QUOTE (xyz ghi)) function."
-  (true-or-false? ___ (equalp '(/ 4 0) (quote (/ 4 0)))))
+  (true-or-false? t (equalp '(/ 4 0) (quote (/ 4 0)))))
