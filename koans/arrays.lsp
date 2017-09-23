@@ -45,16 +45,16 @@
     (dotimes (x 3)
       (dotimes (y 3)
         (dotimes (z 3)
-          (cond ((= 0 x) (setf (aref color-cube x y z) :red))
-                ((= 1 x) (setf (aref color-cube x y z) :blue))
-                ((= 2 x) (setf (aref color-cube x y z) :white))))))
+          (cond ((= x 0) (setf (aref color-cube x y z) :red))
+                ((= x 1) (setf (aref color-cube x y z) :blue))
+                ((= x 2) (setf (aref color-cube x y z) :white))))))
     (if (typep color-cube '(simple-array T (3 3 3)))
-        (progn
-          (assert-equal 3 (array-rank color-cube))
-          (assert-equal '(3 3 3) (array-dimensions color-cube))
-          (assert-equal 27 (array-total-size color-cube))
-          (assert-equal (aref color-cube 0 1 2) :red)
-          (assert-equal (aref color-cube 2 1 0) :white))
+          (progn
+            (assert-equal 3 (array-rank color-cube))
+            (assert-equal '(3 3 3) (array-dimensions color-cube))
+            (assert-equal 27 (array-total-size color-cube))
+            (assert-equal (aref color-cube 0 1 2) :red)
+            (assert-equal (aref color-cube 2 1 0) :white))
         (assert-true nil))))
 
 
