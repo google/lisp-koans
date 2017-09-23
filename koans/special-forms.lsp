@@ -138,7 +138,7 @@
          (lastname (case name ("John" "Doe")
                               ("Max" "Mustermann")
                               (t "Anonymous"))))
-  (assert-equal "Doe" lastname)))
+  (assert-equal "Anonymous" lastname)))
 
 (define-test test-cond
     "cond is the general purpose form for checking multiple
