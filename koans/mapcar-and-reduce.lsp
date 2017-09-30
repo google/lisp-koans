@@ -26,8 +26,6 @@
     "The mapcar function can be applied to
      more than one list. It applies a function
      to successive elements of the lists."
-  (assert-equal ____ (mapcar #'* '(1 2 3) '(4 5 6)))
-  (assert-equal ____ (mapcar #'list '("lisp" "are") '("koans" "fun"))))
   (assert-equal '(4 10 18) (mapcar #'* '(1 2 3) '(4 5 6)))
   (assert-equal '(("lisp" "koans") ("are" "fun")) (mapcar #'list '("lisp" "are") '("koans" "fun"))))
 
