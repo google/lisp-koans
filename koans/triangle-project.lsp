@@ -18,7 +18,19 @@
 (define-condition triangle-error  (error) ())
 
 (defun triangle (a b c)
-  :write-me)
+  (if (not (and (numberp a) (numberp b) (numberp c))) ;must be numbers
+      (error 'triangle-error))
+  (if (not (and (> a 0) (> b 0) (> c 0))) ;must be > 0
+      (error 'triangle-error))
+  (let* ((sides (sort (copy-seq (list a b c)) #'<)) ;using non-destructive sorting
+         (s1 (first sides))
+         (s2 (second sides))
+         (s3 (third sides)))
+    (if (>= s3 (+ s1 s2)) ;cannot form a triangle
+        (error 'triangle-error)))
+  (cond ((= a b c) :equilateral)
+        ((or (= a b) (= a c) (= b c)) :isosceles)
+        (t :scalene)))
 
 
 (define-test test-equilateral-triangles-have-equal-sides
