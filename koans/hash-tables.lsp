@@ -20,10 +20,10 @@
     "make hash table with make-hash-table"
   (let ((my-hash-table))
     (setf my-hash-table (make-hash-table))
-    (true-or-false? ___ (typep my-hash-table 'hash-table))
-    (true-or-false? ___  (hash-table-p my-hash-table))
-    (true-or-false? ___  (hash-table-p (make-array '(3 3 3))))
-    (assert-equal ___ (hash-table-count my-hash-table))))
+    (true-or-false? t (typep my-hash-table 'hash-table))
+    (true-or-false? t  (hash-table-p my-hash-table))
+    (true-or-false? nil  (hash-table-p (make-array '(3 3 3))))
+    (assert-equal 0 (hash-table-count my-hash-table))))
 
 
 (define-test test-hash-table-access
@@ -37,11 +37,11 @@
 
   (setf (gethash 8 table-of-cube-roots) 2)
   (setf (gethash -3 table-of-cube-roots) -27)
-  (assert-equal ___ (gethash -3 table-of-cube-roots))
-  (assert-equal ___ (hash-table-count table-of-cube-roots))
+  (assert-equal -27 (gethash -3 table-of-cube-roots))
+  (assert-equal 3 (hash-table-count table-of-cube-roots))
 
   "accessing unset keys returns nil"
-  (assert-equal ___ (gethash 125 table-of-cube-roots))))
+  (assert-equal nil (gethash 125 table-of-cube-roots))))
 
 
 (define-test test-hash-key-equality
@@ -67,9 +67,9 @@
     (setf (gethash "one" hash-table-default) "uno")
 
     "count how many unique key-value pairs in each"
-    (assert-equal ___ (hash-table-count hash-table-eq))
-    (assert-equal ___ (hash-table-count hash-table-equal))
-    (assert-equal ___ (hash-table-count hash-table-default))))
+    (assert-equal 2 (hash-table-count hash-table-eq))
+    (assert-equal 1 (hash-table-count hash-table-equal))
+    (assert-equal 2 (hash-table-count hash-table-default))))
 
 
 (define-test test-hash-table-equality
@@ -79,9 +79,9 @@
       (setf (gethash "one" h2) "yat")
       (setf (gethash "two" h1) "yi")
       (setf (gethash "two" h2) "yi")
-      (true-or-false? ___ (eq h1 h2))
-      (true-or-false? ___ (equal h1 h2))
-      (true-or-false? ___ (equalp h1 h2))))
+      (true-or-false? nil (eq h1 h2))
+      (true-or-false? nil (equal h1 h2))
+      (true-or-false? t (equalp h1 h2))))
 
 
 (define-test test-changing-hash-tables
@@ -93,7 +93,7 @@
       (setf (gethash "two" expected) "zwei")
 
       (setf (gethash "one" babel-fish) "eins")
-      (setf (gethash "two" babel-fish) ____)
+      (setf (gethash "two" babel-fish) "zwei")
 
       (assert-true (equalp babel-fish expected))))
 
@@ -109,17 +109,21 @@
       (setf value-and-exists (multiple-value-list (gethash "Obama" prev-pres)))
       (assert-equal value-and-exists '("Bush" t))
       (setf value-and-exists (multiple-value-list (gethash "Lincoln" prev-pres)))
-      (assert-equal value-and-exists ____)
+      (assert-equal value-and-exists '("Buchanan" t))
       (setf value-and-exists (multiple-value-list (gethash "Washington" prev-pres)))
-      (assert-equal value-and-exists ____)
+      (assert-equal value-and-exists '(nil t))
       (setf value-and-exists (multiple-value-list (gethash "Franklin" prev-pres)))
-      (assert-equal value-and-exists ____)))
+      (assert-equal value-and-exists '(nil nil))))
 
 
 (define-test test-make-your-own-hash-table
     "make a hash table that meets the following conditions"
-  (let ((colors (make-hash-table))
+  (let ((colors (make-hash-table :test #'equal))
         values)
+    (setf (gethash "blue" colors) '(0 0 1))
+    (setf (gethash "green" colors) '(0 1 0))
+    (setf (gethash "red" colors) '(1 0 0))
+    (setf (gethash "black" colors) '(0 0 0))
 
     (assert-equal (hash-table-count colors) 4)
     (setf values (list (gethash "blue" colors)

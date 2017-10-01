@@ -50,8 +50,26 @@
 ; Your goal is to write the score method.
 
 (defun score (dice)
-  ; You need to write this method
-)
+  (calculate-dice-score (sort (copy-seq dice) #'<) 0))
+
+(defun calculate-dice-score (dice sum-score)
+  (cond ((equal nil dice) sum-score) ; base case - no dice left
+
+        ((and (>= (length dice) 3)
+              (= 1 (first dice) (second dice) (third dice))) ;three ones = 1000p
+         (calculate-dice-score (cdddr dice) (+ 1000 sum-score)))
+
+        ((and (>= (length dice) 3)
+              (= (first dice) (second dice) (third dice))) ;three X = X*100p
+         (calculate-dice-score (cdddr dice) (+ (* (car dice) 100) sum-score)))
+
+        ((equal 1 (car dice)) ; a one is 100p
+         (calculate-dice-score (cdr dice) (+ 100 sum-score)))
+
+        ((equal 5 (car dice)) ; a five is 50p
+         (calculate-dice-score (cdr dice) (+ 50 sum-score)))
+
+        (t (calculate-dice-score (cdr dice) sum-score))))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))

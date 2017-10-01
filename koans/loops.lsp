@@ -20,7 +20,7 @@
            (loop-result
              (loop for letter in letters
                    collect letter)))
-      (assert-equal loop-result ____)))
+      (assert-equal loop-result '(:a :b :c :d))))
 
 
 (define-test test-compound-loop
@@ -29,7 +29,7 @@
              (loop for letter in letters
                    for i from 1 to 1000
                    collect (list i letter))))
-      (assert-equal loop-result ____)))
+      (assert-equal loop-result '((1 :a) (2 :b) (3 :c) (4 :d)))))
 
 
 (define-test test-counting-loop-skip-by-syntax
@@ -39,14 +39,14 @@
              (loop for letter in letters
                    for i from 0 to 1000 by 5
                    collect (list i letter))))
-      (assert-equal loop-result ____ )))
+      (assert-equal loop-result '((0 :a) (5 :b) (10 :c) (15 :d)))))
 
 
 (define-test test-counting-backwards
     (let ((loop-result
              (loop for i from 10 downto -10 by 5
                    collect i )))
-      (assert-equal loop-result ____ )))
+      (assert-equal loop-result '(10 5 0 -5 -10))))
 
 
 (define-test test-loop-in-vs-loop-on
@@ -55,8 +55,8 @@
             (loop for letter in letters collect letter))
            (loop-result-on
             (loop for letter on letters collect letter)))
-      (assert-equal loop-result-in ____)
-      (assert-equal loop-result-on ____ )))
+      (assert-equal loop-result-in '(:a :b :c))
+      (assert-equal loop-result-on '((:a :b :c) (:b :c) (:c)))))
 
 
 (define-test test-loop-in-skip-by
@@ -69,24 +69,24 @@
             (loop for letter in letters by #'cddr collect letter))
            (loop-result-in-cdddr
             (loop for letter in letters by #'cdddr collect letter)))
-      (assert-equal loop-result-in ____)
-      (assert-equal loop-result-in-cdr ____)
-      (assert-equal loop-result-in-cddr ____)
-      (assert-equal loop-result-in-cdddr ____)))
+      (assert-equal loop-result-in '(:a :b :c :d :e :f))
+      (assert-equal loop-result-in-cdr '(:a :b :c :d :e :f))
+      (assert-equal loop-result-in-cddr '(:a :c :e))
+      (assert-equal loop-result-in-cdddr '(:a :d))))
 
 
 (define-test test-loop-across-vector
     (let* ((my-vector (make-array '(5) :initial-contents '(0 1 2 3 4)))
            (loop-result
             (loop for val across my-vector collect val)))
-      (assert-equal ____ loop-result)))
+      (assert-equal '(0 1 2 3 4) loop-result)))
 
 
 (define-test test-loop-across-2d-array
     (let* ((my-array (make-array '(3 3) :initial-contents '((0 1 2) (3 4 5) (6 7 8))))
            (loop-result
             (loop for i from 0 below (array-total-size my-array) collect (row-major-aref my-array i))))
-      (assert-equal loop-result ____ )))
+      (assert-equal loop-result '(0 1 2 3 4 5 6 7 8) )))
 
 
 (define-test test-loop-across-2d-array-respecting-shape
@@ -95,7 +95,7 @@
             (loop for i from 0 below (array-dimension my-array 0) collect
               (loop for j from 0 below (array-dimension my-array 1) collect
                 (expt (aref my-array i j) 2)))))
-      (assert-equal loop-result ____ )))
+      (assert-equal loop-result '((0 1) (4 9) (16 25)))))
 
 
 (defvar books-to-heros)
@@ -111,8 +111,8 @@
             (loop for k being the hash-keys in books-to-heros
                   using (hash-value v)
                   collect (list k v))))
-      (assert-equal ____ (length pairs-in-table))
-      (true-or-false? ____ (find '("The Hobbit" "Bilbo") pairs-in-table :test #'equal))))
+      (assert-equal 4 (length pairs-in-table))
+      (true-or-false? t (find '("The Hobbit" "Bilbo") pairs-in-table :test #'equal))))
 
 
 (define-test test-value-accumulation-forms
@@ -125,11 +125,11 @@
                  minimize x into minimized
                  finally (return (list collected counted summed maximized minimized)))))
       (destructuring-bind (col count sum max min) loop-1
-        (assert-equal col ____)
-        (assert-equal count ____)
-        (assert-equal sum ____)
-        (assert-equal max ____)
-        (assert-equal min ____))))
+        (assert-equal col '(1 2 4 8 16))
+        (assert-equal count 5)
+        (assert-equal sum 31)
+        (assert-equal max 16)
+        (assert-equal min 1))))
 
 
 (define-test test-destructuring-bind
@@ -137,15 +137,15 @@
            (result (loop for (a b) in '((1 9) (2 8) (3 7) (4 6))
                         do (setf count (+ 1 count))
                          collect (+ a b))))
-      (assert-equal ____ count)
-      (assert-equal ____ result)))
+      (assert-equal 4 count)
+      (assert-equal '(10 10 10 10) result)))
 
 
 (define-test test-conditional-execution
     (let ((loop-return
            (loop for x in '(1 1 2 3 5 8 13)
                  when (evenp x) sum x)))
-      (assert-equal loop-return ____)))
+      (assert-equal loop-return 10)))
 
 
 (defun greater-than-10-p (x)
@@ -155,11 +155,11 @@
     (let ((loop-return
            (loop for x in '(1 1 2 3 5 8 13)
                  when (greater-than-10-p x) sum x)))
-      (assert-equal loop-return ____)))
+      (assert-equal loop-return 13)))
 
 
 (define-test test-conditional-with-lambda
     (let ((loop-return
            (loop for x in '(1 1 2 3 5 8 13)
                  when ((lambda (z) (equal 1 (mod z 3))) x) sum x)))
-      (assert-equal loop-return ____)))
+      (assert-equal loop-return 15)))
