@@ -175,7 +175,3 @@
       (assert-equal ____ *last-kind-accessor*)
       (get-kind my-circled-color)
       (assert-equal ____ *last-kind-accessor*)))
-
-
-;; Todo: consider adding :before and :after method control instructions.
-
