@@ -81,5 +81,5 @@
     (assert-equal 600  (score '(6 6 6))))
 
 (define-test test-score-of-mixed-is-sum
-    (assert-equal 250  (score '(2 5 2 2 3)))
+    (assert-equal 150  (score '(2 5 2 2 1)))
     (assert-equal 550  (score '(5 5 5 5))))
