@@ -68,7 +68,7 @@ intent (refactor)."
 
 ## Content
 
-The Common Lisp koans are based on the python koans and ruby koans projects.
+The Common Lisp koans are based on the Python koans and Ruby koans projects.
 Additionally, many of the tests are based on new material that is special
 to Common Lisp.
 
