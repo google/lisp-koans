@@ -39,7 +39,6 @@ else
 fi
 
 $CONTEMPLATE
-# while inotifywait -e modify --exclude "\#.*\#" -q -r koans; do
 while fswatch --exclude "\#.*\#" -r1 koans; do
     $CONTEMPLATE
 done
