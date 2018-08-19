@@ -15,7 +15,7 @@ From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g
 ### Watching the Koans
 
 On Linux and MacOS systems, the shell scripts `meditate-linux.sh` and
-`mediate-macos.sh` can be used to automatically evaluate 'contemplate.lsp'
+`meditate-macos.sh` can be used to automatically evaluate 'contemplate.lsp'
 whenever the koan files are modified, providing immediate feedback on changes
 to the koans. To run the MacOS version you need to have
 [`fswatch`](https://github.com/emcrisostomo/fswatch) installed. From a terminal:
