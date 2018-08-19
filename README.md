@@ -22,7 +22,7 @@ to the koans. To run the MacOS version you need to have
 
     $ cd lisp-koans
     $ sh meditate-linux.sh # on Linux
-    $ sh mediate-macos.sh # on MacOS
+    $ sh meditate-macos.sh # on MacOS
 
 ## Results of Contemplation
 
