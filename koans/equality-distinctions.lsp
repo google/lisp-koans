@@ -29,7 +29,7 @@
     "(eql x y) is true if (eq x y)
      also it is true if x and y are numeric of the same type
      and represent the same number.
-     (eql x y) also if x and y are the same characters."
+     (eql x y) also is true if x and y are the same characters."
    (true-or-false? ___ (eql 'a 'a))
    (true-or-false? ___ (eql 3 3))
    (true-or-false? ___ (eql 3 3.0))
