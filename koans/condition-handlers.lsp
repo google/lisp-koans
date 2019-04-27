@@ -106,7 +106,7 @@ http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node312.html"
       (error 'logline-parse-error :original-line in-line :reason :bad-type-reason))
   (cond
     ((equal 0 (search "TIMESTAMP" in-line)) :timestamp-logline-type)
-    ((if (equal 0 (search "HTTP" in-line)) :http-logline-type))
+    ((equal 0 (search "HTTP" in-line)) :http-logline-type)
     ;; if we don't recognize the first token,  throw a logline-parse-error, and set the :reason and :original-line
     (t (error 'logline-parse-error :original-line in-line :reason :unknown-token-reason))))
 
