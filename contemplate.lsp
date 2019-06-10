@@ -96,8 +96,8 @@
                      #'(lambda (x) (equalp :pass x))
                      (second k-result))))
     (if all-pass-p
-        (format t "[32m~A has expanded your awareness.~%[0m" koan-name)
-        (format t "[31m~A requires more meditation.~%[0m" koan-name))))
+        (format t "~A has expanded your awareness.~%" koan-name)
+        (format t "~A requires more meditation.~%" koan-name))))
 
 (defun print-koan-group-progress (kg-name kg-results)
   (format t "~%Thinking about ~A~%" kg-name)
@@ -130,10 +130,10 @@
 (defun koan-status-message (koan-status)
   (if (find :incomplete koan-status)
        (return-from koan-status-message
-         "  [1m[33mA koan is incomplete.~%[0m"))
+         "  A koan is incomplete.~%"))
   (if (find :fail koan-status)
        (return-from koan-status-message
-         "  [1m[31mA koan is incorrect.~%[0m"))
+         "  A koan is incorrect.~%"))
   (if (find :error koan-status)
        (return-from koan-status-message
          "  A koan threw an error.~%"))
@@ -147,7 +147,7 @@
     (format t "You have not yet reached enlightenment ...~%")
     (format t (koan-status-message koan-status))
     (format t "~%")
-    (format t "[1mPlease meditate on the following code:~%[0m")
+    (format t "Please meditate on the following code:~%")
     (format t "   File \"~A/~A.lsp\"~%" *koan-dir-name* (string-downcase filename))
     (format t "   Koan \"~A\"~%" koan-name)
     (format t "   Current koan assert status is \"~A\"~%" (reverse koan-status))))
@@ -216,4 +216,4 @@
       (print-next-suggestion-message)
       (format t "~%")
       (print-progress-message))
-    (print-completion-message))
+(print-completion-message))
