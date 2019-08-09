@@ -1,0 +1,7 @@
+load("//devtools/copybara/library/workflow", "exclude_paths", "git_to_third_party")
+
+git_to_third_party(
+    url = "https://github.com/google/lisp-koans",
+    git_files = exclude_paths([".gitignore"]),
+    google3_path = "third_party/lisp/lisp-koans",
+)
