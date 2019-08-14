@@ -26,5 +26,5 @@
  :dice-project
  :macros
  :scope-and-extent
- #+sb-thread :threads
+ #+qicklisp :threads
 )
