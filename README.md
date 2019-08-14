@@ -75,10 +75,11 @@ Additionally, many of the tests are based on new material that is special
 to Common Lisp.
 
 Note that the unit on threads uses bordeaux-threads and bt-semaphore.
-The user must have quicklisp installed and loaded or a reader macro
-will remove the isntruction to run :threads.
-For instructions on installing quicklisp please see:
-https://lisp-lang.org/learn/getting-started/
+The user must have Quicklisp installed and loaded or a reader macro
+will remove the instructions to run :threads.
+For information and instructions on installing Quicklisp
+please see:
+https://www.quicklisp.org/beta/
 The user can either remove #+quicklisp and uncomment
 (load "~/.quicklisp/setup.lisp") in threads.lsp, or  if they know
 quicklisp will be loaded while running contemplate.lsp do nothing.
