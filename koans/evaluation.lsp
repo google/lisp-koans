@@ -13,7 +13,10 @@
 ;;   limitations under the License.
 
 
-;; based on http://psg.com/~dlamkins/sl/chapter03-02.html
+;;   Based on "Successful Lisp" by David B. Lamkins
+;;   Download link to archive https://successful-lisp.blogspot.com/p/httpsdrive.html
+;;   Or buy the Book via :  https://successful-lisp.blogspot.com/
+
 
 (define-test test-function-name-is-first-argument
     "In most imperative languages, the syntax of a function call has
