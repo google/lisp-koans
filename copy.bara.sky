@@ -23,7 +23,7 @@ def leakr_check():
 
 core.workflow(
     name = "piper_to_git",
-    origin = piper.origin(pending_cl = True),
+    origin = piper.origin(pending_cl = False),
     origin_files = glob(
         include = ["google3/third_party/lisp/lisp-koans/**"],
         exclude = ["google3/third_party/lisp/lisp-koans/OWNERS"],

@@ -1,0 +1,15 @@
+name: "Lisp Koans"
+description: "Common Lisp Koans is a language learning exercise in the same vein as the ruby koans, python koans and others. It is a port of the prior koans with some modifications to highlight lisp-specific features. Structured as ordered groups of broken unit tests, the project guides the learner progressively through many Common Lisp language features."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/google/lisp-koans"
+  }
+  version: "5896339684fc0b2227e1b06be238aa54cfcde67a"
+  last_upgrade_date {
+    year: 2020
+    month: 5
+    day: 4
+  }
+}

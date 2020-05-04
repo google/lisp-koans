@@ -30,7 +30,6 @@
 
 ;; (load "~/.quicklisp/setup.lisp")
 (ql:quickload :bordeaux-threads)
-(ql:quickload :bt-semaphore)
 
 (defvar *greeting* "no greeting")
 
@@ -272,24 +271,52 @@
 ;; Semaphores ;;
 ;;;;;;;;;;;;;;;;
 
-;; Incrementing a semaphore is an atomic operation.
-(defvar *g-semaphore* (bordeaux-threads:make-semaphore :name "g" :count 0))
+;; bordeaux-threads does not allow you to see
+;; count on a semaphore, so we make a struct
+;; to keep track of both the semaphore and count for us.
+
+(defstruct semaphore
+  (semaphore nil :type bordeaux-threads:semaphore)
+  (count 0 :type integer))
+
+(defun make-our-semaphore (&key (count 0) (name ""))
+  (make-semaphore :semaphore (bordeaux-threads:make-semaphore
+                              :count count
+                              :name name)
+                  :count count))
+
+(defun signal-semaphore (semaphore)
+  (bordeaux-threads:signal-semaphore
+   (semaphore-semaphore semaphore))
+  (incf (semaphore-count semaphore)))
+
+(defun wait-on-semaphore (semaphore)
+  (bordeaux-threads:wait-on-semaphore
+   (semaphore-semaphore semaphore))
+  (decf (semaphore-count semaphore)))
+
+(defun semaphore-name (semaphore)
+  (semaphore-name (semaphore-semaphore semaphore)))
+
+;; Incrementing a bordeaux-threads semaphore is an atomic operation
+;; but our increment is not.
+(defvar *g-semaphore* (make-our-semaphore :name "g" :count 0))
 
 (defun semaphore-increments-g ()
-  (bordeaux-threads:signal-semaphore *g-semaphore*))
+  (signal-semaphore *g-semaphore*))
 
 (define-test test-increment-semaphore
-    (assert-equal 0 (bt-semaphore:semaphore-count *g-semaphore*))
+    (assert-equal ___ (semaphore-count *g-semaphore*))
   (bordeaux-threads:join-thread (bordeaux-threads:make-thread 'semaphore-increments-g :name "S incrementor 1"))
   (bordeaux-threads:join-thread (bordeaux-threads:make-thread 'semaphore-increments-g :name "S incrementor 2"))
   (bordeaux-threads:join-thread (bordeaux-threads:make-thread 'semaphore-increments-g :name "S incrementor 3"))
-  (assert-equal ___ (bt-semaphore:semaphore-count *g-semaphore*)))
+  (assert-equal ___ (semaphore-count *g-semaphore*)))
 
 
 ;; Semaphores can be used to manage resource allocation, and to trigger
 ;; threads to run when the semaphore value is above zero.
 
-(defvar *apples* (bt-semaphore:make-semaphore :name "how many apples" :count 0))
+(defvar *apples* (make-semaphore :name "how many apples" :count 0))
 (defvar *orchard-log* (make-array 10))
 (defvar *next-log-entry* 0)
 (defvar *orchard-log-mutex* (bordeaux-threads:make-lock "orchard log mutex"))
@@ -300,16 +327,16 @@
     (incf *next-log-entry*)))
 
 (defun apple-eater ()
-  (bt-semaphore:wait-on-semaphore *apples*)
+  (wait-on-semaphore *apples*)
   (add-to-log "apple eaten."))
 
 (defun apple-grower ()
   (sleep 0.1)
   (add-to-log "apple grown.")
-  (bt-semaphore:signal-semaphore *apples*))
+  (signal-semaphore *apples*))
 
 (defun num-apples ()
-  (bt-semaphore:semaphore-count *apples*))
+  (semaphore-count *apples*))
 
 (define-test test-orchard-simulation
     (assert-equal (num-apples) ___)
