@@ -23,6 +23,7 @@
  :format
  :type-checking
  :clos
+ :std-method-comb
  :dice-project
  :macros
  :scope-and-extent
