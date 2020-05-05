@@ -23,9 +23,11 @@
 ;;; .koans file controls which files in *koan-dir-name* are loaded as
 ;;; koans to complete
 (defvar *koan-dir-name* "koans")
-(with-open-file (in #P".koans")
-  (with-standard-io-syntax
-    (defvar *all-koans-groups* (read in))))
+
+(defvar *all-koans-groups*
+  (with-open-file (in #P".koans")
+    (with-standard-io-syntax
+      (read in))))
 
 ;;; set *print-koan-progress* to t to list all completed koans before summary
 (defvar *print-koan-progress* t)
