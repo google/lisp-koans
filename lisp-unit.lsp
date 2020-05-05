@@ -84,7 +84,7 @@
            :summarize-results
            :any-non-pass-p)
   ;; Utility predicates
-  (:export :logically-equal :set-equal))
+  (:export :logically-equal))
 
 (in-package #:com.google.lisp-koans.test)
 
@@ -93,7 +93,6 @@
 (defconstant ___ :blank-value)
 (defconstant ____ :blank-value)
 (defvar +blanks+ '(__ ___ ____))
-(defconstant +blank-value+ 'BLANK-VALUE)
 
 ;;; Global counters
 
@@ -614,9 +613,3 @@ assertion.")
   (if (eq :all test-names)
       (%run-all-thunks package)
       (%run-thunks test-names package)))
-
-(defun set-equal (l1 l2 &key (test #'equal))
-  "Return true if every element of l1 is an element of l2 and vice versa."
-  (and (listp l1)
-       (listp l2)
-       (subsetp l1 l2 :test test)))
