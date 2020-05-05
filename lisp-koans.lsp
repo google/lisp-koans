@@ -41,7 +41,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun package-name-from-group-name (group-name)
-  (format nil "COM.GOOGLE.LISP-KOANS.KOANS.~:@(~A~)" group-name))
+  (format nil "COM.GOOGLE.LISP-KOANS.KOANS.~A" group-name))
 
 (defun load-koan-group-named (koan-group-name)
   ;; Creates a package for the koan-group based on koan-group-name.
