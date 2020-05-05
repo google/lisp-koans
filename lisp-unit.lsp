@@ -63,7 +63,7 @@
            :assert-error)
   ;; Functions for managing tests
   (:export :define-test
-           :list-tests
+           :test-count
            :test-code
            :test-documentation
            :remove-tests
@@ -236,12 +236,12 @@ assertion.")
 
 ;;; Manage tests
 
-(defun list-tests (&optional (package *package*))
-  "Return a list of the tests in package."
+(defun test-count (&optional (package *package*))
+  "Returns the number of tests for a package."
   (let ((table (package-table package)))
-    (when table
-      (loop for test-name being each hash-key in table
-            collect test-name))))
+    (if table
+        (hash-table-count table)
+        0)))
 
 (defun test-documentation (name &optional (package *package*))
   "Return the documentation for the test."

@@ -57,7 +57,7 @@
                            #+sbcl #:sb-ext)))
     (let ((*package* (find-package koan-package-name)))
       (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
-      (incf *n-total-koans* (length (list-tests))))))
+      (incf *n-total-koans* (test-count)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions for executing koans ;;
