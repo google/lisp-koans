@@ -27,9 +27,9 @@
 (load "lisp-unit.lsp")
 
 (defpackage :lisp-koans
-  (:use :common-lisp)
-  (:use :lisp-unit)
-  #+sbcl (:use :sb-ext))
+  (:use #:common-lisp
+        #:com.google.lisp-koans.test
+        #+sbcl #:sb-ext))
 
 (in-package :lisp-koans)
 
@@ -67,7 +67,9 @@
     (in-package :lisp-koans)
     (unless (find-package koan-package-name)
       (make-package koan-package-name
-                    :use '(:common-lisp :lisp-unit #+sbcl :sb-ext)))
+                    :use '(#:common-lisp
+                           #:com.google.lisp-koans.test
+                           #+sbcl #:sb-ext)))
     (setf *package* (find-package koan-package-name))
     (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
     (incf *n-total-koans* (length (list-tests)))
