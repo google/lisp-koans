@@ -77,9 +77,7 @@ functions or even macros does not require reloading any tests.
 |#
 
 ;;; Packages
-(in-package :cl-user)
-
-(defpackage :lisp-unit
+(defpackage #:com.google.lisp-koans.test
   (:use :common-lisp)
   ;; Print parameters
   (:export :*print-summary*
@@ -128,7 +126,7 @@ functions or even macros does not require reloading any tests.
   ;; Utility predicates
   (:export :logically-equal :set-equal))
 
-(in-package :lisp-unit)
+(in-package #:com.google.lisp-koans.test)
 
 
 ;; blank constants allow the incomplete tests to compile without errors
@@ -747,5 +745,3 @@ assertion.")
        (listp l2)
        (subsetp l1 l2 :test test)
        (subsetp l2 l1 :test test)))
-
-(pushnew :lisp-unit common-lisp:*features*)
