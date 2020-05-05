@@ -1,29 +1,27 @@
-;;   Copyright 2013 Google Inc.
-;;
-;;   Licensed under the Apache License, Version 2.0 (the "License");
-;;   you may not use this file except in compliance with the License.
-;;   You may obtain a copy of the License at
-;;
-;;       http://www.apache.org/licenses/LICENSE-2.0
-;;
-;;   Unless required by applicable law or agreed to in writing, software
-;;   distributed under the License is distributed on an "AS IS" BASIS,
-;;   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;;   See the License for the specific language governing permissions and
-;;   limitations under the License.
-
+;;; Copyright 2013 Google Inc.
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
 (in-package :cl-user)
 
-;; Though Clozure / CCL runs lisp-koans on the command line using
-;; "ccl -l contemplate.lsp", the following lines are needed to
-;; meditate on the koans within the CCL IDE.
-;; (The :hemlock is used to distiguish between ccl commandline and the IDE)
+;;; Though Clozure / CCL runs lisp-koans on the command line using
+;;; "ccl -l contemplate.lsp", the following lines are needed to
+;;; meditate on the koans within the CCL IDE.
+;;; (The :hemlock is used to distiguish between ccl commandline and the IDE)
 #+(and :ccl :hemlock)
 (setf *default-pathname-defaults* (directory-namestring *load-pathname*))
 
-
-;; lisp-unit defines the modules for loading / executing koans
+;;; lisp-unit defines the modules for loading / executing koans
 (load "lisp-unit.lsp")
 
 (defpackage :lisp-koans
@@ -33,21 +31,21 @@
 
 (in-package :lisp-koans)
 
-;; .koans file controls which files in *koan-dir-name* are loaded as
-;; koans to complete
+;;; .koans file controls which files in *koan-dir-name* are loaded as
+;;; koans to complete
 (defvar *koan-dir-name* "koans")
 (with-open-file (in #P".koans")
   (with-standard-io-syntax
     (defvar *all-koans-groups* (read in))))
 
-;; set *print-koan-progress* to t to list all completed koans before summary
+;;; set *print-koan-progress* to t to list all completed koans before summary
 (defvar *print-koan-progress* t)
-;; debug-print directives
+;;; debug-print directives
 (defvar *dp-loading* nil)
 
-
-;; Global state used to hold results of loading and processing koans
+;;; Global state used to hold results of loading and processing koans
 (defvar *n-total-koans* 0)
+
 (defvar *collected-results* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,8 +73,6 @@
     (incf *n-total-koans* (length (list-tests)))
     (in-package :lisp-koans)
     (if *dp-loading* (format t "done loading ~A ~%" koan-file-name))))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions for executing koans ;;
@@ -189,19 +185,18 @@
               (- (length *collected-results*) 1)
               (length *all-koans-groups*)))
 
-
 ;;;;;;;;;;
 ;; Main ;;
 ;;;;;;;;;;
 
-;; Load all the koans before testing any, and
-;; count how many total koans there are.
+;;; Load all the koans before testing any, and
+;;; count how many total koans there are.
 (defun load-all-koans ()
   (loop for koan-group-name in *all-koans-groups*
         do (load-koan-group-named koan-group-name)))
 
-;; Run through the koans until reaching the end condition.
-;; Store the results in *collected-results*
+;;; Run through the koans until reaching the end condition.
+;;; Store the results in *collected-results*
 (defun execute-koans ()
   (setf *collected-results*
         (loop for koan-group-name in *all-koans-groups*
@@ -213,7 +208,7 @@
               until (and (not *proceed-after-failure*) (any-non-pass-p kg-results)))))
 
 
-;; Output advice to the learner
+;;; Output advice to the learner
 (defun output-advice ()
   (cond ((any-assert-non-pass-p)
          (print-next-suggestion-message)

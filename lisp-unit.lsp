@@ -1,80 +1,47 @@
-;;;-*- Mode: Lisp; Syntax: ANSI-Common-Lisp -*-
+;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp -*-
 
-#|
-This version of lisp-unit.lsp has been extended to support the lisp koans.
-Specifically, it is an unnamed branch from
-https://github.com/OdonataResearchLLC/lisp-unit/
-with hash 93d07b2fa6e32364916225f6218e9e7313027c1f
+;;; Copyright (c) 2004-2005 Christopher K. Riesbeck
+;;;
+;;; Permission is hereby granted, free of charge, to any person obtaining
+;;; a copy of this software and associated documentation files (the "Software"),
+;;; to deal in the Software without restriction, including without limitation
+;;; the rights to use, copy, modify, merge, publish, distribute, sublicense,
+;;; and/or sell copies of the Software, and to permit persons to whom the
+;;; Software is furnished to do so, subject to the following conditions:
+;;;
+;;; The above copyright notice and this permission notice shall be included
+;;; in all copies or substantial portions of the Software.
+;;;
+;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+;;; OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+;;; THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+;;; OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+;;; ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+;;; OTHER DEALINGS IN THE SOFTWARE.
 
-Modifications were made to:
-   1) Support *incomplete* tests in addition to *passing* and *failing* ones
-   2) End test execution at the first non-passing test.
-|#
+;;; Copyright 2013 Google Inc.
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
-
-#|
-Copyright (c) 2004-2005 Christopher K. Riesbeck
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-
-How to use
-----------
-
-1. Read the documentation at:
-   https://github.com/OdonataResearchLLC/lisp-unit/wiki
-
-2. Make a file of DEFINE-TEST's. See exercise-tests.lisp for many
-examples. If you want, start your test file with (REMOVE-TESTS :ALL)
-to clear any previously defined tests.
-
-3. Load this file.
-
-4. (use-package :lisp-unit)
-
-5. Load your code file and your file of tests.
-
-6. Test your code with (RUN-TESTS '(test-name1 test-name2 ...)) or
-simply (RUN-TESTS :ALL) to run all defined tests.
-
-A summary of how many tests passed and failed will be printed.
-
-NOTE: Nothing is compiled until RUN-TESTS is expanded. Redefining
-functions or even macros does not require reloading any tests.
-
-|#
-
-#|
-   Copyright 2013 Google Inc.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-|#
+;;; This version of lisp-unit.lsp has been extended to support the lisp koans.
+;;; Specifically, it is an unnamed branch from
+;;; https://github.com/OdonataResearchLLC/lisp-unit/
+;;; with hash 93d07b2fa6e32364916225f6218e9e7313027c1f
+;;;
+;;; Modifications were made to:
+;;;   1) Support *incomplete* tests in addition to *passing* and *failing* ones
+;;;   2) End test execution at the first non-passing test.
 
 ;;; Packages
 (defpackage #:com.google.lisp-koans.test
@@ -128,14 +95,12 @@ functions or even macros does not require reloading any tests.
 
 (in-package #:com.google.lisp-koans.test)
 
-
 ;; blank constants allow the incomplete tests to compile without errors
 (defconstant __ :blank-value)
 (defconstant ___ :blank-value)
 (defconstant ____ :blank-value)
 (defvar +blanks+ '(__ ___ ____))
 (defconstant +blank-value+ 'BLANK-VALUE)
-
 
 ;;; Global counters
 
@@ -744,4 +709,3 @@ assertion.")
   (and (listp l1)
        (listp l2)
        (subsetp l1 l2 :test test)
-       (subsetp l2 l1 :test test)))
