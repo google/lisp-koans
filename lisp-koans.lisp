@@ -32,7 +32,7 @@
 
 (defun load-koan-group-named (koan-group-name)
   (let* ((koan-name (string-downcase (string koan-group-name)))
-         (koan-file-name (concatenate 'string koan-name ".lsp"))
+         (koan-file-name (concatenate 'string koan-name ".lisp"))
          (koan-package-name (package-name-from-group-name koan-group-name)))
     (unless (find-package koan-package-name)
       (make-package koan-package-name
@@ -96,7 +96,7 @@
     (format t "You have not yet reached enlightenment.
     ~A
 [1mPlease meditate on the following code:[0m
-    File \"koans/~(~A~).lsp\"
+    File \"koans/~(~A~).lisp\"
     Koan \"~A\"
     Current koan assert status is \"~A\"~%~%"
             (koan-status-message koan-status) filename koan-name koan-status)))
@@ -106,7 +106,7 @@
 That was the last one, well done! ENLIGHTENMENT IS YOURS!
 *********************************************************
 
-If you demand greater challenge, take a look at extra-credit.lsp
+If you demand greater challenge, take a look at extra-credit.lisp
 Or, let the student become the teacher:
 Write and submit your own improvements to https://github.com/google/lisp-koans!
 "))

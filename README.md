@@ -4,18 +4,18 @@
 
 ### One-time Method
 
-From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g.
+From a terminal, execute your lisp interpreter on the file 'contemplate.lisp' e.g.
 
-    abcl --noinform --noinit --load contemplate.lsp --eval '(quit)'
-    ccl -n -l contemplate.lsp -e '(quit)'
-    clisp -q -norc -ansi contemplate.lsp
-    ecl -norc -load contemplate.lsp -eval '(quit)'
-    sbcl --script contemplate.lsp
+    abcl --noinform --noinit --load contemplate.lisp --eval '(quit)'
+    ccl -n -l contemplate.lisp -e '(quit)'
+    clisp -q -norc -ansi contemplate.lisp
+    ecl -norc -load contemplate.lisp -eval '(quit)'
+    sbcl --script contemplate.lisp
 
 ### Watching the Koans
 
 On Linux and MacOS systems, the shell scripts `meditate-linux.sh` and
-`meditate-macos.sh` can be used to automatically evaluate 'contemplate.lsp'
+`meditate-macos.sh` can be used to automatically evaluate 'contemplate.lisp'
 whenever the koan files are modified, providing immediate feedback on changes
 to the koans. To run the MacOS version you need to have
 [`fswatch`](https://github.com/emcrisostomo/fswatch) installed. From a terminal:
@@ -36,7 +36,7 @@ You have not yet reached enlightenment ...
   A koan is incomplete.
 
 Please meditate on the following code:
-   File "koans/asserts.lsp"
+   File "koans/asserts.lisp"
    Koan "ASSERT-TRUE"
    Current koan assert status is "(INCOMPLETE)"
 
@@ -44,7 +44,7 @@ You are now 0/169 koans and 0/25 lessons closer to reaching enlightenment
 ```
 
 This indicates that the script has completed, and that the learner should look
-to asserts.lsp to locate and fix the problem.  The problem will be within
+to asserts.lisp to locate and fix the problem.  The problem will be within
 a define-test expression such as
 
     (define-test assert-true
@@ -81,5 +81,5 @@ For information and instructions on installing Quicklisp
 please see:
 https://www.quicklisp.org/beta/
 The user can either remove #+quicklisp and uncomment
-(load "~/.quicklisp/setup.lisp") in threads.lsp, or  if they know
-quicklisp will be loaded while running contemplate.lsp do nothing.
+(load "~/.quicklisp/setup.lisp") in threads.lisp, or  if they know
+quicklisp will be loaded while running contemplate.lisp do nothing.
