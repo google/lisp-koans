@@ -31,9 +31,6 @@
 ;;; set *print-koan-progress* to t to list all completed koans before summary
 (defvar *print-koan-progress* t)
 
-;;; debug-print directives
-(defvar *dp-loading* nil)
-
 ;;; Global state used to hold results of loading and processing koans
 (defvar *n-total-koans* 0)
 
@@ -53,7 +50,6 @@
   (let* ((koan-name (string-downcase (string koan-group-name)))
          (koan-file-name (concatenate 'string koan-name ".lsp"))
          (koan-package-name (package-name-from-group-name koan-group-name)))
-    (if *dp-loading* (format t "start loading ~A ~%" koan-file-name))
     (unless (find-package koan-package-name)
       (make-package koan-package-name
                     :use '(#:common-lisp
@@ -61,8 +57,7 @@
                            #+sbcl #:sb-ext)))
     (let ((*package* (find-package koan-package-name)))
       (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
-      (incf *n-total-koans* (length (list-tests))))
-    (if *dp-loading* (format t "done loading ~A ~%" koan-file-name))))
+      (incf *n-total-koans* (length (list-tests))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions for executing koans ;;
@@ -71,7 +66,6 @@
 (defun run-koan-group-named (koan-group-name)
   ;; Executes the koan group, using run-koans defined in lisp-unit
   ;; returning a test-results object.
-  (if *dp-loading* (format t "start running ~A ~%" koan-group-name))
   (run-koans (package-name-from-group-name koan-group-name)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
