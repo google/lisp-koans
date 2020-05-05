@@ -1,5 +1,3 @@
-;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp -*-
-
 ;;; Copyright (c) 2004-2005 Christopher K. Riesbeck
 ;;;
 ;;; Permission is hereby granted, free of charge, to any person obtaining
