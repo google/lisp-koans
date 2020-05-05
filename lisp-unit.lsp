@@ -702,10 +702,8 @@ assertion.")
   "Run the tests associated with the specified tags in package."
   (%run-thunks (tagged-tests tags package) package))
 
-;;; (SET-EQUAL l1 l2 :test) => true or false
-;;;   Return true if every element of l1 is an element of l2
-;;;   and vice versa.
 (defun set-equal (l1 l2 &key (test #'equal))
+  "Return true if every element of l1 is an element of l2 and vice versa."
   (and (listp l1)
        (listp l2)
-       (subsetp l1 l2 :test test)
+       (subsetp l1 l2 :test test)))
