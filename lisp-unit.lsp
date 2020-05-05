@@ -227,11 +227,8 @@ assertion.")
   "Store the test in the test database."
   (multiple-value-bind (doc code) (parse-body body)
     `(let ((doc (or ,doc (string ',name))))
-       (setf
-        ;; Unit test
-        (gethash ',name (package-table *package* t))
-        (make-instance 'unit-test :doc doc :code ',code))
-       ;; Return the name of the test
+       (setf (gethash ',name (package-table *package* t))
+             (make-instance 'unit-test :doc doc :code ',code))
        ',name)))
 
 ;;; Manage tests
