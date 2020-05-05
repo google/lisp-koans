@@ -29,6 +29,7 @@
 
 ;;; set *print-koan-progress* to t to list all completed koans before summary
 (defvar *print-koan-progress* t)
+
 ;;; debug-print directives
 (defvar *dp-loading* nil)
 
@@ -48,7 +49,8 @@
   ;; Creates a package for the koan-group based on koan-group-name.
   ;; Loads a lisp file at *koan-dir-name* / koan-group-name .lsp
   ;; Adds all the koans from that file to the package.
-  (let* ((koan-file-name    (concatenate 'string (string-downcase (string koan-group-name)) ".lsp"))
+  (let* ((koan-name (string-downcase (string koan-group-name)))
+         (koan-file-name (concatenate 'string koan-name ".lsp"))
          (koan-package-name (package-name-from-group-name koan-group-name)))
     (if *dp-loading* (format t "start loading ~A ~%" koan-file-name))
     (in-package :lisp-koans)
