@@ -70,11 +70,6 @@
            :run-tests
            :run-koans
            :use-debugger)
-  ;; Functions for managing tags
-  (:export :list-tags
-           :tagged-tests
-           :remove-tags
-           :run-tags)
   ;; Constants for blanks in koans
   (:export __
            ___
@@ -207,19 +202,6 @@ assertion.")
     (setf (gethash package *test-db*) (make-hash-table)))
    (t (warn "No tests defined for package: ~S" package))))
 
-;;; Global tags database
-
-(defparameter *tag-db* (make-hash-table :test #'eq)
-  "The tag database is simply a hash table.")
-
-(defun package-tags (package &optional create)
-  "Return the tags DB for the package."
-  (cond
-   ((gethash (find-package package) *tag-db*))
-   (create
-    (setf (gethash package *tag-db*) (make-hash-table)))
-   (t (warn "No tags defined for package: ~S" package))))
-
 (defclass unit-test ()
   ((doc
     :type string
@@ -234,30 +216,21 @@ assertion.")
    "Organize the unit test documentation and code."))
 
 ;;; NOTE: Shamelessly taken from PG's analyze-body
-(defun parse-body (body &optional doc tag)
+(defun parse-body (body &optional doc)
   "Separate the components of the body."
   (let ((item (first body)))
-    (cond
-     ((and (listp item) (eq :tag (first item)))
-      (parse-body (rest body) doc (nconc (rest item) tag)))
-     ((and (stringp item) (not doc) (rest body))
-      (if tag
-          (values doc tag (rest body))
-          (parse-body (rest body) doc tag)))
-     (t (values doc tag body)))))
+    (if (and (stringp item) (not doc) (rest body))
+        (parse-body (rest body) doc)
+        (values doc body))))
 
 (defmacro define-test (name &body body)
   "Store the test in the test database."
-  (multiple-value-bind (doc tag code) (parse-body body)
+  (multiple-value-bind (doc code) (parse-body body)
     `(let ((doc (or ,doc (string ',name))))
        (setf
         ;; Unit test
         (gethash ',name (package-table *package* t))
         (make-instance 'unit-test :doc doc :code ',code))
-       ;; Tags
-       (loop for tag in ',tag do
-             (pushnew
-              ',name (gethash tag (package-tags *package* t))))
        ;; Return the name of the test
        ',name)))
 
@@ -291,64 +264,13 @@ assertion.")
   (if (eq :all names)
       (if (null package)
           (clrhash *test-db*)
-          (progn
-            (remhash (find-package package) *test-db*)
-            (remhash (find-package package) *tag-db*)))
+          (remhash (find-package package) *test-db*))
       (let ((table (package-table package)))
         (unless (null table)
           ;; Remove tests
           (loop for name in names
                 always (remhash name table)
                 collect name into removed
-                finally (return removed))
-          ;; Remove tests from tags
-          (loop with tags = (package-tags package)
-                for tag being each hash-key in tags
-                using (hash-value tagged-tests)
-                do
-                (setf
-                 (gethash tag tags)
-                 (set-difference tagged-tests names)))))))
-
-;;; Manage tags
-
-(defun %tests-from-all-tags (&optional (package *package*))
-  "Return all of the tests that have been tagged."
-  (loop for tests being each hash-value in (package-tags package)
-        nconc (copy-list tests) into all-tests
-        finally (return (delete-duplicates all-tests))))
-
-(defun %tests-from-tags (tags &optional (package *package*))
-  "Return the tests associated with the tags."
-  (loop with table = (package-tags package)
-        for tag in tags
-        as tests = (gethash tag table)
-        nconc (copy-list tests) into all-tests
-        finally (return (delete-duplicates all-tests))))
-
-(defun list-tags (&optional (package *package*))
-  "Return a list of the tags in package."
-  (let ((tags (package-tags package)))
-    (when tags
-      (loop for tag being each hash-key in tags collect tag))))
-
-(defun tagged-tests (tags &optional (package *package*))
-  "Run the tests associated with the specified tags in package."
-  (if (eq :all tags)
-      (%tests-from-all-tags package)
-      (%tests-from-tags tags package)))
-
-(defun remove-tags (tags &optional (package *package*))
-  "Remove individual tags or entire sets."
-  (if (eq :all tags)
-      (if (null package)
-          (clrhash *tag-db*)
-          (remhash (find-package package) *tag-db*))
-      (let ((table (package-tags package)))
-        (unless (null table)
-          (loop for tag in tags
-                always (remhash tag table)
-                collect tag into removed
                 finally (return removed))))))
 
 ;;; Assert macros
@@ -695,10 +617,6 @@ assertion.")
   (if (eq :all test-names)
       (%run-all-thunks package)
       (%run-thunks test-names package)))
-
-(defun run-tags (tags &optional (package *package*))
-  "Run the tests associated with the specified tags in package."
-  (%run-thunks (tagged-tests tags package) package))
 
 (defun set-equal (l1 l2 &key (test #'equal))
   "Return true if every element of l1 is an element of l2 and vice versa."
