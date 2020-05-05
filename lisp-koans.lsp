@@ -12,193 +12,121 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-(defpackage #:lisp-koans
+(defpackage #:com.google.lisp-koans
   (:use #:common-lisp
-        #:com.google.lisp-koans.test
-        #+sbcl #:sb-ext)
+        #:com.google.lisp-koans.test)
   (:export #:main))
 
-(in-package :lisp-koans)
+(in-package :com.google.lisp-koans)
 
-;;; .koans file controls which files in *koan-dir-name* are loaded as
-;;; koans to complete
 (defvar *koan-dir-name* "koans")
 
-(defvar *all-koans-groups*
-  (with-open-file (in #P".koans")
+(defvar *all-koan-groups*
+  (with-open-file (in #p".koans")
     (with-standard-io-syntax (read in))))
-
-;;; set *print-koan-progress* to t to list all completed koans before summary
-(defvar *print-koan-progress* t)
-
-;;; Global state used to hold results of loading and processing koans
-(defvar *n-total-koans* 0)
 
 (defvar *collected-results* nil)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Functions for loading koans ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Functions for loading koans
 
 (defun package-name-from-group-name (group-name)
   (format nil "COM.GOOGLE.LISP-KOANS.KOANS.~A" group-name))
 
 (defun load-koan-group-named (koan-group-name)
-  ;; Creates a package for the koan-group based on koan-group-name.
-  ;; Loads a lisp file at *koan-dir-name* / koan-group-name .lsp
-  ;; Adds all the koans from that file to the package.
   (let* ((koan-name (string-downcase (string koan-group-name)))
          (koan-file-name (concatenate 'string koan-name ".lsp"))
          (koan-package-name (package-name-from-group-name koan-group-name)))
     (unless (find-package koan-package-name)
       (make-package koan-package-name
-                    :use '(#:common-lisp
-                           #:com.google.lisp-koans.test
-                           #+sbcl #:sb-ext)))
+                    :use '(#:common-lisp #:com.google.lisp-koans.test)))
     (let ((*package* (find-package koan-package-name)))
-      (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
-      (incf *n-total-koans* (test-count)))))
+      (load (concatenate 'string *koan-dir-name* "/" koan-file-name)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Functions for executing koans ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun load-all-koans ()
+  (loop for koan-group-name in *all-koan-groups*
+        do (load-koan-group-named koan-group-name)))
 
-(defun run-koan-group-named (koan-group-name)
-  ;; Executes the koan group, using run-koans defined in lisp-unit
-  ;; returning a test-results object.
-  (run-koans (package-name-from-group-name koan-group-name)))
+;;; Functions for executing koans
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Functions for printing progress ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun execute-koans ()
+  (loop for koan-group-name in *all-koan-groups*
+        for package-name = (package-name-from-group-name koan-group-name)
+        for kg-results = (run-koans package-name)
+        collect (list koan-group-name kg-results) into results
+        do (print-koan-group-progress koan-group-name kg-results)
+        while (every (lambda (x) (eq x :pass)) (second (first kg-results)))
+        finally (setf *collected-results* results)))
 
-(defun print-one-koan-status (k-result)
-  (let ((koan-name (first k-result))
-        (all-pass-p (every
-                     #'(lambda (x) (equalp :pass x))
-                     (second k-result))))
-    (if all-pass-p
-        (format t "[32m~A has expanded your awareness.~%[0m" koan-name)
-        (format t "[31m~A requires more meditation.~%[0m" koan-name))))
+;;; Functions for printing progress
 
-(defun print-koan-group-progress (kg-name kg-results)
-  (format t "~%Thinking about ~A~%" kg-name)
-  (dolist (k-result (reverse kg-results))
-    (format t "    ")
-    (print-one-koan-status k-result))
-  (format t "~%"))
+(defun print-koan-group-progress (name results)
+  (format t "~%Thinking about ~A~%" name)
+  (dolist (result (reverse results))
+    (destructuring-bind (test-name results) result
+      (let ((format-control (if (every (lambda (x) (equalp :pass x)) results)
+                                "    [32m~A has expanded your awareness.~%[0m~%"
+                                "    [31m~A requires more meditation.~%[0m~%")))
+        (format t format-control test-name)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Functions for processing results ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Functions for processing results
+
+(defun n-passed-koans-overall (collected-results)
+  (flet ((all-asserts-passed-in-koan-p (result)
+           (every (lambda (x) (eq :pass x)) (second result))))
+    (loop for kg in collected-results
+          sum (count-if #'all-asserts-passed-in-koan-p (second kg)))))
 
 (defun any-assert-non-pass-p ()
   (dolist (k-group-result *collected-results*)
-    (dolist (koan-result (second k-group-result))
-      (dolist (one-assert (second koan-result))
-        (if (not (equal one-assert :pass))
-            (return-from any-assert-non-pass-p one-assert)))))
-  nil)
+    (dolist (result (second k-group-result))
+      (dolist (one-assert (second result))
+        (when (not (equal one-assert :pass))
+          (return-from any-assert-non-pass-p one-assert))))))
 
-(defun get-error-filename (collected-results)
-  (first (first (last collected-results))))
-
-(defun get-error-koan-name (collected-results)
-  (first (first (second (first (last (last collected-results)))))))
-
-(defun get-error-koan-status (collected-results)
-  (second (first (second (first (last (last collected-results)))))))
+;;; Functions for printing results
 
 (defun koan-status-message (koan-status)
-  (if (find :incomplete koan-status)
-      (return-from koan-status-message
-        "  [1m[33mA koan is incomplete.~%[0m"))
-  (if (find :fail koan-status)
-      (return-from koan-status-message
-        "  [1m[31mA koan is incorrect.~%[0m"))
-  (if (find :error koan-status)
-      (return-from koan-status-message
-        "  A koan threw an error.~%"))
-  (format t "  last koan status: ~A~%" koan-status)
-  "")
+  (cond ((find :incomplete koan-status) "[1m[33mA koan is incomplete.[0m")
+        ((find :fail koan-status) "[1m[31mA koan is incorrect.[0m")
+        ((find :error koan-status) "[1m[31mA koan signaled an error.[0m")
+        (t (format nil "[1mLast koan status: ~A.[0m" koan-status))))
 
 (defun print-next-suggestion-message ()
-  (let ((filename (get-error-filename *collected-results*))
-        (koan-name (get-error-koan-name *collected-results*))
-        (koan-status (get-error-koan-status *collected-results*)))
-    (format t "You have not yet reached enlightenment ...~%")
-    (format t (koan-status-message koan-status))
-    (format t "~%")
-    (format t "[1mPlease meditate on the following code:~%[0m")
-    (format t "   File \"~A/~A.lsp\"~%" *koan-dir-name* (string-downcase filename))
-    (format t "   Koan \"~A\"~%" koan-name)
-    (format t "   Current koan assert status is \"~A\"~%" (reverse koan-status))))
+  (let ((filename (caar *collected-results*))
+        (koan-name (caaadr (car (last (last *collected-results*)))))
+        (koan-status (reverse (cadaar (cdar (last (last *collected-results*)))))))
+    (format t "You have not yet reached enlightenment.
+    ~A
+[1mPlease meditate on the following code:[0m
+    File \"koans/~(~A~).lsp\"
+    Koan \"~A\"
+    Current koan assert status is \"~A\"~%~%"
+            (koan-status-message koan-status) filename koan-name koan-status)))
 
 (defun print-completion-message ()
-  (format t "**********************************************************~%")
-  (format t "That was the last one, well done!  ENLIGHTENMENT IS YOURS!~%")
-  (format t "**********************************************************~%~%")
-  (format t "If you demand greater challenge, take a look at extra-credit.lsp~%")
-  (format t "Or, let the student become the teacher:~%")
-  (format t "   Write and submit your own improvements to github.com/google/lisp-koans!~%"))
+  (format t "*********************************************************
+That was the last one, well done! ENLIGHTENMENT IS YOURS!
+*********************************************************
 
-(defun n-completed-koans (collected-results)
-  (loop for kg in collected-results
-        sum (length (second kg)) into partial-sum
-        finally (return partial-sum)))
-
-(defun all-asserts-passed-in-koan-p (koan-result)
-  (equal
-   (length (second koan-result))
-   (count :pass (second koan-result))))
-
-(defun n-passed-koans-in-group (kg)
-  (loop for k in (second kg)
-        counting (all-asserts-passed-in-koan-p k) into partial-sum
-        finally (return partial-sum)))
-
-(defun n-passed-koans-overall (collected-results)
-  (loop for kg in collected-results
-        sum (n-passed-koans-in-group kg) into partial-sum
-        finally (return partial-sum)))
+If you demand greater challenge, take a look at extra-credit.lsp
+Or, let the student become the teacher:
+Write and submit your own improvements to https://github.com/google/lisp-koans!
+"))
 
 (defun print-progress-message ()
   (format t "You are now ~A/~A koans and ~A/~A lessons closer to reaching enlightenment~%~%"
           (n-passed-koans-overall *collected-results*)
-          *n-total-koans*
-          (- (length *collected-results*) 1)
-          (length *all-koans-groups*)))
+          (test-total-count)
+          (1- (length *collected-results*))
+          (length *all-koan-groups*)))
 
-;;;;;;;;;;
-;; Main ;;
-;;;;;;;;;;
-
-;;; Load all the koans before testing any, and
-;;; count how many total koans there are.
-(defun load-all-koans ()
-  (loop for koan-group-name in *all-koans-groups*
-        do (load-koan-group-named koan-group-name)))
-
-;;; Run through the koans until reaching the end condition.
-;;; Store the results in *collected-results*
-(defun execute-koans ()
-  (setf *collected-results*
-        (loop for koan-group-name in *all-koans-groups*
-              for kg-results = (run-koan-group-named koan-group-name)
-              collect (list koan-group-name kg-results)
-              do (if *print-koan-progress*
-                     (print-koan-group-progress koan-group-name kg-results))
-                 ;; *proceed-after-failure* is defined in lisp-unit
-              until (and (not *proceed-after-failure*) (any-non-pass-p kg-results)))))
-
-
-;;; Output advice to the learner
 (defun output-advice ()
   (cond ((any-assert-non-pass-p)
-         (print-next-suggestion-message)
-         (format t "~%")
-         (print-progress-message))
+         (print-progress-message)
+         (print-next-suggestion-message))
         (t (print-completion-message))))
+
+;;; Main
 
 (defun main ()
   (load-all-koans)
