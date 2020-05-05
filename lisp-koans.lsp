@@ -100,12 +100,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun any-assert-non-pass-p ()
-   (dolist (k-group-result *collected-results*)
-     (dolist (koan-result (second k-group-result))
-       (dolist (one-assert (second koan-result))
-         (if (not (equal one-assert :pass))
-             (return-from any-assert-non-pass-p one-assert)))))
-   nil)
+  (dolist (k-group-result *collected-results*)
+    (dolist (koan-result (second k-group-result))
+      (dolist (one-assert (second koan-result))
+        (if (not (equal one-assert :pass))
+            (return-from any-assert-non-pass-p one-assert)))))
+  nil)
 
 (defun get-error-filename (collected-results)
   (first (first (last collected-results))))
@@ -118,14 +118,14 @@
 
 (defun koan-status-message (koan-status)
   (if (find :incomplete koan-status)
-       (return-from koan-status-message
-         "  [1m[33mA koan is incomplete.~%[0m"))
+      (return-from koan-status-message
+        "  [1m[33mA koan is incomplete.~%[0m"))
   (if (find :fail koan-status)
-       (return-from koan-status-message
-         "  [1m[31mA koan is incorrect.~%[0m"))
+      (return-from koan-status-message
+        "  [1m[31mA koan is incorrect.~%[0m"))
   (if (find :error koan-status)
-       (return-from koan-status-message
-         "  A koan threw an error.~%"))
+      (return-from koan-status-message
+        "  A koan threw an error.~%"))
   (format t "  last koan status: ~A~%" koan-status)
   "")
 
@@ -170,11 +170,11 @@
         finally (return partial-sum)))
 
 (defun print-progress-message ()
-      (format t "You are now ~A/~A koans and ~A/~A lessons closer to reaching enlightenment~%~%"
-              (n-passed-koans-overall *collected-results*)
-              *n-total-koans*
-              (- (length *collected-results*) 1)
-              (length *all-koans-groups*)))
+  (format t "You are now ~A/~A koans and ~A/~A lessons closer to reaching enlightenment~%~%"
+          (n-passed-koans-overall *collected-results*)
+          *n-total-koans*
+          (- (length *collected-results*) 1)
+          (length *all-koans-groups*)))
 
 ;;;;;;;;;;
 ;; Main ;;
