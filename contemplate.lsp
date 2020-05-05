@@ -196,26 +196,34 @@
 
 ;; Load all the koans before testing any, and
 ;; count how many total koans there are.
-(loop for koan-group-name in *all-koans-groups*
-      do
-   (load-koan-group-named koan-group-name))
+(defun load-all-koans ()
+  (loop for koan-group-name in *all-koans-groups*
+        do (load-koan-group-named koan-group-name)))
 
 ;; Run through the koans until reaching the end condition.
 ;; Store the results in *collected-results*
-(setf *collected-results*
-      (loop for koan-group-name in *all-koans-groups*
-            for kg-results = (run-koan-group-named koan-group-name)
-            collect (list koan-group-name kg-results)
-            do (if *print-koan-progress*
-                   (print-koan-group-progress koan-group-name kg-results))
-               ;; *proceed-after-failure* is defined in lisp-unit
-            until (and (not *proceed-after-failure*) (any-non-pass-p kg-results))))
+(defun execute-koans ()
+  (setf *collected-results*
+        (loop for koan-group-name in *all-koans-groups*
+              for kg-results = (run-koan-group-named koan-group-name)
+              collect (list koan-group-name kg-results)
+              do (if *print-koan-progress*
+                     (print-koan-group-progress koan-group-name kg-results))
+                 ;; *proceed-after-failure* is defined in lisp-unit
+              until (and (not *proceed-after-failure*) (any-non-pass-p kg-results)))))
 
 
 ;; Output advice to the learner
-(if (any-assert-non-pass-p)
-    (progn
-      (print-next-suggestion-message)
-      (format t "~%")
-      (print-progress-message))
-    (print-completion-message))
+(defun output-advice ()
+  (cond ((any-assert-non-pass-p)
+         (print-next-suggestion-message)
+         (format t "~%")
+         (print-progress-message))
+        (t (print-completion-message))))
+
+(defun main ()
+  (load-all-koans)
+  (execute-koans)
+  (output-advice))
+
+(main)
