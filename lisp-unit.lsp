@@ -135,7 +135,7 @@ functions or even macros does not require reloading any tests.
 (defconstant __ :blank-value)
 (defconstant ___ :blank-value)
 (defconstant ____ :blank-value)
-(defconstant +blanks+ '(__ ___ ____))
+(defvar +blanks+ '(__ ___ ____))
 (defconstant +blank-value+ 'BLANK-VALUE)
 
 
