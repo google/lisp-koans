@@ -19,8 +19,6 @@
 
 (in-package :com.google.lisp-koans)
 
-(defvar *koan-dir-name* "koans")
-
 (defvar *all-koan-groups*
   (with-open-file (in #p".koans")
     (with-standard-io-syntax (read in))))
@@ -40,7 +38,7 @@
       (make-package koan-package-name
                     :use '(#:common-lisp #:com.google.lisp-koans.test)))
     (let ((*package* (find-package koan-package-name)))
-      (load (concatenate 'string *koan-dir-name* "/" koan-file-name)))))
+      (load (concatenate 'string "koans/" koan-file-name)))))
 
 (defun load-all-koans ()
   (loop for koan-group-name in *all-koan-groups*
