@@ -21,7 +21,7 @@
 #+(and :ccl :hemlock)
 (setf *default-pathname-defaults* (directory-namestring *load-pathname*))
 
-(load "lisp-unit.lsp")
+(load "test-framework.lsp")
 (load "lisp-koans.lsp")
 
-(lisp-koans:main)
+(com.google.lisp-koans:main)
