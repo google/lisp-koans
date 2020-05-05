@@ -26,8 +26,7 @@
 
 (defvar *all-koans-groups*
   (with-open-file (in #P".koans")
-    (with-standard-io-syntax
-      (read in))))
+    (with-standard-io-syntax (read in))))
 
 ;;; set *print-koan-progress* to t to list all completed koans before summary
 (defvar *print-koan-progress* t)
@@ -55,16 +54,14 @@
          (koan-file-name (concatenate 'string koan-name ".lsp"))
          (koan-package-name (package-name-from-group-name koan-group-name)))
     (if *dp-loading* (format t "start loading ~A ~%" koan-file-name))
-    (in-package :lisp-koans)
     (unless (find-package koan-package-name)
       (make-package koan-package-name
                     :use '(#:common-lisp
                            #:com.google.lisp-koans.test
                            #+sbcl #:sb-ext)))
-    (setf *package* (find-package koan-package-name))
-    (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
-    (incf *n-total-koans* (length (list-tests)))
-    (in-package :lisp-koans)
+    (let ((*package* (find-package koan-package-name)))
+      (load (concatenate 'string *koan-dir-name* "/" koan-file-name))
+      (incf *n-total-koans* (length (list-tests))))
     (if *dp-loading* (format t "done loading ~A ~%" koan-file-name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
