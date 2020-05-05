@@ -104,6 +104,8 @@
     (cons (or (form-contains-blanks-p (car form))
               (form-contains-blanks-p (cdr form))))))
 
+(defun notnot (x) (not (not x)))
+
 (defvar *koan-assert-list*)
 
 (defun internal-assert (type form code-thunk expected-thunk test)
@@ -154,7 +156,7 @@
 
 (defmacro assert-true (form)
   "Assert whether the form is true."
-  `(expand-assert :result ,form ,form t))
+  `(expand-assert :result ,form ,form t :test #'notnot))
 
 ;;; Run the tests
 
