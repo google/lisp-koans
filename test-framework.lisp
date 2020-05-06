@@ -122,31 +122,31 @@
 
 ;;; Assert macros
 
-(defmacro assert-eq (expected form)
+(defmacro assert-eq (form expected)
   "Assert whether expected and form are EQ."
   `(expand-assert :equal ,form ,form ,expected :test #'eq))
 
-(defmacro assert-eql (expected form)
+(defmacro assert-eql (form expected)
   "Assert whether expected and form are EQL."
   `(expand-assert :equal ,form ,form ,expected :test #'eql))
 
-(defmacro assert-equal (expected form)
+(defmacro assert-equal (form expected)
   "Assert whether expected and form are EQUAL."
   `(expand-assert :equal ,form ,form ,expected :test #'equal))
 
-(defmacro assert-equalp (expected form)
+(defmacro assert-equalp (form expected)
   "Assert whether expected and form are EQUALP."
   `(expand-assert :equal ,form ,form ,expected :test #'equalp))
 
-(defmacro true-or-false? (expected form)
+(defmacro true-or-false? (form expected)
   "Assert whether expected and form are logically equivalent."
-  `(expand-assert :equal ,form (not (not ,form)) ,expected :test #'equal))
+  `(expand-assert :equal ,form (notnot ,form) ,(notnot expected) :test #'eql))
 
-(defmacro assert-error (condition form)
+(defmacro assert-error (form condition)
   "Assert whether form signals condition."
   `(expand-assert :error ,form (handler-case ,form (error (e) e)) ,condition))
 
-(defmacro assert-expands (expansion form)
+(defmacro assert-expands (form expansion)
   "Assert whether form expands to expansion."
   `(expand-assert :macro ,form (macroexpand-1 ',form) ,expansion))
 
@@ -156,7 +156,7 @@
 
 (defmacro assert-true (form)
   "Assert whether the form is true."
-  `(expand-assert :result ,form ,form t :test #'notnot))
+  `(expand-assert :result ,form ,(notnot form) t))
 
 ;;; Run the tests
 
