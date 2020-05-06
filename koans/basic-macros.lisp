@@ -66,21 +66,20 @@
   (assert-equal :found-a-nil (case-special-symbols-match nil))
   (assert-equal :something-else (case-special-symbols-match 42)))
 
-(defun cartoon-dads (input)
-  (case input
-    ;; Fill in the blanks with proper cases.
-    ____
-    ____
-    ____
-    (:this-one-doesnt-happen :fancy-cat)
-    (t :unknown)))
-
 (define-test your-own-case-statement
-  ;; You need to fill in the blanks in CARTOON-DADS.
-  (assert-equal (cartoon-dads :bart) :homer)
-  (assert-equal (cartoon-dads :stewie) :peter)
-  (assert-equal (cartoon-dads :stan) :randy)
-  (assert-equal (cartoon-dads :space-ghost) :unknown))
+  ;; We use FLET to define a local function.
+  (flet ((cartoon-dads (input)
+           (case input
+             ;; Fill in the blanks with proper cases.
+             ____
+             ____
+             ____
+             (:this-one-doesnt-happen :fancy-cat)
+             (t :unknown))))
+    (assert-equal (cartoon-dads :bart) :homer)
+    (assert-equal (cartoon-dads :stewie) :peter)
+    (assert-equal (cartoon-dads :stan) :randy)
+    (assert-equal (cartoon-dads :space-ghost) :unknown)))
 
 (define-test limits-of-case
   ;; So far, we have been comparing objects using EQUAL, one of the Lisp

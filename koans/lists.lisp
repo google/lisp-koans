@@ -64,30 +64,6 @@
     (assert-equal ____ (cadr x))
     (assert-equal ____ (cdaadr x))))
 
-(define-test cons-tructing-improper-lists
-  ;; A proper list is a list whose final CDR ends with NIL.
-  ;; An improper list either has a non-NIL value in its final CDR or does not
-  ;; have a final CDR due to a cycle in its structure.
-  (let (;; We can construct non-cyclic improper lists using LIST*...
-        (x (list* 1 2 3 4 5))
-        ;; ...or pass them as literals via dot notation.
-        (y '(6 7 8 9 . 0)))
-    ;; The function LAST returns the last cons cell of a list.
-    (assert-equal ____ (last x))
-    (assert-equal ____ (list y)))
-  ;; We can create a cyclic list by changing the last CDR of a list to refer to
-  ;; another cons cell
-  (let ((list (list 1 2 3 4 5))
-        (cyclic-list (list 1 2 3 4 5)))
-    (setf (cdr (last cyclic-list)) cyclic-list)
-    ;; Function LIST-LENGTH returns NIL if a list is cyclic.
-    (assert-equal ____ (list-length list))
-    (assert-equal ____ (list-length cyclic-list))
-    ;; Many Lisp functions operate only on proper lists.
-    ;; The function NTH is not one of them; it can be used to retrieve elements
-    ;; of cyclic lists.
-    (assert-equal ____ (nth 101 cyclic-list))))
-
 (define-test push-pop
   ;; PUSH and POP are macros similar to SETF, as both of them operate on places.
   (let ((place '(10 20 30 40)))
@@ -126,31 +102,45 @@
 
 (define-test test-accessing-list-elements
   (let ((noms '("peanut" "butter" "and" "jelly")))
+    ;; Common Lisp defines accessor functions for lists: FIRST, SECOND, ...,
+    ;; up to TENTH.
     (assert-equal "peanut" (first noms))
-    (assert-equal ___ (second noms))
-    (assert-equal ___ (fourth noms))
-    "last returns a singleton list of the final element"
-    (assert-equal ___ (last noms))
-    (assert-equal "butter" (nth 1 noms)) ; k 1
-    (assert-equal ___ (nth 0 noms))
-    (assert-equal ___ (nth 2 noms))
-    "'elt' is similar to 'nth', with the arguments reversed"
-    (assert-equal ___ (elt noms 2))))
+    (assert-equal ____ (second noms))
+    (assert-equal ____ (fourth noms))
+    ;; The function LAST returns the last cons cell of a list.
+    (assert-equal ____ (last noms))
+    ;; The function NTH returns the n-th element of a list.
+    (assert-equal "butter" (nth 1 noms))
+    (assert-equal ____ (nth 0 noms))
+    (assert-equal ____ (nth 3 noms))))
 
+(define-test cons-tructing-improper-lists
+  ;; A proper list is a list whose final CDR ends with NIL.
+  ;; An improper list either has a non-NIL value in its final CDR or does not
+  ;; have a final CDR due to a cycle in its structure.
+  (let (;; We can construct non-cyclic improper lists using LIST*...
+        (x (list* 1 2 3 4 5))
+        ;; ...or pass them as literals via dot notation.
+        (y '(6 7 8 9 . 0)))
+    (assert-equal ____ (last x))
+    (assert-equal ____ (list y)))
+  ;; We can create a cyclic list by changing the last CDR of a list to refer to
+  ;; another cons cell
+  (let ((list (list 1 2 3 4 5))
+        (cyclic-list (list 1 2 3 4 5)))
+    (setf (cdr (last cyclic-list)) cyclic-list)
+    ;; Function LIST-LENGTH returns NIL if a list is cyclic.
+    (assert-equal ____ (list-length list))
+    (assert-equal ____ (list-length cyclic-list))
+    ;; Many Lisp functions operate only on proper lists.
+    ;; The function NTH is not one of them; it can be used to retrieve elements
+    ;; of cyclic lists.
+    (assert-equal ____ (nth 101 cyclic-list))))
 
 (define-test test-slicing-lists
-  (let ((noms '("peanut" "butter" "and" "jelly")))
-    (assert-equal ___ (subseq noms 0 1))
-    (assert-equal ___ (subseq noms 0 2))
-    (assert-equal ___ (subseq noms 2 2))
-    (assert-equal ___ (subseq noms 2))))
-
-
-(define-test test-list-breakdown
-  "car (aka. 'first') returns the first value in a list"
-  (assert-equal ___ (car '(1 2 3)))
-  (assert-equal ___ (car nil))
-  "cdr (aka. 'rest') refers to the remainder of the list,
-     after the first element"
-  (assert-equal ___ (cdr '(1 2 3)))
-  (assert-equal ___ (cdr nil)))
+  ;; The function SUBSEQ returns a subsequence of a list.
+  (let ((noms (list "peanut" "butter" "and" "jelly")))
+    (assert-equal ____ (subseq noms 0 1))
+    (assert-equal ____ (subseq noms 0 2))
+    (assert-equal ____ (subseq noms 2 2))
+    (assert-equal ____ (subseq noms 2))))
