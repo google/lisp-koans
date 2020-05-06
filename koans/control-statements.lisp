@@ -12,16 +12,18 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
+;; TODO return-from
+
 (define-test test-if-then-else
-    (let ((result))
-      (if t
-          (setf result "true value")
-          (setf result "false value"))
-      (assert-equal result ____)
-      (if nil
-          (setf result "true value")
-          (setf result "false value"))
-      (assert-equal result ____)))
+  (let ((result))
+    (if t
+        (setf result "true value")
+        (setf result "false value"))
+    (assert-equal result ____)
+    (if nil
+        (setf result "true value")
+        (setf result "false value"))
+    (assert-equal result ____)))
 
 
 (define-test test-when-and-unless

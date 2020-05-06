@@ -30,7 +30,7 @@
 
 (define-test binding-and-setting-multiple-values
   ;; The macro MULTIPLE-VALUE-BIND is like LET, except it binds the variables
-  ;; listed in its first argument to the values returned by the form in its
+  ;; listed in its first argument to the values returned by the form that is its
   ;; second argument.
   (multiple-value-bind (x y) (next-fib 3 5)
     (let ((result (* x y)))
