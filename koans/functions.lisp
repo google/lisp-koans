@@ -1,132 +1,113 @@
-;;   Copyright 2013 Google Inc.
-;;
-;;   Licensed under the Apache License, Version 2.0 (the "License");
-;;   you may not use this file except in compliance with the License.
-;;   You may obtain a copy of the License at
-;;
-;;       http://www.apache.org/licenses/LICENSE-2.0
-;;
-;;   Unless required by applicable law or agreed to in writing, software
-;;   distributed under the License is distributed on an "AS IS" BASIS,
-;;   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;;   See the License for the specific language governing permissions and
-;;   limitations under the License.
-
-
-; borrows from about_methods.py
+;;; Copyright 2013 Google Inc.
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
 (defun some-named-function (a b)
   (+ a b))
 
-(define-test test-call-a-function
-    "DEFUN defines global functions"
-  (assert-equal ___ (some-named-function 7 11)))
+(define-test call-a-function
+  ;; DEFUN can be used to define global functions.
+  (assert-equal ____ (some-named-function 4 5))
+  ;; FLET can be used to define local functions.
+  (flet ((another-named-function (a b) (* a b)))
+    (assert-equal ____ (another-named-function 4 5)))
+  ;; LABELS can be used to define local functions which can refer to themselves
+  ;; or each other.
+  (labels ((recursive-function (a b)
+             (if (or (= 0 a) (= 0 b))
+                 1
+                 (+ (* a b) (recursive-function (1- a) (1- b))))))
+    (assert-equal ____ (different-named-function 4 5))))
 
+(define-test shadow-a-function
+  (assert-eq 18 (some-named-function 7 11))
+  ;; FLET and LABELS can shadow function definitions.
+  (flet ((some-named-function (a b) (* a b)))
+    (assert-equal ____ (some-named-function 7 11)))
+  (assert-equal ____ (some-named-function 7 11)))
 
-(define-test test-shadow-a-function
-    "Local functions are defined with FLET or LABELS.  One major difference
-     between the two is that local functions defined with LABELS may refer
-     to themselves, whereas local functions defined with FLET may not."
-   (assert-eq 18 (some-named-function 7 11))
-   "flet binds a function to a name within a lexical environment"
-   (flet ((some-named-function (a b) (* a b)))
-     (assert-equal ___ (some-named-function 7 11)))
-   (assert-equal ___  (some-named-function 7 11)))
+(defun function-with-optional-parameters (&optional (a 2) (b 3) c)
+  ;; If an optional argument to a function is not provided, it is given its
+  ;; default value, or NIL, if no default value is specified.
+  (list a b c))
 
+(define-test optional-parameters
+  (assert-equal ____ (function-with-optional-parameters 42 24 4224))
+  (assert-equal ____ (function-with-optional-parameters 42 24))
+  (assert-equal ____ (function-with-optional-parameters 42))
+  (assert-equal ____ (function-with-optional-parameters)))
 
-; borrowed from Common Lisp The Language chapter 5.2.2
-(defun func-with-opt-params (&optional (a 2) (b 3) )
-  ; each optional parameter has a form like (var default-val)
-  (list a b))
+(defun function-with-optional-indication
+    (&optional (a 2 a-provided-p) (b 3 b-provided-p))
+  ;; It is possible to check whether an optional argument was provided.
+  (list a a-provided-p b b-provided-p))
 
-(define-test test-optional-parameters
-    "Optional parameters are filled in with their default value."
-   (assert-equal (func-with-opt-params :test-1 :test-2) ___)
-   (assert-equal (func-with-opt-params :test-1) ___)
-   (assert-equal (func-with-opt-params) ___))
+(define-test optional-indication
+  (assert-equal ____ (function-with-optional-indication 42 24))
+  (assert-equal ____ (function-with-optional-indication 42))
+  (assert-equal ____ (function-with-optional-indication)))
 
-
-;; ----
-
-
-(defun func-with-opt-params-and-indication (&optional (a 2 a?) (b 3 b?))
-  (list a a? b b?))
-
-(define-test test-optional-parameters-with-indication
-   "Common Lisp optional params may bind a symbol which indicate whether the
-    value was provided or defaulted.  Each optional parameter binding has the
-    form (var default-form supplied-p)."
-   (assert-equal (func-with-opt-params-and-indication :test-1 :test-2) ___)
-   (assert-equal (func-with-opt-params-and-indication :test-1) ___)
-   (assert-equal (func-with-opt-params-and-indication) ___))
-
-
-;; ----
-
-
-(defun func-with-rest-params (&rest x)
+(defun function-with-rest-parameter (&rest x)
+  ;; A rest parameter gathers all remaining parameters in a list.
   x)
 
-(define-test test-func-with-rest-params
-  "With &rest, the remaining params, are handed in as a list.  Remaining
-   arguments (possibly none) are collected into a list."
-  (assert-equal (func-with-rest-params) ___)
-  (assert-equal (func-with-rest-params 1) ___)
-   (assert-equal (func-with-rest-params 1 :two 333) ___))
+(define-test rest-parameter
+  (assert-equal ____ (function-with-rest-parameter))
+  (assert-equal ____ (function-with-rest-parameter 1))
+  (assert-equal ____ (function-with-rest-parameter 1 :two 333)))
 
+(defun function-with-keyword-parameters (&key (a :something) b c)
+  ;; A keyword parameters is similar to an optional parameter, but is provided
+  ;; by a keyword-value pair.
+  (list a b c))
 
-;; ----
+(define-test keyword-parameters ()
+  (assert-equal ____ (function-with-keyword-parameters))
+  (assert-equal ____ (function-with-keyword-parameters :a 11 :b 22 :c 33))
+  ;; It is not necessary to specify all keyword parameters.
+  (assert-equal ____ (func-with-key-params :b 22))
+  ;; Keyword argument order is not important.
+  (assert-equal ____ (func-with-key-params :b 22 :c -5/2 :a 0))
+  ;; Lisp handles duplicate keyword parameters.
+  (assert-equal ____ (func-with-key-params :b 22 :b 40 :b 812)))
 
+(defun function-with-keyword-indication
+    (&key (a 2 a-provided-p) (b 3 b-provided-p))
+  ;; It is possible to check whether a keyword argument was provided.
+  (list a a-provided-p b b-provided-p))
 
-(defun func-with-key-params (&key a b)
-  (list a b))
+(define-test keyword-indication
+  (assert-equal ____ (function-with-keyword-indication))
+  (assert-equal ____ (function-with-keyword-indication :a 3 :b 4))
+  (assert-equal ____ (function-with-keyword-indication :a 11 :b 22))
+  (assert-equal ____ (function-with-keyword-indication :b 22))
+  (assert-equal ____ (function-with-keyword-indication :b 22 :a 0)))
 
-(define-test test-key-params ()
-  "Key params allow the user to specify params in any order"
-   (assert-equal (func-with-key-params) ___)
-   (assert-equal (func-with-key-params :a 11 :b 22) ___)
-   ; it is not necessary to specify all key parameters
-   (assert-equal (func-with-key-params :b 22) ___)
-   ; order is not important
-   (assert-equal (func-with-key-params :b 22 :a 0) ___))
-
-(defun func-key-params-can-have-defaults (&key  (a 3 a?) (b 4 b?))
-  (list a a? b b?))
-
-(define-test test-key-params-can-have-defaults
-    "key parameters can have defaults also"
-   (assert-equal (func-key-params-can-have-defaults) ____)
-   (assert-equal (func-key-params-can-have-defaults :a 3 :b 4) ___)
-   (assert-equal (func-key-params-can-have-defaults :a 11 :b 22) ___)
-   (assert-equal (func-key-params-can-have-defaults :b 22) ___)
-   ; order is not important
-   (assert-equal (func-key-params-can-have-defaults :b 22 :a 0) ___))
-
-
-;; ----
-
-
-;; borrowed from common lisp the language 5.2.2
-(defun func-with-funky-parameters (a &rest x &key b (c a))
-   (list a b c x))
+(defun function-with-funky-parameters (a &rest x &key b (c a c-provided-p))
+  ;; Lisp functions can have surprisingly complex lambda lists.
+  ;; A &rest parameter must come before &key parameters.
+  (list a b c c-provided-p x))
 
 (define-test test-many-kinds-params
-    "CL provides the programmer with more than enough rope to hang himself."
-   (assert-equal (func-with-funky-parameters 1) ___)
-   (assert-equal (func-with-funky-parameters 1 :b 2) ___)
-   (assert-equal (func-with-funky-parameters 1 :b 2 :c 3) ___)
-   (assert-equal (func-with-funky-parameters 1 :c 3 :b 2) ___))
-
-
-;; Note that &rest parameters have to come before &key parameters.
-;; This is an error: (defun f (&key a &rest x) () )
-;; But this is ok:   (defun f (&rest x &key a) () )
-
+  (assert-equal (func-with-funky-parameters 1) ___)
+  (assert-equal (func-with-funky-parameters 1 :b 2) ___)
+  (assert-equal (func-with-funky-parameters 1 :b 2 :c 3) ___)
+  (assert-equal (func-with-funky-parameters 1 :c 3 :b 2) ___))
 
 (define-test test-lambdas-are-nameless-functions
-    "A lambda form defines a function, but with no name.  It is possible
+  "A lambda form defines a function, but with no name.  It is possible
      to execute that function immediately, or put it somewhere for later use."
-   (assert-equal 19 ((lambda (a b) (+ a b)) 10 9))
+  (assert-equal 19 ((lambda (a b) (+ a b)) 10 9))
   (let ((my-function))
     (setf my-function (lambda (a b) (* a b)))
     (assert-equal ___ (funcall my-function 11 9)))
@@ -137,20 +118,17 @@
     (assert-equal ___ (funcall (second list-of-functions) 2 33))))
 
 (define-test test-lambdas-can-have-optional-params
-   (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10 9))
-   (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10)))
+  (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10 9))
+  (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10)))
 
 
-; returns sign x
-(defun sign-of (x)
-  (if (< x 0) (return-from sign-of -1))
-  (if (eq x 0) (return-from sign-of 0))
-  1)
+                                        ; returns sign x
+(defun sign-of (x) (if (< x 0) (return-from sign-of -1)) (if (eq x 0) (return-from sign-of 0)) 1)
 
 (define-test test-return-from-function-early
-   (assert-equal (sign-of -5.5) ___)
-   (assert-equal (sign-of 0) ___)
-   (assert-equal (sign-of ___) 1))
+  (assert-equal (sign-of -5.5) ___)
+  (assert-equal (sign-of 0) ___)
+  (assert-equal (sign-of ___) 1))
 
 
 ;; ----
@@ -169,9 +147,9 @@
 (define-test test-lexical-closure-over-adder ()
   (let ((add-100 (adder 100))
         (add-500 (adder 500)))
-  "add-100 and add-500 now refer to different bindings to x"
-   (assert-equal ___ (funcall add-100 3))
-   (assert-equal ___ (funcall add-500 3))))
+    "add-100 and add-500 now refer to different bindings to x"
+    (assert-equal ___ (funcall add-100 3))
+    (assert-equal ___ (funcall add-500 3))))
 
 
 ;; ----
@@ -189,16 +167,16 @@
         (function (lambda (y) (setq x y)))))
 
 (define-test test-lexical-closure-interactions
-    "An illustration of how lexical closures may interact."
+  "An illustration of how lexical closures may interact."
   (let ((tangled-funs-1 (two-funs 1))
         (tangled-funs-2 (two-funs 2)))
-     (assert-equal (funcall (first tangled-funs-1)) ___)
-     (funcall (second tangled-funs-1) 0)
-     (assert-equal (funcall (first tangled-funs-1)) ___)
+    (assert-equal (funcall (first tangled-funs-1)) ___)
+    (funcall (second tangled-funs-1) 0)
+    (assert-equal (funcall (first tangled-funs-1)) ___)
 
-     (assert-equal (funcall (first tangled-funs-2)) ___)
-     (funcall (second tangled-funs-2) 100)
-     (assert-equal (funcall (first tangled-funs-2)) ___)))
+    (assert-equal (funcall (first tangled-funs-2)) ___)
+    (funcall (second tangled-funs-2) 100)
+    (assert-equal (funcall (first tangled-funs-2)) ___)))
 
 
 (define-test test-apply-function-with-apply
@@ -212,8 +190,8 @@
     (assert-equal ___ (apply f1 '(1 2)))
     (assert-equal ___ (apply f2 '(1 2)))
 
-    ; after the function name, the parameters are consed onto the front
-    ; of the very last parameter
+                                        ; after the function name, the parameters are consed onto the front
+                                        ; of the very last parameter
     (assert-equal ___ (apply f1 1 2 '(3)))
     (assert-equal ___ (apply f3 1 2 3 4 '()))))
 

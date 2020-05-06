@@ -12,8 +12,6 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-;;; See http://www.gigamonkeys.com/book/collections.html
-
 (define-test basic-array-stuff
   ;; We make an 8x8 array and then fill it with a checkerboard pattern.
   (let ((chess-board (make-array '(8 8))))
