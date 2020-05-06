@@ -1,104 +1,104 @@
-;;   Copyright 2013 Google Inc.
-;;
-;;   Licensed under the Apache License, Version 2.0 (the "License");
-;;   you may not use this file except in compliance with the License.
-;;   You may obtain a copy of the License at
-;;
-;;       http://www.apache.org/licenses/LICENSE-2.0
-;;
-;;   Unless required by applicable law or agreed to in writing, software
-;;   distributed under the License is distributed on an "AS IS" BASIS,
-;;   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;;   See the License for the specific language governing permissions and
-;;   limitations under the License.
+;;; Copyright 2013 Google Inc.
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
+;;; Lisp structures encapsulate data which belongs together. They are a template
+;;; of sorts, providing a way to generate multiple instances of uniformly
+;;; organized information
+;;; Defining a structure also interns accessor functions to get and set the
+;;; slots of that structure.
 
-;; Lisp structures encapsulate data which belongs together.  They are
-;; a template of sorts, providing a way to generate multiple instances of
-;; uniformly organized information
-;;
-;; Defining a struct also interns accessor functions to get and set the fields
-;; of the structure.
+;;; The following form creates a new structure class named BASKETBALL-PLAYER
+;;; with slots named NAME, TEAM, and NUMBER.
+;;; This additionally creates functions MAKE-BASKETBALL-PLAYER,
+;;; COPY-BASKETBALL-PLAYER, BASKETBALL-PLAYER-P, BASKETBALL-PLAYER-NAME,
+;;; BASKETBALL-PLAYER-TEAM, and BASKETBALL-PLAYER-NUMBER.
 
+(defstruct basketball-player
+  name team number)
 
-;; Define a new struct with the defstruct form.  The following call creates a
-;; new structure type named basketball-player, with slots named:
-;; 'name', 'team', and number.
-(defstruct basketball-player name team number)
+(define-test make-struct
+  (let ((player (make-basketball-player :name "Larry" :team :celtics :number 33)))
+    (true-or-false? ____ (basketball-player-p player))
+    (assert-equal ____ (basketball-player-name player))
+    (assert-equal ____ (basketball-player-team player))
+    (assert-equal ____ (basketball-player-number player))
+    (setf (basketball-player-team player) :retired)
+    (assert-equal ____ (basketball-player-team player))))
 
-(define-test test-make-struct
-    ;; Create a basketball structure instance, and then read out the values.
-  (let ((player-1 (make-basketball-player
-                   :name "larry" :team :celtics :number 33)))
-    (assert-equal "larry" (basketball-player-name player-1))
-    (assert-equal ___ (basketball-player-team player-1))
-    (assert-equal ___ (basketball-player-number player-1))
-    (assert-equal 'basketball-player (type-of player-1))
-    (setf (basketball-player-team player-1) :RETIRED)
-    (assert-equal ___ (basketball-player-team player-1))))
+;;; Structure fields can have default values.
 
+(defstruct baseball-player
+  name (team :red-sox) (position :outfield))
 
-;; Struct fields can have default values
-;; fields without explicit defaults default to nil.
+(define-test struct-defaults
+  (let ((player (make-baseball-player)))
+    ;; We have not specified a default value for NAME, therefore we cannot
+    ;; read it here - it would invoke undefined behaviour.
+    (assert-equal ____ (baseball-player-team player))
+    (assert-equal ____ (baseball-player-position player))))
 
-(defstruct baseball-player name (position :outfield) (team :red-sox))
+;;; The accessor names can get pretty long. It's possible to specify a different
+;;; prefix with the :CONC-NAME option.
 
-(define-test test-struct-defaults
-    (let ((player-2 (make-baseball-player)))
-      (assert-equal ___ (baseball-player-position player-2))
-      (assert-equal ___ (baseball-player-team player-2))
-      (assert-equal ___ (baseball-player-name player-2))))
+(defstruct (american-football-player (:conc-name nfl-guy-))
+  name position team)
 
+(define-test struct-access
+  (let ((player (make-american-football-player
+                 :name "Drew Brees" :position :qb :team "Saints")))
+    (assert-equal ____ (nfl-guy-name player))
+    (assert-equal ____ (nfl-guy-team player))
+    (assert-equal ____ (nfl-guy-position player))))
 
-;; The accessor names can get pretty long.  It's possible to specify
-;; a nickname to make code readable with the :conc-name option.
+;;; Structs can be defined to include other structure definitions.
+;;; This form of inheritance allows composition of objects.
 
-(defstruct (american-football-player (:conc-name nfl-guy-)) name position team)
+(defstruct (nba-contract (:include basketball-player))
+  salary start-year end-year)
 
-(define-test test-abbreviated-struct-access
-    (let ((player-3 (make-american-football-player
-                     :name "Drew Brees" :position :QB :team "Saints")))
-      (assert-equal ___ (nfl-guy-position player-3))))
+(define-test structure-inheritance
+  (let ((contract (make-nba-contract :salary 136000000
+                                     :start-year 2004 :end-year 2011
+                                     :name "Kobe Bryant"
+                                     :team :lakers :number 24)))
+    (assert-equal ____ (nba-contract-start-year contract))
+    (assert-equal ____ (type-of contract))
+    ;; Inherited structures follow the rules of type hierarchy.
+    (true-or-false? ____ (typep contract 'basketball-player))
+    ;; One can access structure fields both with the structure's own accessors
+    ;; and with the inherited accessors.
+    (assert-equal ____ (nba-contract-team contract))
+    (assert-equal ____ (basketball-player-team contract))))
 
+;;; Copying a structure named FOO is handled with the COPY-FOO function.
+;;; All such copies are shallow.
 
-;; Structs can be defined as EXTENSIONS to previous structures.
-;; This form of inheritance allows composition of objects.
-
-(defstruct (nba-contract (:include basketball-player)) salary start-year end-year)
-
-(define-test test-structure-extension
-    (let ((contract-1 (make-nba-contract
-                       :salary 136000000
-                       :start-year 2004
-                       :end-year 2011
-                       :name "Kobe Bryant"
-                       :team :LAKERS
-                       :number 24)))
-      (assert-equal ___ (nba-contract-start-year contract-1))
-      (assert-equal ___ (type-of contract-1))
-      ;; do inherited structures follow the rules of type hierarchy?
-      (true-or-false? ___ (typep contract-1 'BASKETBALL-PLAYER))
-      ;; can you access structure fields with the inherited accessors?
-      (assert-equal ___ (nba-contract-team contract-1))
-      (assert-equal ___ (basketball-player-team contract-1))))
-
-
-;; Copying of structs is handled with the copy-{name} form.  Note that
-;; copying is shallow.
-
-(define-test test-structure-copying
-    (let ((manning-1 (make-american-football-player :name "Manning" :team '("Colts" "Broncos")))
-          (manning-2 (make-american-football-player :name "Manning" :team '("Colts" "Broncos"))))
-      ;; manning-1 and manning-2 are different objects
-      (true-or-false? ___ (eq manning-1 manning-2))
-      ;; but manning-1 and manning-2 contain the same information
-      ;; (note the equalp instead of eq
-      (true-or-false? ___ (equalp manning-1 manning-2))
-      ;; copied structs are much the same.
-      (true-or-false? ___ (equalp manning-1 (copy-american-football-player manning-1)))
-      (true-or-false? ___ (eq     manning-1 (copy-american-football-player manning-1)))
-      ;; note that the copying is shallow
-      (let ((shallow-copy (copy-american-football-player manning-1)))
-        (setf (car (nfl-guy-team manning-1)) "Giants")
-        (assert-equal ___ (car (nfl-guy-team manning-1)))
-        (assert-equal ___ (car (nfl-guy-team shallow-copy))))))
+(define-test structure-equality-and-copying
+  (let ((manning-1 (make-american-football-player
+                    :name "Manning" :team (list "Colts" "Broncos")))
+        (manning-2 (make-american-football-player
+                    :name "Manning" :team (list "Colts" "Broncos"))))
+    ;; MANNING-1 and MANNING-2 are different objects...
+    (true-or-false? ____ (eq manning-1 manning-2))
+    ;;...but they contain the same information.
+    (true-or-false? ____ (equalp manning-1 manning-2))
+    (let ((manning-3 (copy-american-football-player manning-1)))
+      (true-or-false? ____ (eq manning-1 manning-3))
+      (true-or-false? ____ (equalp manning-1 manning-3))
+      ;; Setting the slot of one instance does not modify the others.
+      (setf (car (nfl-guy-team manning-1)) "Giants")
+      (true-or-false? ____ (string= (car (nfl-guy-team manning-1))
+                                    (car (nfl-guy-team manning-3))))
+      (assert-equal ____ (car (nfl-guy-team manning-1)))
+      (assert-equal ____ (car (nfl-guy-team manning-1))))))
