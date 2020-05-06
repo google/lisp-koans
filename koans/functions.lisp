@@ -98,112 +98,83 @@
   ;; A &rest parameter must come before &key parameters.
   (list a b c c-provided-p x))
 
-(define-test test-many-kinds-params
+(define-test funky-parameters
   (assert-equal (func-with-funky-parameters 1) ___)
   (assert-equal (func-with-funky-parameters 1 :b 2) ___)
   (assert-equal (func-with-funky-parameters 1 :b 2 :c 3) ___)
   (assert-equal (func-with-funky-parameters 1 :c 3 :b 2) ___))
 
-(define-test test-lambdas-are-nameless-functions
-  "A lambda form defines a function, but with no name.  It is possible
-     to execute that function immediately, or put it somewhere for later use."
-  (assert-equal 19 ((lambda (a b) (+ a b)) 10 9))
-  (let ((my-function))
-    (setf my-function (lambda (a b) (* a b)))
-    (assert-equal ___ (funcall my-function 11 9)))
-  (let ((list-of-functions nil))
-    (push (lambda (a b) (+ a b)) list-of-functions)
-    (push (lambda (a b) (* a b)) list-of-functions)
-    (push (lambda (a b) (- a b)) list-of-functions)
-    (assert-equal ___ (funcall (second list-of-functions) 2 33))))
+(define-test lambda
+  ;; A list form starting with the symbol LAMBDA denotes an anonymous function.
+  ;; It is possible to call that function immediately or to store it for later
+  ;; use.
+  (let ((my-function (lambda (a b) (* a b))))
+    (assert-equal ____ (funcall my-function 11 9)))
+  ;; A LAMBDA form is allowed to take the place of a function name.
+  (assert-equal ____ ((lambda (a b) (+ a b)) 10 9))
+  (let ((functions (list (lambda (a b) (+ a b))
+                         (lambda (a b) (- a b))
+                         (lambda (a b) (* a b))
+                         (lambda (a b) (/ a b)))))
+    (assert-equal ____ (funcall (first functions) 2 33))
+    (assert-equal ____ (funcall (second functions) 2 33))
+    (assert-equal ____ (funcall (third functions) 2 33))
+    (assert-equal ____ (funcall (fourth functions) 2 33))))
 
-(define-test test-lambdas-can-have-optional-params
+(define-test lambda-with-optional-parameters
   (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10 9))
   (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10)))
 
-
-                                        ; returns sign x
-(defun sign-of (x) (if (< x 0) (return-from sign-of -1)) (if (eq x 0) (return-from sign-of 0)) 1)
-
-(define-test test-return-from-function-early
-  (assert-equal (sign-of -5.5) ___)
-  (assert-equal (sign-of 0) ___)
-  (assert-equal (sign-of ___) 1))
-
-
-;; ----
-
-
-;; Lambdas create "lexical closures", meaning that the resulting function, when
-;; called, will execute in an environment wherein the lexical bindings to all
-;; referred to names still apply.
-;; This example from "Common Lisp The Language" Ch. 7
-
-(defun adder (x)
-  "The result of (adder n) is a nameless function with one parameter.
-  This function will add n to its argument."
+(defun make-adder (x)
+  ;; MAKE-ADDER will create a function that closes over the parameter X.
+  ;; The parameter will be remembered as a part of the environment of the
+  ;; returned function, which will continue refering to it.
   (lambda (y) (+ x y)))
 
-(define-test test-lexical-closure-over-adder ()
-  (let ((add-100 (adder 100))
-        (add-500 (adder 500)))
-    "add-100 and add-500 now refer to different bindings to x"
-    (assert-equal ___ (funcall add-100 3))
-    (assert-equal ___ (funcall add-500 3))))
+(define-test lexical-closures
+  (let ((adder-100 (make-adder 100))
+        (adder-500 (make-adder 500)))
+    ;; ADD-100 and ADD-500 now close over different values.
+    (assert-equal ____ (funcall adder-100 3))
+    (assert-equal ____ (funcall adder-500 3))))
 
-
-;; ----
-
-
-;; The closure gives the returned function access to the bindings, not just the
-;; values.  This means that two functions which close over the same variables
-;; will always see the same values of those variables if one does a setq.
-
-(defun two-funs (x)
-  "Returns a list of two functions.
-   The first takes no parameters and returns x.
-   The second takes one parameter, y, and resets x to the value of y."
+(defun make-reader-and-writer (x)
+  ;; Both returned functions will refer to the same place.
   (list (function (lambda () x))
         (function (lambda (y) (setq x y)))))
 
 (define-test test-lexical-closure-interactions
-  "An illustration of how lexical closures may interact."
-  (let ((tangled-funs-1 (two-funs 1))
-        (tangled-funs-2 (two-funs 2)))
-    (assert-equal (funcall (first tangled-funs-1)) ___)
-    (funcall (second tangled-funs-1) 0)
-    (assert-equal (funcall (first tangled-funs-1)) ___)
+  ;; The macro DESTRUCTURING-BIND is like LET, except it binds the variables
+  ;; listed in its first argument to the parts of the list returned by the form
+  ;; that is its second argument.
+  (destructuring-bind (reader-1 writer-1) (make-reader-and-writer 1)
+    (destructuring-bind (reader-2 writer-2) (make-reader-and-writer :one))
+    (assert-equal ____ (funcall reader-1))
+    (funcall writer-1 0)
+    (assert-equal ____ (funcall reader-1))
+    ;; The two different function pairs refer to different places.
+    (assert-equal ____ (funcall reader-2))
+    (funcall writer-2 :zero)
+    (assert-equal ____ (funcall reader-2))))
 
-    (assert-equal (funcall (first tangled-funs-2)) ___)
-    (funcall (second tangled-funs-2) 100)
-    (assert-equal (funcall (first tangled-funs-2)) ___)))
+(define-test apply
+  ;; The function APPLY applies a function to a list of arguments.
+  (let ((function (lambda (x y z) (+ x y z))))
+    (assert-equal ____ (apply function '(100 20 3))))
+  ;; FUNCTION is a special operator that retrieves function objects, defined
+  ;; both globally and locally. #'X is syntax sugar for (FUNCTION X).
+  (assert-equal ____ (apply (function +) '(1 2)))
+  (assert-equal ____ (apply #'- '(1 2)))
+  ;; Only the last argument to APPLY must be a list.
+  (assert-equal ____ (apply #'+ 1 2 '(3)))
+  (assert-equal ____ (apply #'max 1 2 3 4 '())))
 
-
-(define-test test-apply-function-with-apply
-  "APPLY calls the function parameter on a list of all the remaining
-   parameters"
-  (let (f1 f2 f3)
-    (setq f1 '+)
-    (setq f2 '-)
-    (setq f3 'max)
-
-    (assert-equal ___ (apply f1 '(1 2)))
-    (assert-equal ___ (apply f2 '(1 2)))
-
-                                        ; after the function name, the parameters are consed onto the front
-                                        ; of the very last parameter
-    (assert-equal ___ (apply f1 1 2 '(3)))
-    (assert-equal ___ (apply f3 1 2 3 4 '()))))
-
-
-(define-test test-apply-function-with-funcall
-  "FUNCALL calls the function parameter on a list of all the remaining
-   parameters.  Remaining params do not expect a final list."
-  (let (f1 f2 f3)
-    (setq f1 '+)
-    (setq f2 '-)
-    (setq f3 'max)
-    (assert-equal ___ (funcall f1 1 2))
-    (assert-equal ___ (funcall f2 1 2))
-    (assert-equal ___ (funcall f1 1 2 3))
-    (assert-equal ___ (funcall f3 1 2 3 4))))
+(define-test funcall
+  ;; The function FUNCALL calls a function with arguments, not expecting a final
+  ;; list of arguments.
+  (let ((function (lambda (x y z) (+ x y z))))
+    (assert-equal ____ (funcall function 300 20 1)))
+  (assert-equal ____ (funcall (function +) 1 2))
+  (assert-equal ____ (funcall #'- 1 2))
+  (assert-equal ____ (funcall #'+ 1 2 3))
+  (assert-equal ____ (funcall #'max 1 2 3 4)))
