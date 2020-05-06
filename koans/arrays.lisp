@@ -14,28 +14,29 @@
 
 ;;; See http://www.gigamonkeys.com/book/collections.html
 
-(define-test test-basic-array-stuff
-  "We define an 8x8 array and then fill it with a checkerboard pattern."
+(define-test basic-array-stuff
+  ;; We make an 8x8 array and then fill it with a checkerboard pattern.
   (let ((chess-board (make-array '(8 8))))
-    "(DOTIMES (X 8) ...) will iterate with X taking values from 0 to 7."
+    ;; (DOTIMES (X 8) ...) will iterate with X taking values from 0 to 7.
     (dotimes (x 8)
       (dotimes (y 8)
-        "AREF stands for \"array reference\"."
+        ;; AREF stands for "array reference".
         (setf (aref chess-board x y) (if (evenp (+ x y)) :black :white))))
     (assert-true (typep chess-board 'array))
-    (assert-equal (aref chess-board 0 0) ____)
-    (assert-equal (aref chess-board 2 3) ____)
-    "ARRAY-RANK returns the number of dimensions of the array."
+    (assert-equal ____ (aref chess-board 0 0))
+    (assert-equal ____ (aref chess-board 2 3))
+    ;; The function ARRAY-RANK returns the number of dimensions of the array.
     (assert-equal ____ (array-rank chess-board))
-    "ARRAY-DIMENSIONS returns a list of the cardinality of the array dims"
+    ;; The function ARRAY-DIMENSIONS returns a list of the cardinality of the
+    ;; array dimensions.
     (assert-equal ____ (array-dimensions chess-board))
-    "ARRAY-TOTAL-SIZE returns the total number of elements in the array."
+    ;; ARRAY-TOTAL-SIZE returns the total number of elements in the array.
     (assert-equal ____ (array-total-size chess-board))))
 
-(define-test test-make-your-own-array
-  "Make your own array that meets the specifications below."
+(define-test make-your-own-array
+  ;; Make your own array that satisfies the test.
   (let ((color-cube ____))
-    "You may need to modify your array after you create it."
+    ;; You may need to modify your array after you create it.
     (setf (____ color-cube ____ ____ ____) ____
           (____ color-cube ____ ____ ____) ____)
     (if (typep color-cube '(simple-array T (3 3 3)))
@@ -47,25 +48,25 @@
           (assert-equal (aref color-cube 2 1 0) :white))
         (assert-true nil))))
 
-(define-test test-adjustable-array
-  "The size of an array does not need to be constant."
+(define-test adjustable-array
+  ;; The size of an array does not need to be constant.
   (let ((x (make-array '(2 2) :initial-element 5 :adjustable t)))
-    (assert-equal (aref x 1 0) ____)
-    (assert-equal (array-dimensions x) ____)
+    (assert-equal ____ (aref x 1 0))
+    (assert-equal ____ (array-dimensions x))
     (adjust-array x '(3 4))
-    (assert-equal (array-dimensions x) ____)))
+    (assert-equal ____ (array-dimensions x))))
 
-(define-test test-make-array-from-list
-  "One can create arrays from list structure."
+(define-test make-array-from-list
+  ;; One can create arrays with initial contents.
   (let ((x (make-array '(4) :initial-contents '(:one :two :three :four))))
-    (assert-equal (array-dimensions x) ____)
+    (assert-equal ____ (array-dimensions x))
     (assert-equal ____ (aref x 0))))
 
-(define-test test-row-major-index
-  "Row major indexing is a way to access elements with a single integer,
-   rather than a list of integers."
+(define-test row-major-index
+  ;; Row major indexing is a way to access elements with a single integer,
+  ;; rather than a list of integers.
   (let ((my-array (make-array '(2 2 2 2))))
     (dotimes (i (* 2 2 2 2))
       (setf (row-major-aref my-array i) i))
-    (assert-equal (aref my-array 0 0 0 0) ____)
-    (assert-equal (aref my-array 1 1 1 1) ____)))
+    (assert-equal ____ (aref my-array 0 0 0 0))
+    (assert-equal ____ (aref my-array 1 1 1 1))))
