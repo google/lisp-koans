@@ -1,165 +1,140 @@
-;;   Copyright 2013 Google Inc.
-;;
-;;   Licensed under the Apache License, Version 2.0 (the "License");
-;;   you may not use this file except in compliance with the License.
-;;   You may obtain a copy of the License at
-;;
-;;       http://www.apache.org/licenses/LICENSE-2.0
-;;
-;;   Unless required by applicable law or agreed to in writing, software
-;;   distributed under the License is distributed on an "AS IS" BASIS,
-;;   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;;   See the License for the specific language governing permissions and
-;;   limitations under the License.
+;;; Copyright 2013 Google Inc.
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
-;; see http://www.gigamonkeys.com/book/loop-for-black-belts.html
-;; "Loop for blackbelts" for more on the loop macro.
+;;; The extended for of LOOP allows for advanced iteration.
+;;; See http://www.gigamonkeys.com/book/loop-for-black-belts.html
 
-(define-test test-basic-loop
-    (let* ((letters '(:a :b :c :d))
-           (loop-result
-             (loop for letter in letters
-                   collect letter)))
-      (assert-equal loop-result ____)))
+(define-test loop-collect
+  ;; LOOP can collect the results in various ways.
+  (let* ((result-1 (loop for letter in '(#\a \b #\c #\d) collect letter))
+         (result-2 (loop for number in '(1 2 3 4 5) sum number))
+         (result-3 (loop for list in '((foo) (bar) (baz)) append list)))
+    (assert-equal ____ result-1)
+    (assert-equal ____ result-2)
+    (assert-equal ____ result-3)))
 
+(define-test loop-multiple-variables
+  ;; With multiple FOR clauses, the loop ends when any of the provided lists are
+  ;; exhausted.
+  (let* ((letters '(:a :b :c :d))
+         (result (loop for letter in letters
+                       for i from 1 to 1000
+                       collect (list i letter))))
+    (assert-equal ____ result)))
 
-(define-test test-compound-loop
-    (let* ((letters '(:a :b :c :d))
-           (loop-result
-             (loop for letter in letters
-                   for i from 1 to 1000
-                   collect (list i letter))))
-      (assert-equal loop-result ____)))
+(define-test loop-in-versus-loop-on
+  ;; Instead of iterating over each element of a list, we can iterate over each
+  ;; cons cell of a list.
+  (let* ((letters '(:a :b :c))
+         (result-in (loop for thing in letters collect thing))
+         (result-on (loop for thing on letters collect thing)))
+    (assert-equal ____ result-in)
+    (assert-equal ____ result-on)))
 
+(define-test loop-for-by
+  ;; Numeric iteration can go faster or slower if we use the BY keyword.
+  (let* ((result (loop for i from 0 to 30 by 5 collect i)))
+    (assert-equal ____ result)))
 
-(define-test test-counting-loop-skip-by-syntax
-   "with multiple 'for' clauses, loop ends when the first is exhausted"
-    (let* ((letters '(:a :b :c :d))
-           (loop-result
-             (loop for letter in letters
-                   for i from 0 to 1000 by 5
-                   collect (list i letter))))
-      (assert-equal loop-result ____ )))
+(define-test loop-counting-backwards
+  ;; We can count downwards instead of upwards by using DOWNTO instead of TO.
+  (let ((result (loop for i from 5 downto -5 collect i)))
+    (assert-equal ____ result)))
 
+(define-test loop-list-by
+  ;; List iteration can go faster or slower if we use the BY keyword.
+  (let* ((letters '(:a :b :c :d :e :f))
+         (result (loop for letter in letters collect letter))
+         (result-cdr (loop for letter in letters by #'cdr collect letter))
+         (result-cddr (loop for letter in letters by #'cddr collect letter))
+         (result-cdddr (loop for letter in letters by #'cdddr collect letter)))
+    (assert-equal ____ result-in)
+    (assert-equal ____ result-in-cdr)
+    (assert-equal ____ result-in-cddr)
+    (assert-equal ____ result-in-cdddr)))
 
-(define-test test-counting-backwards
-    (let ((loop-result
-             (loop for i from 10 downto -10 by 5
-                   collect i )))
-      (assert-equal loop-result ____ )))
+(define-test loop-across
+  ;; LOOP can iterate over a vector with the ACROSS keyword.
+  (let* ((vector (make-array '(5) :initial-contents '(0 1 2 3 4)))
+         (result (loop for number across vector collect number)))
+    (assert-equal ____ result)))
 
+(define-test loop-over-2d-array
+  (let ((array (make-array '(3 2) :initial-contents '((0 1) (2 3) (4 5)))))
+    ;; LOOP can be combined with ROW-MAJOR-AREF to iterate over the contents of
+    ;; a multidimensional array.
+    (let* ((result (loop for i from 0 below (array-total-size array)
+                         collect (row-major-aref my-array i))))
+      (assert-equal ____ result))
+    ;; It is always possible to resort to nested loops.
+    (let* ((result (loop with max-i = (array-dimension array 0)
+                         for i from 0 below max-i
+                         collect (loop with max-j = (array-dimension array 1)
+                                       for j from 0 below max-j
+                                       collect (expt (aref my-array i j) 2)))))
+      (assert-equal ____ result))))
 
-(define-test test-loop-in-vs-loop-on
-    (let* ((letters '(:a :b :c))
-           (loop-result-in
-            (loop for letter in letters collect letter))
-           (loop-result-on
-            (loop for letter on letters collect letter)))
-      (assert-equal loop-result-in ____)
-      (assert-equal loop-result-on ____ )))
-
-
-(define-test test-loop-in-skip-by
-    (let* ((letters '(:a :b :c :d :e :f))
-           (loop-result-in
-            (loop for letter in letters collect letter))
-           (loop-result-in-cdr
-            (loop for letter in letters by #'cdr collect letter))
-           (loop-result-in-cddr
-            (loop for letter in letters by #'cddr collect letter))
-           (loop-result-in-cdddr
-            (loop for letter in letters by #'cdddr collect letter)))
-      (assert-equal loop-result-in ____)
-      (assert-equal loop-result-in-cdr ____)
-      (assert-equal loop-result-in-cddr ____)
-      (assert-equal loop-result-in-cdddr ____)))
-
-
-(define-test test-loop-across-vector
-    (let* ((my-vector (make-array '(5) :initial-contents '(0 1 2 3 4)))
-           (loop-result
-            (loop for val across my-vector collect val)))
-      (assert-equal ____ loop-result)))
-
-
-(define-test test-loop-across-2d-array
-    (let* ((my-array (make-array '(3 3) :initial-contents '((0 1 2) (3 4 5) (6 7 8))))
-           (loop-result
-            (loop for i from 0 below (array-total-size my-array) collect (row-major-aref my-array i))))
-      (assert-equal loop-result ____ )))
-
-
-(define-test test-loop-across-2d-array-respecting-shape
-    (let* ((my-array (make-array '(3 2) :initial-contents '((0 1) (2 3) (4 5))))
-           (loop-result
-            (loop for i from 0 below (array-dimension my-array 0) collect
-              (loop for j from 0 below (array-dimension my-array 1) collect
-                (expt (aref my-array i j) 2)))))
-      (assert-equal loop-result ____ )))
-
-
-(defvar books-to-heros)
-(setf books-to-heros (make-hash-table :test 'equal))
-(setf (gethash "The Hobbit" books-to-heros) "Bilbo")
-(setf (gethash "Where The Wild Things Are" books-to-heros) "Max")
-(setf (gethash "The Wizard Of Oz" books-to-heros) "Dorothy")
-(setf (gethash "The Great Gatsby" books-to-heros) "James Gatz")
-
-
-(define-test test-loop-over-hash-tables
-    (let* ((pairs-in-table
-            (loop for k being the hash-keys in books-to-heros
-                  using (hash-value v)
-                  collect (list k v))))
+(define-test loop-hash-table
+  (let ((book-heroes (make-hash-table :test 'equal)))
+    (setf (gethash "The Hobbit" book-heroes) "Bilbo"
+          (gethash "Where The Wild Things Are" book-heroes) "Max"
+          (gethash "The Wizard Of Oz" book-heroes) "Dorothy"
+          (gethash "The Great Gatsby" book-heroes) "James Gatz")
+    ;; LOOP can iterate over hash tables.
+    (let (pairs-in-table (loop for key being the hash-key of book-heroes
+                                 using (hash-value value)
+                               collect (list key value)))
       (assert-equal ____ (length pairs-in-table))
-      (true-or-false? ____ (find '("The Hobbit" "Bilbo") pairs-in-table :test #'equal))))
+      (true-or-false? ____ (find '("The Hobbit" "Bilbo") pairs-in-table
+                                 :test #'equal)))))
 
+(define-test loop-statistics
+  ;; LOOP can perform basics statistics on the collected elements.
+  (let ((result (loop for x in '(1 2 4 8 16 32)
+                      collect x into collected
+                      count x into counted
+                      sum x into summed
+                      maximize x into maximized
+                      minimize x into minimized
+                      finally (return (list collected counted summed
+                                            maximized minimized)))))
+    (destructuring-bind (collected counted summed maximized minimized) result
+      (assert-equal ____ collected)
+      (assert-equal ____ counted)
+      (assert-equal ____ summed)
+      (assert-equal ____ maximized)
+      (assert-equal ____ minimized))))
 
-(define-test test-value-accumulation-forms
-    (let ((loop-1
-           (loop for x in '(1 2 4 8 16)
-                 collect x into collected
-                   count x into counted
-                 sum x into summed
-                 maximize x into maximized
-                 minimize x into minimized
-                 finally (return (list collected counted summed maximized minimized)))))
-      (destructuring-bind (col count sum max min) loop-1
-        (assert-equal col ____)
-        (assert-equal count ____)
-        (assert-equal sum ____)
-        (assert-equal max ____)
-        (assert-equal min ____))))
+(define-test loop-destructuring
+  ;; LOOP can bind multiple variables on each iteration step.
+  (let* ((count 0)
+         (result (loop for (a b) in '((1 9) (2 8) (3 7) (4 6))
+                       do (incf count)
+                       collect (+ a b))))
+    (assert-equal ____ count)
+    (assert-equal ____ result)))
 
-
-(define-test test-destructuring-bind
-    (let* ((count 0)
-           (result (loop for (a b) in '((1 9) (2 8) (3 7) (4 6))
-                        do (setf count (+ 1 count))
-                         collect (+ a b))))
-      (assert-equal ____ count)
-      (assert-equal ____ result)))
-
-
-(define-test test-conditional-execution
-    (let ((loop-return
-           (loop for x in '(1 1 2 3 5 8 13)
-                 when (evenp x) sum x)))
-      (assert-equal loop-return ____)))
-
-
-(defun greater-than-10-p (x)
-  (> x 10))
-
-(define-test test-conditional-with-defun
-    (let ((loop-return
-           (loop for x in '(1 1 2 3 5 8 13)
-                 when (greater-than-10-p x) sum x)))
-      (assert-equal loop-return ____)))
-
-
-(define-test test-conditional-with-lambda
-    (let ((loop-return
-           (loop for x in '(1 1 2 3 5 8 13)
-                 when ((lambda (z) (equal 1 (mod z 3))) x) sum x)))
-      (assert-equal loop-return ____)))
+(define-test conditional-execution
+  (let ((numbers '(1 1 2 3 5 8 13 21)))
+    ;; LOOP can execute some actions conditionally.
+    (let ((result (loop for x in numbers
+                        when (evenp x) sum x)))
+      (assert-equal ____ result))
+    (let ((result (loop for x in numbers
+                        unless (evenp x) sum x)))
+      (assert-equal ____ result))
+    (flet ((greater-than-10-p (x) (> x 10)))
+      (let ((result (loop for x in numbers
+                          when (greater-than-10-p 10) sum x)))
+        (assert-equal ____ result)))))
