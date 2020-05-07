@@ -17,14 +17,14 @@
  #:iteration
  #:mapcar-and-reduce
  #:control-statements
- #:condition-handlers
  #:loops
- #:triangle-project
  #:scoring-project
  #:format
  #:type-checking
  #:clos
  #:std-method-comb
+ #:condition-handlers
+ #:triangle-project
  #:dice-project
  #:macros
  #:scope-and-extent
