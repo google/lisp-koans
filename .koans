@@ -30,4 +30,5 @@
  #:backquote
  #:macros
  #+quicklisp #:threads
+ #:extra-credit
 )
