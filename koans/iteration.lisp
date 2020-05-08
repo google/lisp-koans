@@ -40,6 +40,23 @@
     (assert-equal ____ (dotimes (i 5 stack)
                          (push i stack)))))
 
+(define-test do
+  ;; The macro DO accepts a list of variable bindings, a termination test with
+  ;; epilogue forms, and Lisp code that should be executed on each iteration.
+  (let ((result '()))
+    (do ((i 0 (1+ i)))
+        ((> i 5))
+      (push i result))
+    (assert-equal ____ result))
+  ;; The epilogue of DO can return a value.
+  (let ((result (do ((i 0 (1+ i))
+                     ;; A variable bound by DO noes not need to be updated on
+                     ;; each iteration.
+                     (result '()))
+                    ((> i 5) (nreverse result))
+                  (push i result))))
+    (assert-equal ____ result)))
+
 (define-test loop-basic-form
   ;; The macro LOOP in its simple form loops forever. It is possible to stop the
   ;; looping by calling the RETURN special form.
