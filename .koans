@@ -4,6 +4,7 @@
  #:evaluation
  #:atoms-vs-lists
  #:let
+ #:scope-and-extent
  #:basic-macros
  #:lists
  #:arrays
@@ -27,6 +28,5 @@
  #:triangle-project
  #:dice-project
  #:macros
- #:scope-and-extent
  #+quicklisp #:threads
 )
