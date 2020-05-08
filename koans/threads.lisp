@@ -18,6 +18,9 @@
 ;;; If you are using Quicklisp, please feel free to enable this lesson by
 ;;; following the instructions in the README.
 
+;;; TODO: wait for Bordeaux Threads to implement a portable SEMAPHORE-COUNT
+;;; and use it in the semaphore koans.
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-test thread-return-value
