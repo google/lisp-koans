@@ -58,9 +58,9 @@
 
 ;; Blank constants allow the incomplete tests to compile without errors.
 
-(defconstant __ '__)
-(defconstant ___ '___)
-(defconstant ____ '____)
+(defvar __ '__) ;; TODO remove
+(defvar ___ '___) ;; TODO remove
+(defvar ____ '____)
 (defvar +blanks+ '(__ ___ ____))
 
 ;;; Global unit test database
