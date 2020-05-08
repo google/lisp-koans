@@ -71,6 +71,16 @@ in the blank (\_\_\_\_) with appropriate lisp code to make the assert pass.
 In order to test code, or evaluate tests interactively, students may copy
 and paste code into the lisp command line REPL.
 
+### Testing
+
+To test the koans, execute your lisp interpreter on the file 'contemplate.lisp' e.g.
+
+    abcl --noinform --noinit --load test.lisp --eval '(quit)'
+    ccl -n -l test.lisp -e '(quit)'
+    clisp -q -norc -ansi test.lisp
+    ecl -norc -load test.lisp -eval '(quit)'
+    sbcl --script test.lisp
+
 ## Quoting the Ruby Koans instructions
 
    "In test-driven development the mantra has always been, red, green,

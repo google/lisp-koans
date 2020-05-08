@@ -21,23 +21,23 @@
         ;; AREF stands for "array reference".
         (setf (aref chess-board x y) (if (evenp (+ x y)) :black :white))))
     (assert-true (typep chess-board 'array))
-    (assert-equal ____ (aref chess-board 0 0))
-    (assert-equal ____ (aref chess-board 2 3))
+    (assert-equal :black (aref chess-board 0 0))
+    (assert-equal :white (aref chess-board 2 3))
     ;; The function ARRAY-RANK returns the number of dimensions of the array.
-    (assert-equal ____ (array-rank chess-board))
+    (assert-equal 2 (array-rank chess-board))
     ;; The function ARRAY-DIMENSIONS returns a list of the cardinality of the
     ;; array dimensions.
-    (assert-equal ____ (array-dimensions chess-board))
+    (assert-equal '(8 8) (array-dimensions chess-board))
     ;; ARRAY-TOTAL-SIZE returns the total number of elements in the array.
-    (assert-equal ____ (array-total-size chess-board))))
+    (assert-equal 64 (array-total-size chess-board))))
 
 (define-test make-your-own-array
   ;; Make your own array that satisfies the test.
-  (let ((color-cube ____))
+  (let ((color-cube (make-array '(3 3 3))))
     ;; You may need to modify your array after you create it.
-    (setf (____ color-cube ____ ____ ____) ____
-          (____ color-cube ____ ____ ____) ____)
-    (if (typep color-cube '(simple-array t (3 3 3)))
+    (setf (aref color-cube 0 1 2) :red
+          (aref color-cube 2 1 0) :white)
+    (if (typep color-cube '(simple-array T (3 3 3)))
         (progn
           (assert-equal 3 (array-rank color-cube))
           (assert-equal '(3 3 3) (array-dimensions color-cube))
@@ -49,16 +49,16 @@
 (define-test adjustable-array
   ;; The size of an array does not need to be constant.
   (let ((x (make-array '(2 2) :initial-element 5 :adjustable t)))
-    (assert-equal ____ (aref x 1 0))
-    (assert-equal ____ (array-dimensions x))
+    (assert-equal 5 (aref x 1 0))
+    (assert-equal '(2 2) (array-dimensions x))
     (adjust-array x '(3 4))
-    (assert-equal ____ (array-dimensions x))))
+    (assert-equal '(3 4) (array-dimensions x))))
 
 (define-test make-array-from-list
   ;; One can create arrays with initial contents.
   (let ((x (make-array '(4) :initial-contents '(:one :two :three :four))))
-    (assert-equal ____ (array-dimensions x))
-    (assert-equal ____ (aref x 0))))
+    (assert-equal '(4) (array-dimensions x))
+    (assert-equal :one (aref x 0))))
 
 (define-test row-major-index
   ;; Row major indexing is a way to access elements with a single integer,
@@ -66,5 +66,5 @@
   (let ((my-array (make-array '(2 2 2 2))))
     (dotimes (i (* 2 2 2 2))
       (setf (row-major-aref my-array i) i))
-    (assert-equal ____ (aref my-array 0 0 0 0))
-    (assert-equal ____ (aref my-array 1 1 1 1))))
+    (assert-equal 0 (aref my-array 0 0 0 0))
+    (assert-equal 15 (aref my-array 1 1 1 1))))

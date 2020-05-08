@@ -92,7 +92,7 @@
 (defun test-passed-p (type expected actual test)
   (ecase type
     (:error (or (eql (car actual) (car expected)) (typep (car actual) (car expected))))
-    (:equal (and (<= (length expected) (length actual)) (every test expected actual)))
+    (:equal (and (>= (length expected) (length actual)) (every test expected actual)))
     (:macro (equal (car actual) (car expected)))
     (:result (eql (not (car actual)) (not (car expected))))))
 
@@ -138,7 +138,7 @@
 
 (defmacro true-or-false? (form expected)
   "Assert whether expected and form are logically equivalent."
-  `(expand-assert :equal ,form (notnot ,form) ,(notnot expected) :test #'eql))
+  `(expand-assert :equal ,form (notnot ,form) (notnot ,expected) :test #'eql))
 
 (defmacro assert-error (form condition)
   "Assert whether form signals condition."
