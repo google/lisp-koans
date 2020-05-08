@@ -38,7 +38,7 @@
 ;;; with hash 93d07b2fa6e32364916225f6218e9e7313027c1f
 ;;;
 ;;; Modifications were made to:
-;;;   1) Support *incomplete* tests in addition to *passing* and *failing* ones
+;;;   1) Support incomplete tests in addition to passing and failing ones
 ;;;   2) End test execution at the first non-passing test
 ;;;   3) Remove all dead code unrelated to lisp-koans
 ;;;   4) Rename the system to not collide with the original LISP-UNIT.
