@@ -50,8 +50,8 @@
     (let ((limit 10)
           (result '()))
       (for (i 0 3)
-           (push i result)
-           (assert-equal ____ limit))
+        (push i result)
+        (assert-equal ____ limit))
       (assert-equal ____ (nreverse result)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -71,7 +71,7 @@
       (flet ((return-0 () (push 0 side-effects) 0)
              (return-3 () (push 3 side-effects) 3))
         (for (i (return-0) (return-3))
-             (push i result)))
+          (push i result)))
       (assert-equal ____ (nreverse result))
       (assert-equal ____ (nreverse side-effects)))))
 
@@ -95,7 +95,7 @@
       (flet ((return-0 () (push 0 side-effects) 0)
              (return-3 () (push 3 side-effects) 3))
         (for (i (return-0) (return-3))
-             (push i result)))
+          (push i result)))
       (assert-equal ____ (nreverse result))
       (assert-equal ____ (nreverse side-effects)))))
 
@@ -111,6 +111,6 @@
       (flet ((return-0 () (push 0 side-effects) 0)
              (return-3 () (push 3 side-effects) 3))
         (for (i (return-0) (return-3))
-             (push i result)))
+          (push i result)))
       (assert-equal '(0 1 2 3) (nreverse result))
       (assert-equal '(0 3) (nreverse side-effects)))))
