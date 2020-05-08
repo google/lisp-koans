@@ -100,7 +100,7 @@
     (assert-equal ____ list-1)
     (assert-equal ____ list-2)))
 
-(define-test test-accessing-list-elements
+(define-test accessing-list-elements
   (let ((noms '("peanut" "butter" "and" "jelly")))
     ;; Common Lisp defines accessor functions for lists: FIRST, SECOND, ...,
     ;; up to TENTH.
@@ -137,7 +137,7 @@
     ;; of cyclic lists.
     (assert-equal ____ (nth 101 cyclic-list))))
 
-(define-test test-slicing-lists
+(define-test slicing-lists
   ;; The function SUBSEQ returns a subsequence of a list.
   (let ((noms (list "peanut" "butter" "and" "jelly")))
     (assert-equal ____ (subseq noms 0 1))

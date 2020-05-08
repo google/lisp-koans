@@ -93,7 +93,7 @@
           (gethash ____ hash-table-1) ____)
     (assert-true (equalp hash-table-1 hash-table-2))))
 
-(define-test test-make-your-own-hash-table
+(define-test make-your-own-hash-table
   ;; Make your own hash table that satisfies the test.
   (let ((colors ____))
     ;; You will need to modify your hash table after you create it.

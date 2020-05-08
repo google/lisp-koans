@@ -51,21 +51,21 @@
     (assert-equal ____ (char my-string 3))
     (assert-equal ____ (aref my-string 7))))
 
-(define-test test-concatenating-strings
+(define-test concatenating-strings
   ;; Concatenating strings in Common Lisp is possible, if a little cumbersome.
   (let ((a "Lorem")
         (b "ipsum")
         (c "dolor"))
     (assert-equal ____ (concatenate 'string a " " b " " c))))
 
-(define-test test-searching-for-characters
+(define-test searching-for-characters
   ;; The function POSITION can be used to find the first position of an element
   ;; in a sequence. If the element is not found, NIL is returned.
   (assert-equal ____ (position #\b "abc"))
   (assert-equal ____ (position #\c "abc"))
   (assert-equal ____ (position #\d "abc")))
 
-(define-test test-finding-substrings
+(define-test finding-substrings
   ;; The function SEARCH can be used to search a sequence for subsequences.
   (let ((title "A supposedly fun thing I'll never do again"))
     (assert-equal ____ (search "supposedly" title))
