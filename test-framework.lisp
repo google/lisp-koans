@@ -51,17 +51,15 @@
            #:assert-expands #:assert-true #:assert-false #:assert-error)
   ;; Manage tests
   (:export #:define-test #:test-count #:test-total-count #:run-koans)
-  ;; Constants for blanks in koans
-  (:export #:__ #:___ #:____))
+  ;; Test blank
+  (:export #:____))
 
 (in-package #:com.google.lisp-koans.test)
 
-;; Blank constants allow the incomplete tests to compile without errors.
+;; The self-evaluating test blank allows many Lisp forms in the koans to compile
+;; without errors.
 
-(defvar __ '__) ;; TODO remove
-(defvar ___ '___) ;; TODO remove
 (defvar ____ '____)
-(defvar +blanks+ '(__ ___ ____))
 
 ;;; Global unit test database
 
@@ -100,7 +98,7 @@
 
 (defun form-contains-blanks-p (form)
   (typecase form
-    (symbol (find form +blanks+))
+    (symbol (eq form '____))
     (cons (or (form-contains-blanks-p (car form))
               (form-contains-blanks-p (cdr form))))))
 
