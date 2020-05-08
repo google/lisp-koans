@@ -143,7 +143,7 @@
   (list (function (lambda () x))
         (function (lambda (y) (setq x y)))))
 
-(define-test test-lexical-closure-interactions
+(define-test lexical-closure-interactions
   ;; The macro DESTRUCTURING-BIND is like LET, except it binds the variables
   ;; listed in its first argument to the parts of the list returned by the form
   ;; that is its second argument.

@@ -227,7 +227,7 @@
         (t (error 'parse-log-line-error :line line
                                         :reason :unknown-log-line-type))))
 
-(define-test test-errors-have-slots
+(define-test log-line-type-errors
   (flet ((try-log-line-type (line)
            (handler-case (log-line-type line)
              (error (condition) condition))))

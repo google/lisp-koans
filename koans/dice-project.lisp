@@ -12,68 +12,80 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-; based on about_dice_project.rb
+;;; In this project, we are going to define a CLOS class representing a simple
+;;; set of dice. There are only two operations on the dice: reading the dice
+;;; values and re-rolling their values.
 
-;; In this project we are going to build a CLOS class representing
-;; a simple set of dice.  There are only two operations on the dice,
-;; reading the values, and re-rolling.
-
-
-;;  YOU WRITE THIS PART:
 (defclass dice-set ()
-  () ;; WRITE DICE-SET CLASS BODY HERE
-)
+  ;; Fill in the blank with a proper slot definition.
+  (____))
 
-(defmethod get-values ((object dice-set))
-  ;; WRITE GET-VALUES METHOD DEFINITION HERE
-)
+(defmethod dice-values ((object dice-set))
+  ____)
 
-(defmethod roll (how-many (object dice-set))
-  ;; WRITE ROLL METHOD DEFINITION HERE
-)
+(defmethod roll ((count integer) (object dice-set))
+  ____)
 
+(define-test make-dice-set
+  (let ((dice (make-instance 'dice-set)))
+    (assert-true (type-of dice 'dice-set))))
 
-(define-test test-create-dice-set
-;; tests making an instance of the dice-set
-    (let ((dice (make-instance 'dice-set)))
-      (assert-true dice)))
+(define-test dice-are-six-sided
+  (let ((dice (make-instance 'dice-set)))
+    (roll 5 dice)
+    (assert-true (typep (dice-values dice) 'list))
+    (assert-equal 5 (length (dice-values dice)))
+    (dolist (die (dice-values dice))
+      (assert-true (typep die '(integer 1 6))))))
 
+(define-test dice-values-do-not-change-without-rolling
+  (let ((dice (make-instance 'dice-set)))
+    (roll 100 dice)
+    (let ((dice-values-1 (dice-values dice))
+          (dice-values-2 (dice-values dice)))
+      (assert-equal dice-values-1 dice-values-2))))
 
-(define-test test-rolling-the-dice-returns-a-set-of-integers-between-1-and-6
-;; tests rolling the dice
-    (let ((dice (make-instance 'dice-set)))
-      (roll 5 dice)
-      (assert-true (typep (get-values dice) 'list))
-      (assert-equal 5 (length (get-values dice)))
-      (dolist (x (get-values dice))
-        (assert-true (and (>= x 1)
-                          (<= x 6)
-                          (typep x 'integer))))))
+(define-test roll-returns-new-dice-values
+  (let* ((dice (make-instance 'dice-set))
+         (dice-values (roll 100 dice)))
+    (assert-true (equal dice-values (dice-values dice)))))
 
+(define-test dice-values-should-change-between-rolling
+  (let* ((dice (make-instance 'dice-set))
+         (first-time (roll 100 dice))
+         (second-time (roll 100 dice)))
+    (assert-false (equal first-time second-time))
+    (assert-true (equal second-time (dice-values dice)))))
 
-(define-test test-dice-values-do-not-change-unless-explicitly-rolled
-;; tests that dice don't change just by looking at them
-    (let ((dice (make-instance 'dice-set)))
-      (roll 100 dice)
-      (let ((first-time (get-values dice))
-            (second-time (get-values dice)))
-        (assert-equal first-time second-time))))
+(define-test different-dice-sets-have-different-values
+  (let* ((dice-1 (make-instance 'dice-set))
+         (dice-2 (make-instance 'dice-set)))
+    (roll 100 dice-1)
+    (roll 100 dice-2)
+    (assert-false (equal (dice-values dice-1) (dice-values dice-2)))))
 
+(define-test different-numbers-of-dice
+  (let ((dice (make-instance 'dice-set)))
+    (assert-equal 5 (length (roll 5 dice)))
+    (assert-equal 100 (length (roll 100 dice)))
+    (assert-equal 1 (length (roll 1 dice)))))
 
-(define-test test-dice-values-should-change-between-rolls
-;; tests that rolling the dice DOES change the values.
-    (let ((dice (make-instance 'dice-set))
-          (first-time nil)
-          (second-time nil))
-      (roll 100 dice)
-      (setf first-time (get-values dice))
-      (roll 100 dice)
-      (setf second-time (get-values dice))
-      (assert-false (equal first-time second-time))))
-
-(define-test test-you-can-roll-different-numbers-of-dice
-;; tests count parameter of how many dice to roll
-    (let ((dice (make-instance 'dice-set)))
-      (assert-equal 5 (length (roll 5 dice)))
-      (assert-equal 100 (length (roll 100 dice)))
-      (assert-equal 1 (length (roll 1 dice)))))
+(define-test junk-as-dice-count
+  (let ((dice (make-instance 'dice-set)))
+    (labels ((dice-failure (count)
+               (handler-case (progn (roll-dice count dice)
+                                    (error "Test failure"))
+                 (error (condition) condition)))
+             (test-dice-failure (value)
+               (let* ((condition (dice-failure value))
+                      (expected-type (type-error-expected-type condition)))
+                 (assert-true (typep condition 'type-error))
+                 (assert-equal value (type-error-datum))
+                 (assert-true (subtypep expected-type '(integer 1 6)))
+                 (assert-true (subtypep '(integer 1 6) expected-type)))))
+      (test-dice-failure 0)
+      (test-dice-failure "0")
+      (test-dice-failure :zero)
+      (test-dice-failure 18.0)
+      (test-dice-failure -7)
+      (test-dice-failure '(6 6 6)))))
