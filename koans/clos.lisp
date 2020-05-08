@@ -74,8 +74,8 @@
                                  :accessor favorite-lisp-implementation)))
 
 (defclass c-programmer (person)
-  (favorite-c-compiler :initarg :favorite-c-compiler
-                       :accessor favorite-c-compiler))
+  ((favorite-c-compiler :initarg :favorite-c-compiler
+                        :accessor favorite-c-compiler)))
 
 (define-test inheritance
   (let ((jack (make-instance 'person :name :jack))
