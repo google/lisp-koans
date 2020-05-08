@@ -112,7 +112,7 @@ Write and submit your own improvements to https://github.com/google/lisp-koans!
 "))
 
 (defun print-progress-message ()
-  (format t "You are now ~A/~A koans and ~A/~A lessons closer to reaching enlightenment~%~%"
+  (format t "You are now ~A/~A koans and ~A/~A lessons closer to reaching enlightenment.~%~%"
           (n-passed-koans-overall *collected-results*)
           (test-total-count)
           (1- (length *collected-results*))
@@ -120,8 +120,8 @@ Write and submit your own improvements to https://github.com/google/lisp-koans!
 
 (defun output-advice ()
   (cond ((any-assert-non-pass-p)
-         (print-progress-message)
-         (print-next-suggestion-message))
+         (print-next-suggestion-message)
+         (print-progress-message))
         (t (print-completion-message))))
 
 ;;; Main

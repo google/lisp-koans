@@ -30,30 +30,43 @@ Running on a fresh version should output the following:
 
 ```
 Thinking about ASSERTS
-    ASSERT-TRUE requires more meditation.
+    FILL-IN-THE-BLANKS requires more meditation.
 
-You have not yet reached enlightenment ...
-  A koan is incomplete.
-
+You have not yet reached enlightenment.
+    A koan is incomplete.
 Please meditate on the following code:
-   File "koans/asserts.lisp"
-   Koan "ASSERT-TRUE"
-   Current koan assert status is "(INCOMPLETE)"
+    File "koans/asserts.lisp"
+    Koan "FILL-IN-THE-BLANKS"
+    Current koan assert status is "(INCOMPLETE INCOMPLETE INCOMPLETE)"
 
-You are now 0/169 koans and 0/25 lessons closer to reaching enlightenment
+You are now 0/198 koans and 0/31 lessons closer to reaching enlightenment.
 ```
 
 This indicates that the script has completed, and that the learner should look
 to asserts.lisp to locate and fix the problem.  The problem will be within
 a define-test expression such as
 
-    (define-test assert-true
-        "t is true.  Replace the blank with a t"
-        (assert-true ___))
+```lisp
+;;; In order to progress, fill in the blanks, denoted via ____ in source code.
+;;; Sometimes, you will be asked to provide values that are equal to something.
+
+(define-test fill-in-the-blanks
+  (assert-equal ____ 2)
+  (assert-equal ____ 3.14)
+  (assert-equal ____ "Hello World"))
+
+;;; Sometimes, you will be asked to say whether something is true or false,
+;;; In Common Lisp, the canonical values for truth and falsehood are T and NIL.
+
+(define-test assert-true
+  (assert-true ____))
+
+(define-test assert-false
+  (assert-false ____))
+```
 
 In this case, the test is incomplete, and the student should fill
-in the blank (____) with appropriate lisp code to make the assert pass.
-
+in the blank (\_\_\_\_) with appropriate lisp code to make the assert pass.
 
 In order to test code, or evaluate tests interactively, students may copy
 and paste code into the lisp command line REPL.
