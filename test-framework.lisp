@@ -146,9 +146,9 @@
   "Assert whether form signals condition."
   `(expand-assert :error ,form (handler-case ,form (error (e) e)) ,condition))
 
-(defmacro assert-expands (form expansion)
+(defmacro assert-expands (form expected)
   "Assert whether form expands to expansion."
-  `(expand-assert :macro ,form (macroexpand-1 ',form) ,expansion))
+  `(expand-assert :macro ',form (macroexpand-1 ',form) ',expected))
 
 (defmacro assert-false (form)
   "Assert whether the form is false."

@@ -27,6 +27,7 @@
  #:condition-handlers
  #:triangle-project
  #:dice-project
+ #:backquote
  #:macros
  #+quicklisp #:threads
 )

@@ -12,150 +12,105 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-;; A lisp macro is like a function which takes an input lisp form
-;; and produces a new output lisp form.  Calling the macro
-;; first produces new form, and then evaluates it in the context
-;; of the macro call.  The first phase, the creation of the new
-;; macro form, is called 'macro expansion'.
+;;; A Lisp macro is a function that accepts Lisp data and produces a Lisp form.
+;;; When the macro is called, its macro function receives unevaluated arguments
+;;; and may use them to produce a new Lisp form. This form is then spliced in
+;;; place of the original macro call and is then evaluated.
 
+(defmacro my-and (&rest forms)
+  ;; We use a LABELS local function to allow for recursive expansion.
+  (labels ((generate (forms)
+             (cond ((null forms) 'nil)
+                   ((null (rest forms)) (first forms))
+                   (t `(when ,(first forms)
+                         ,(generate (rest forms)))))))
+    (generate forms)))
 
+(define-test my-and
+  ;; ASSERT-EXPANDS macroexpands the first form once and checks if it is equal
+  ;; to the second form.
+  (assert-expands (my-and (= 0 (random 6)) (error "Bang!"))
+                  (when (= 0 (random 6)) (error "Bang!")))
+  (assert-expands (my-and (= 0 (random 6))
+                          (= 0 (random 6))
+                          (= 0 (random 6))
+                          (error "Bang!"))
+                  ____))
 
-(defmacro repeat-2 (f) (list 'progn f f))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-test test-macro-expands
-    "assert-expands checks the expanded macro form against expectation."
-  (assert-expands
-   '(progn (do-something arg1 arg2) (do-something arg1 arg2))
-   (repeat-2 (do-something arg1 arg2)))
+;;; A common macro pitfall is capturing a variable defined by the user.
 
-  (assert-expands
-   ____
-   (repeat-2 (setf x (+ 1 x)))))
+(define-test variable-capture
+  (macrolet ((for ((var start stop) &body body)
+               `(do ((,var ,start (1+ ,var))
+                     (limit ,stop))
+                    ((> ,var limit))
+                  ,@body)))
+    (let ((limit 10)
+          (result '()))
+      (for (i 0 3)
+           (push i result)
+           (assert-equal ____ limit))
+      (assert-equal ____ (nreverse result)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; ----
+;;; Another pitfall is evaluating some forms multiple times where they are only
+;;; meant to be evaluated once.
 
+(define-test multiple-evaluation
+  ;; We use MACROLET for defining a local macro.
+  (macrolet ((for ((var start stop) &body body)
+               `(do ((,var ,start (1+ ,var)))
+                    ((> ,var ,stop))
+                  ,@body)))
+    (let ((side-effects '())
+          (result '()))
+      ;; Our functions RETURN-0 and RETURN-3 have side effects.
+      (flet ((return-0 () (push 0 side-effects) 0)
+             (return-3 () (push 3 side-effects) 3))
+        (for (i (return-0) (return-3))
+             (push i result)))
+      (assert-equal ____ (nreverse result))
+      (assert-equal ____ (nreverse side-effects)))))
 
-(define-test test-backtick-form
-    "backtick (`) form is much like single-quote (') form, except that subforms
-     preceded by a comma (,) are evaluated, rather than left as literals"
-  (let ((num 5)
-        (word 'dolphin))
-    (true-or-false? ___  (equal '(1 3 5) `(1 3 5)))
-    (true-or-false? ___  (equal '(1 3 5) `(1 3 num)))
-    (assert-equal ____ `(1 3 ,num))
-    (assert-equal ____ `(word ,word ,word word))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; Yet another pitfall is not respecting the evaluation order of the macro
+;;; subforms.
 
-(define-test test-at-form
-    "The at form, (@) in the backtick context splices a list variables into
-     the form."
-    (let ((axis '(x y z)))
-      (assert-equal '(x y z) axis)
-      (assert-equal '(the axis are (x y z)) `(the axis are ,axis))
-      (assert-equal '(the axis are x y z) `(the axis are ,@axis)))
-    (let ((coordinates '((43.15 77.6) (42.36 71.06))))
-      (assert-equal ____
-        `(the coordinates are ,coordinates))
-      (assert-equal ____
-        `(the coordinates are ,@coordinates))))
+(define-test wrong-evaluation-order
+  (macrolet ((for ((var start stop) &body body)
+               ;; The function GENSYM creates GENerated SYMbols, guaranteed to
+               ;; be unique in the whole Lisp system. Because of that, they
+               ;; cannot capture other symbols, preventing variable capture.
+               (let ((limit (gensym "LIMIT")))
+                 `(do ((,limit ,stop)
+                       (,var ,start (1+ ,var)))
+                      ((> ,var ,limit))
+                    ,@body))))
+    (let ((side-effects '())
+          (result '()))
+      (flet ((return-0 () (push 0 side-effects) 0)
+             (return-3 () (push 3 side-effects) 3))
+        (for (i (return-0) (return-3))
+             (push i result)))
+      (assert-equal ____ (nreverse result))
+      (assert-equal ____ (nreverse side-effects)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; ---- On Gensym: based on ideas from common lisp cookbook
-
-;; sets sym1 and sym2 to val
-(defmacro double-setf-BAD (sym1 sym2 val)
-  `(progn (setf ,sym1 ,val) (setf ,sym2 ,val)))
-
-(define-test test-no-gensym
-    "macro expansions may introduce difficult to see
-     interactions"
-  (let ((x 0)
-        (y 0))
-    (double-setf-BAD x y 10)
-    (assert-equal x 10)
-    (assert-equal y 10))
-
-  (let ((x 0)
-        (y 0))
-    (double-setf-BAD x y (+ x 100))
-    (assert-equal x ____)
-    (assert-equal y ____)))
-
-;; sets sym1 and sym2 to val
-(defmacro double-setf-SAFER (sym1 sym2 val)
-  (let ((new-fresh-symbol (gensym)))
-    `(let ((,new-fresh-symbol ,val))
-       (progn (setf ,sym1 ,new-fresh-symbol) (setf ,sym2 ,new-fresh-symbol)))))
-
-(define-test test-with-gensym
-    "gensym creates a new symbol."
-  (let ((x 0)
-        (y 0))
-    (double-setf-SAFER x y 10)
-    (assert-equal x 10)
-    (assert-equal y 10))
-
-  (let ((x 0)
-        (y 0))
-    (double-setf-SAFER x y (+ x 100))
-    (assert-equal x ____)
-    (assert-equal y ____)))
-
-
-;; ----
-
-(defvar *log* nil)
-
-(defmacro log-form (form)
-  "records the body form to the list *log* and then evalues the body normally"
-  `(let ((retval ,form))
-     (push ',form *log*)
-     retval))
-
-(define-test test-basic-log-form
-  "illustrates how the basic log-form macro above works"
-  (assert-equal 1978 (* 2 23 43))
-  (assert-equal nil *log*)
-  "log-form does not interfere with the usual return value"
-  (assert-equal 1978 (log-form (* 2 23 43)))
-  "log-form records the code which it has been passed"
-  (assert-equal ___ (length *log*))
-  (assert-equal ___ (first *log*))
-  "macros evaluating to more macros is ok, if confusing"
-  (assert-equal 35 (log-form (log-form (- 2013 1978))))
-  (assert-equal 3 (length *log*))
-  (assert-equal '(log-form (- 2013 1978)) (first *log*))
-  (assert-equal '(- 2013 1978) (second *log*)))
-
-;; Now you must write a more advanced log-form, that also records the value
-;; returned by the form
-
-(defvar *log-with-value* nil)
-
-;; you must write this macro
-(defmacro log-form-with-value (form)
-  "records the body form, and the form's return value
-   to the list *log-with-value* and then evalues the body normally"
-  `(let ((logform nil)
-         (retval ,form))
-
-     ;; YOUR MACRO COMPLETION CODE GOES HERE.
-
-     retval))
-
-
-
-(define-test test-log-form-and-value
-    "log should start out empty"
-  (assert-equal nil *log-with-value*)
-  "log-form-with-value does not interfere with the usual return value"
-  (assert-equal 1978 (log-form-with-value (* 2 23 43)))
-  "log-form records the code which it has been passed"
-  (assert-equal 1 (length *log-with-value*))
-  (assert-equal '(:form (* 2 23 43) :value 1978) (first *log-with-value*))
-  "macros evaluating to more macros is ok, if confusing"
-  (assert-equal 35 (log-form-with-value (log-form-with-value (- 2013 1978))))
-  (assert-equal 3 (length *log-with-value*))
-  (assert-equal '(:form (log-form-with-value (- 2013 1978)) :value 35) (first *log-with-value*))
-  (assert-equal '(:form (- 2013 1978) :value 35) (second *log-with-value*)))
+(define-test for
+  (macrolet ((for ((var start stop) &body body)
+               ;; Fill in the blank with a correct FOR macroexpansion that is
+               ;; not affected by the three macro pitfalls mentioned above.
+               ____))
+    (let ((side-effects '())
+          (result '()))
+      (flet ((return-0 () (push 0 side-effects) 0)
+             (return-3 () (push 3 side-effects) 3))
+        (for (i (return-0) (return-3))
+             (push i result)))
+      (assert-equal '(0 1 2 3) (nreverse result))
+      (assert-equal '(0 3) (nreverse side-effects)))))
