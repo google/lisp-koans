@@ -24,4 +24,6 @@
 (load "test-framework.lisp")
 (load "lisp-koans.lisp")
 
+#+quicklisp (ql:quickload :bordeaux-threads)
+
 (com.google.lisp-koans:main)

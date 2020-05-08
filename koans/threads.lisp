@@ -12,336 +12,147 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-;; NOTE: This koan group uses quicklisp to load packages that are
-;; not part of the Common Lisp specification.
-;; If you are using quicklisp please feel free to enable this group
-;; by following the instructions in the README.
+;;; This lesson group uses Quicklisp to load Bordeaux Threads, a portability
+;;; library for working with threads. This is because threads are not a part of
+;;; the Common Lisp standard and implementations do them differently.
+;;; If you are using Quicklisp, please feel free to enable this lesson by
+;;; following the instructions in the README.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Making threads with bordeaux-threads:make-thread  ;;
-;; Joining threads with bordeaux-threads:join-thread ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; bordeaux-threads takes a -function- as a parameter.
-;; This function will be executed in a separate thread.
+(define-test thread-return-value
+  ;; When a thread object is constructed, it accepts a function to execute.
+  (let* ((thread (bt:make-thread (lambda () (+ 2 2))))
+         ;; When the thread's function finishes, its return value becomes the
+         ;; return value of BT:JOIN-THREAD.
+         (value (bt:join-thread thread)))
+    (assert-equal ____ value)))
 
-;; Since the execution order of separate threads is not guaranteed,
-;; we must -join- the threads in order to make our assertions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (load "~/.quicklisp/setup.lisp")
-(ql:quickload :bordeaux-threads)
+(defvar *variable*)
 
-(defvar *greeting* "no greeting")
+(define-test thread-global-bindings
+  ;; The global value of a variable is shared between all threads.
+  (setf *variable* 42)
+  (let ((thread (bt:make-thread (lambda ()
+                                  (when (= *variable* 42)
+                                    (setf *variable* 24)
+                                    t)))))
+    (assert-true (bt:join-thread thread))
+    (assert-equal ____ *variable*)))
 
-(defun sets-socal-greeting ()
-  (setf *greeting* "Sup, dudes"))
+(define-test thread-local-bindings
+  ;; Newly established local bindings of a variable are visible only in the
+  ;; thread that established these bindings.
+  (setf *variable* 42)
+  (let ((thread (bt:make-thread (lambda ()
+                                  (let ((*variable* 42))
+                                    (setf *variable* 24))))))
+    (bt:join-thread thread)
+    (assert-equal ____ *variable*)))
 
-(define-test test-hello-world-thread
-    "Create a thread which returns 'hello world', then ends.
-    using a lambda as the supplied function to execute."
-  (assert-equal *greeting* "no greeting")
-  (let ((greeting-thread
-         (bordeaux-threads:make-thread
-          (lambda ()
-            (setf *greeting* "hello world")))))
-    (bordeaux-threads:join-thread greeting-thread)
-    (assert-equal *greeting* "hello world")
-    (setf greeting-thread (bordeaux-threads:make-thread #'sets-socal-greeting))
-    (bordeaux-threads:join-thread greeting-thread)
-    (assert-equal *greeting* ____)))
+(define-test thread-initial-bindings
+  ;; Initial dynamic bindings may be passed to the new thread.
+  (setf *variable* 42)
+  (let ((thread (bt:make-thread (lambda () (setf *variable* 24))
+                                :initial-bindings '((*variable* . 42)))))
+    (bt:join-thread thread)
+    (assert-equal ____ *variable*)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-test test-join-thread-return-value
-    "the return value of the thread is passed in bordeaux-threads:join-thread"
-  (let ((my-thread (bordeaux-threads:make-thread
-                    (lambda () (* 11 99)))))
-    (assert-equal ____ (bordeaux-threads:join-thread my-thread))))
+(define-test thread-name
+  ;; Threads can have names.
+  (let ((thread (bt:make-thread #'+ :name "Summing thread")))
+    (assert-equal ____ (bt:thread-name thread))
+    (assert-equal ____ (bt:join-thread thread))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-test test-threads-can-have-names
-    "Threads can have names.  Names can be useful in diagnosing problems
-     or reporting."
-  (let ((empty-plus-thread
-         (bordeaux-threads:make-thread #'+
-                                :name "what is the sum of no things adding?")))
-    (assert-equal (bordeaux-threads:thread-name empty-plus-thread)
-                  ____)))
+(define-test thread-function-arguments
+  ;; Passing arguments to thread functions requires closing over them.
+  (let* ((x 240)
+         (y 18)
+         (thread (bt:make-thread (lambda () (* x y)))))
+    (assert-equal ____ (bt:join-thread thread))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Sending arguments to the thread function: ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define-test destroy-thread
+  ;; Looping and renegade threads can usually be killed via BT:DESTROY-THREAD.
+  ;; It is the last measure, since doing so might leave the Lisp system in an
+  ;; unpredictable state if the thread was doing something complex.
+  (let ((thread (bt:make-thread (lambda () (loop (sleep 1))))))
+    (true-or-false? ____ (bt:thread-alive-p thread))
+    (bt:destroy-thread thread)
+    (true-or-false? ____ (bt:thread-alive-p thread))))
 
-(defun returns-hello-name (name)
-  (format nil "Hello, ~a" name))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun double-wrap-list (x y z)
-  (list (list x y z)))
+(defvar *another-variable*)
 
-;; Create a thread which will print out "Hello -Name-" using
-;; the named write-hello-name function.  Arguments and functions
-;; are handed to threads in a lambda.
+;; Preventing concurrent access to some data can be achieved via a lock in
+;; order to avoid race conditions.
 
-(define-test test-sending-arguments-to-thread
-    (assert-equal "Hello, Buster"
-                  (bordeaux-threads:join-thread
-                   (bordeaux-threads:make-thread
-                    #'(lambda ()
-                        (returns-hello-name "Buster")))))
-  (assert-equal ____
-                (bordeaux-threads:join-thread
-                 (bordeaux-threads:make-thread
-                  #'(lambda ()
-                      (double-wrap-list 3 4 5))))))
+(defvar *lock* (bt:make-lock))
 
+(define-test lock
+  (setf *another-variable* 0)
+  (flet ((increaser () (bt:with-lock-held (*lock*) (incf *another-variable*))))
+    (loop repeat 100
+          collect (bt:make-thread #'increaser) into threads
+          finally (loop until (notany #'bt:thread-alive-p threads))
+                  (assert-equal ____ *another-variable*))))
 
-;; ----
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar *accum* 0)
+;;; We can further orchestrate threads by using semaphores.
 
-(defun accum-after-time (time arg1)
-    "sleeps for time seconds and then adds arg1 to *accum*"
-  (sleep time)
-  (incf *accum* arg1))
+(defvar *semaphore* (bt:make-semaphore))
 
-(defvar *before-time-millisec* 0)
-(defvar *after-time-millisec* 0)
+(defun signal-our-semaphore ()
+  (bt:signal-semaphore semaphore))
 
-;; cheap and dirty time measuring function
-(defun duration-ms ()
-  (- *after-time-millisec* *before-time-millisec*))
+(defun wait-on-our-semaphore ()
+  (bt:wait-on-semaphore semaphore :timeout 100))
 
-(define-test test-run-in-series
-    "get internal real time returns a time stamp in milliseconds"
-  (setf *accum* 0)
-  (setf *before-time-millisec* (get-internal-real-time))
-  (accum-after-time 0.3 1)
-  (accum-after-time 0.2 2)
-  (accum-after-time 0.1 4)
-  (setf *after-time-millisec* (get-internal-real-time))
-  (true-or-false? ___ (> (duration-ms) 500))
-  (true-or-false? ___ (< (duration-ms) 700))
-  (assert-equal *accum* ___))
+(define-test semaphore
+  (assert-equal 1 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+  (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+  (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+  (assert-equal 2 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore))))
 
-(define-test test-run-in-parallel
-    "same program as above, executed in threads.  Sleeps are simultaneous"
-  (setf *accum* 0)
-  (setf *before-time-millisec* (get-internal-real-time))
-  (let ((thread-1 (bordeaux-threads:make-thread #'(lambda () (accum-after-time 0.3 1))))
-        (thread-2 (bordeaux-threads:make-thread #'(lambda () (accum-after-time 0.2 2))))
-        (thread-3 (bordeaux-threads:make-thread #'(lambda () (accum-after-time 0.1 4)))))
-    (bordeaux-threads:join-thread thread-1)
-    (bordeaux-threads:join-thread thread-2)
-    (bordeaux-threads:join-thread thread-3))
-  (setf *after-time-millisec* (get-internal-real-time))
-  (true-or-false? ___ (> (duration-ms) 200))
-  (true-or-false? ___  (< (duration-ms) 400))
-  (assert-equal *accum* ___))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; killing renegade threads            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(defun spawn-looping-thread (name)
-  "create a never-ending looping thread with a given name"
-  (bordeaux-threads:make-thread (lambda () (loop)) :name name))
-
-(defun main-thread-p (thread)
-  (string-equal (bordeaux-threads:thread-name thread)
-                "Main Thread"))
-
-(defun kill-thread-if-not-main (thread)
-" kills a given thread, unless the thread is the main thread.
- returns nil if thread is main.
- returns a 'terminated~' string otherwise"
-  (unless (string-equal (bordeaux-threads:thread-name thread)
-                        "Main Thread")
-    (bordeaux-threads:destroy-thread thread)
-    (concatenate 'string "terminated " (bordeaux-threads:thread-name thread))))
-
-(defun kill-spawned-threads ()
-  "kill all lisp threads except the main thread."
-  (map 'list 'kill-thread-if-not-main (bordeaux-threads:all-threads)))
-
-(defun spawn-three-loopers ()
-  "Spawn three run-aways."
-  (progn
-    (spawn-looping-thread "looper one")
-    (spawn-looping-thread "looper two")
-    (spawn-looping-thread "looper three")))
-
-(define-test test-counting-and-killing-threads
-    "all-threads makes a list of all running threads in this lisp.  The sleep
-     calls are necessary, as killed threads are not instantly removed from the
-     list of all running threads."
-  (assert-equal ___ (length (bordeaux-threads:all-threads)))
-  (kill-thread-if-not-main (spawn-looping-thread "NEVER CATCH ME~!  NYA NYA!"))
-  (sleep 0.01)
-  (assert-equal ___ (length (bordeaux-threads:all-threads)))
-  (spawn-three-loopers)
-  (assert-equal ___ (length (bordeaux-threads:all-threads)))
-  (kill-spawned-threads)
-  (sleep 0.01)
-  (assert-equal ___ (length (bordeaux-threads:all-threads))))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; bindings are not inherited across threads ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defvar *v* 0)
-
-(defun returns-v ()
-  *v*)
-
-(define-test test-threads-dont-get-bindings
-    "bindings are not inherited across threads"
-  (let ((thread-ret-val (bordeaux-threads:join-thread
-                         (bordeaux-threads:make-thread 'returns-v))))
-    (assert-equal thread-ret-val ____))
-  (let ((*v* "LEXICAL BOUND VALUE"))
-    (assert-equal *v* ____)
-    (let ((thread-ret-val (bordeaux-threads:join-thread
-                           (bordeaux-threads:make-thread 'returns-v))))
-      (assert-equal thread-ret-val ____))))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; global state (special vars) are ;;
-;; shared across threads           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defvar *g* 0)
-
-(defun waits-and-increments-g (&optional (n 0.2))
-  "sets *g* to 1 + the value of *g* n seconds ago"
-  (let ((my-remembered-g *g*))
-    (sleep n)
-    (setq *g* (+ 1 my-remembered-g))))
-
-(define-test test-serial-wait-and-increment
- "incrementing *g* three times and expecting
-  the final value to be three works."
-  (setf *g* 0)
-  (waits-and-increments-g)
-  (waits-and-increments-g)
-  (waits-and-increments-g)
-  (assert-equal *g* ___))
-
-
-(define-test test-parallel-wait-and-increment
-    (setf *g* 0)
-  (let ((thread-1 (bordeaux-threads:make-thread 'waits-and-increments-g))
-        (thread-2 (bordeaux-threads:make-thread 'waits-and-increments-g))
-        (thread-3 (bordeaux-threads:make-thread 'waits-and-increments-g)))
-    (bordeaux-threads:join-thread thread-1)
-    (bordeaux-threads:join-thread thread-2)
-    (bordeaux-threads:join-thread thread-3)
-    (assert-equal *g* ___)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Global state can be protected ;;
-;; with a mutex.                 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setf *g* 0)
-(defvar *gs-mutex* (bordeaux-threads:make-lock "g's lock"))
-
-(defun protected-increments-g (&optional (n 0.1))
-  "Surround all references to *g* within the with-mutex form."
-  (bordeaux-threads:with-lock-held (*gs-mutex*)
-    (let ((my-remembered-g *g*))
-      (sleep n)
-      (setq *g* (+ 1 my-remembered-g)))))
-
-(define-test test-parallel-wait-and-increment-with-mutex
-    (setf *g* 0)
-  (let ((thread-1 (bordeaux-threads:make-thread 'protected-increments-g))
-        (thread-2 (bordeaux-threads:make-thread 'protected-increments-g))
-        (thread-3 (bordeaux-threads:make-thread 'protected-increments-g)))
-    (bordeaux-threads:join-thread thread-1)
-    (bordeaux-threads:join-thread thread-2)
-    (bordeaux-threads:join-thread thread-3)
-    (assert-equal *g* ___)))
-
-;;;;;;;;;;;;;;;;
-;; Semaphores ;;
-;;;;;;;;;;;;;;;;
-
-;; bordeaux-threads does not allow you to see
-;; count on a semaphore, so we make a struct
-;; to keep track of both the semaphore and count for us.
-
-(defstruct semaphore
-  (semaphore nil :type bordeaux-threads:semaphore)
-  (count 0 :type integer))
-
-(defun make-our-semaphore (&key (count 0) (name ""))
-  (make-semaphore :semaphore (bordeaux-threads:make-semaphore
-                              :count count
-                              :name name)
-                  :count count))
-
-(defun signal-semaphore (semaphore)
-  (bordeaux-threads:signal-semaphore
-   (semaphore-semaphore semaphore))
-  (incf (semaphore-count semaphore)))
-
-(defun wait-on-semaphore (semaphore)
-  (bordeaux-threads:wait-on-semaphore
-   (semaphore-semaphore semaphore))
-  (decf (semaphore-count semaphore)))
-
-(defun semaphore-name (semaphore)
-  (semaphore-name (semaphore-semaphore semaphore)))
-
-;; Incrementing a bordeaux-threads semaphore is an atomic operation
-;; but our increment is not.
-(defvar *g-semaphore* (make-our-semaphore :name "g" :count 0))
-
-(defun semaphore-increments-g ()
-  (signal-semaphore *g-semaphore*))
-
-(define-test test-increment-semaphore
-    (assert-equal ___ (semaphore-count *g-semaphore*))
-  (bordeaux-threads:join-thread (bordeaux-threads:make-thread 'semaphore-increments-g :name "S incrementor 1"))
-  (bordeaux-threads:join-thread (bordeaux-threads:make-thread 'semaphore-increments-g :name "S incrementor 2"))
-  (bordeaux-threads:join-thread (bordeaux-threads:make-thread 'semaphore-increments-g :name "S incrementor 3"))
-  (assert-equal ___ (semaphore-count *g-semaphore*)))
-
-
-;; Semaphores can be used to manage resource allocation, and to trigger
+;; Semaphores can be used to manage resource allocation and to trigger some
 ;; threads to run when the semaphore value is above zero.
 
-(defvar *apples* (make-semaphore :name "how many apples" :count 0))
-(defvar *orchard-log* (make-array 10))
-(defvar *next-log-entry* 0)
-(defvar *orchard-log-mutex* (bordeaux-threads:make-lock "orchard log mutex"))
+(defvar *foobar-semaphore* (bt:make-semaphore))
 
-(defun add-to-log (item)
-  (bordeaux-threads:with-lock-held (*orchard-log-mutex*)
-    (setf (aref *orchard-log* *next-log-entry*) item)
-    (incf *next-log-entry*)))
+(defvar *foobar-list*)
 
-(defun apple-eater ()
-  (wait-on-semaphore *apples*)
-  (add-to-log "apple eaten."))
+(defun bar-pusher ()
+  (dotimes (i 10)
+    (sleep 0.01)
+    (push i (nth i *foobar-list*))
+    (push :bar (nth i *foobar-list*))
+    ;; We push :BAR before :FOO, so the final list looks like (:FOO :BAR).
+    (bt:signal-semaphore *foobar-semaphore*)))
 
-(defun apple-grower ()
-  (sleep 0.1)
-  (add-to-log "apple grown.")
-  (signal-semaphore *apples*))
+(defun foo-pusher ()
+  (dotimes (i 10)
+    (bt:wait-on-semaphore *foobar-semaphore*)
+    (push :foo (nth i *foobar-list*))))
 
-(defun num-apples ()
-  (semaphore-count *apples*))
-
-(define-test test-orchard-simulation
-    (assert-equal (num-apples) ___)
-  (let ((eater-thread (bordeaux-threads:make-thread 'apple-eater :name "apple eater thread")))
-    (let ((grower-thread (bordeaux-threads:make-thread 'apple-grower :name "apple grower thread")))
-      (bordeaux-threads:join-thread eater-thread)))
-  (assert-equal (aref *orchard-log* 0) ____)
-  (assert-equal (aref *orchard-log* 1) ____))
+(define-test list-of-foobars
+  (setf *foobar-list* (make-list 10))
+  (let ((bar-pusher (bt:make-thread #'bar-pusher))
+        (foo-pusher (bt:make-thread #'foo-pusher)))
+    (bt:join-thread foo-pusher))
+  (assert-equal ____ (nth 0 *foobar-list*))
+  (assert-equal ____ (nth 1 *foobar-list*))
+  (assert-equal ____ (nth 5 *foobar-list*)))
