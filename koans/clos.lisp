@@ -64,66 +64,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass access-counter ()
-  ((value :reader value :initform :value)
-   (access-count :reader access-count :initform 0)))
-
-;;; The generated reader, writer, and accessor functions are generic functions.
-;;; This allows us to define :BEFORE and :AFTER methods whose code is executed
-;;; before or after the primary method, and whose return values are discarded.
-
-(defmethod value :after ((object access-counter))
-  (incf (slot-value object 'access-count)))
-
-(defmethod (setf value) :after ((object access-counter))
-  (incf (slot-value object 'access-count)))
-
-(define-test defmethod-after
-  (let ((counter (make-instance 'access-counter :value 42)))
-    (assert-equal ____ (access-count counter))
-    (assert-equal ____ (value counter))
-    (assert-equal ____ (access-count counter))
-    (setf (value counter) 24)
-    (assert-equal ____ (access-count counter))
-    (assert-equal ____ (value counter))
-    (assert-equal ____ (access-count counter))
-    ;; We read the value three more times and discard the result.
-    (value counter)
-    (value counter)
-    (value counter)
-    (assert-equal ____ (access-count counter))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defclass countdown ()
-  ;; The countdown object represents an ongoing countdown. Each time the
-  ;; REMAINING-TIME function is called, it should return a number one less than
-  ;; the previous time that it returned. If the countdown hits zero, :BANG
-  ;; should be returned instead.
-  ((remaining-time :reader remaining-time :initarg :value)))
-
-;;; In addition to :BEFORE and :AFTER methods is also possible to write :AROUND
-;;; methods, whose code executes around the primary method. In such context, it
-;;; is possible to call the primary method via CALL-NEXT-METHOD.
-
-(defmethod remaining-time :around ((object countdown))
-  (let ((value (call-next-method)))
-    (if (<= 0 value)
-        ;; DECF is similar to INCF. It decreases the value stored in the place
-        ;; and returns the decreased value.
-        (decf value)
-        :bang)))
-
-(define-test countdown
-  (let ((countdown (make-instance 'countdown :value 4)))
-    (assert-equal 3 (remaining-time countdown))
-    (assert-equal 2 (remaining-time countdown))
-    (assert-equal 1 (remaining-time countdown))
-    (assert-equal :bang (remaining-time countdown))
-    (assert-equal :bang (remaining-time countdown))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;;; Lisp classes can inherit from one another.
 
 (defclass person ()
@@ -212,8 +152,7 @@
 (defclass italian (person) ())
 
 (defgeneric stereotypical-food (person)
-  ;; We can use :METHOD options to DEFGENERIC to define methods for that
-  ;; function.
+  ;; The :METHOD option in DEFGENERIC is an alternative to DEFMETHOD.
   (:method ((person italian)) :pasta)
   (:method ((person american)) :burger))
 
