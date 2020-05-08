@@ -26,4 +26,4 @@
 
 #+quicklisp (ql:quickload :bordeaux-threads)
 
-(net.common-lisp.lisp-koans:main)
+(com.google.lisp-koans:main)
