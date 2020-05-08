@@ -13,7 +13,7 @@
 ;;; limitations under the License.
 
 (define-test shadowing
-  (assert-equal ____ (let ((z 4)) (list z (let ((z 2)) z)))))
+  (assert-equal '(4 2) (let ((z 4)) (list z (let ((z 2)) z)))))
 
 (defun block-1 ()
   (block here
@@ -28,21 +28,21 @@
     (return-from outer 'valve)))
 
 (define-test block-return-from
-  (assert-equal ____ (block-1))
-  (assert-equal ____ (block-2)))
+  (assert-equal 4 (block-1))
+  (assert-equal 'space (block-2)))
 
 ;;; See http://www.gigamonkeys.com/book/variables.html
 
 (define-test lexical-variables-can-be-enclosed
-  (assert-equal ____ (let ((f (let ((x 10))
-                                (lambda () x))))
-                       (let ((x 20))
-                         (funcall f)))))
+  (assert-equal 10 (let ((f (let ((x 10))
+                              (lambda () x))))
+                     (let ((x 20))
+                       (funcall f)))))
 
 (define-test dynamic-variables-are-affected-by-execution-path
-  (assert-equal ____ (let ((f (let ((x 10))
-                                (declare (special x))
-                                (lambda () x))))
-                       (let ((x 20))
-                         (declare (special x))
-                         (funcall f)))))
+  (assert-equal 20 (let ((f (let ((x 10))
+                              (declare (special x))
+                              (lambda () x))))
+                     (let ((x 20))
+                       (declare (special x))
+                       (funcall f)))))

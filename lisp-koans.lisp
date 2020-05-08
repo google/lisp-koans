@@ -30,7 +30,7 @@
 (defun package-name-from-group-name (group-name)
   (format nil "COM.GOOGLE.LISP-KOANS.KOANS.~A" group-name))
 
-(defun load-koan-group-named (koan-group-name)
+(defun load-koan-group-named (dirname koan-group-name)
   (let* ((koan-name (string-downcase (string koan-group-name)))
          (koan-file-name (concatenate 'string koan-name ".lisp"))
          (koan-package-name (package-name-from-group-name koan-group-name)))
@@ -38,11 +38,11 @@
       (make-package koan-package-name
                     :use '(#:common-lisp #:com.google.lisp-koans.test)))
     (let ((*package* (find-package koan-package-name)))
-      (load (concatenate 'string "koans/" koan-file-name)))))
+      (load (concatenate 'string dirname "/" koan-file-name)))))
 
-(defun load-all-koans ()
+(defun load-all-koans (dirname)
   (loop for koan-group-name in *all-koan-groups*
-        do (load-koan-group-named koan-group-name)))
+        do (load-koan-group-named dirname koan-group-name)))
 
 ;;; Functions for executing koans
 
@@ -62,8 +62,8 @@
   (dolist (result (reverse results))
     (destructuring-bind (test-name results) result
       (let ((format-control (if (every (lambda (x) (equalp :pass x)) results)
-                                "    [32m~A has expanded your awareness.~%[0m~%"
-                                "    [31m~A requires more meditation.~%[0m~%")))
+                                "    [32m~A has expanded your awareness.~%[0m"
+                                "    [31m~A requires more meditation.~%[0m")))
         (format t format-control test-name)))))
 
 ;;; Functions for processing results
@@ -89,17 +89,17 @@
         ((find :error koan-status) "[1m[31mA koan signaled an error.[0m")
         (t (format nil "[1mLast koan status: ~A.[0m" koan-status))))
 
-(defun print-next-suggestion-message ()
+(defun print-next-suggestion-message (dirname)
   (let ((filename (caar *collected-results*))
         (koan-name (caaadr (car (last (last *collected-results*)))))
         (koan-status (reverse (cadaar (cdar (last (last *collected-results*)))))))
-    (format t "You have not yet reached enlightenment.
+    (format t "~&You have not yet reached enlightenment.
     ~A
 [1mPlease meditate on the following code:[0m
-    File \"koans/~(~A~).lisp\"
+    File \"~A/~(~A~).lisp\"
     Koan \"~A\"
     Current koan assert status is \"~A\"~%~%"
-            (koan-status-message koan-status) filename koan-name koan-status)))
+            (koan-status-message koan-status) dirname filename koan-name koan-status)))
 
 (defun print-completion-message ()
   (format t "*********************************************************
@@ -118,15 +118,15 @@ Write and submit your own improvements to https://github.com/google/lisp-koans!
           (1- (length *collected-results*))
           (length *all-koan-groups*)))
 
-(defun output-advice ()
+(defun output-advice (dirname)
   (cond ((any-assert-non-pass-p)
-         (print-next-suggestion-message)
+         (print-next-suggestion-message dirname)
          (print-progress-message))
         (t (print-completion-message))))
 
 ;;; Main
 
-(defun main ()
-  (load-all-koans)
+(defun main (&optional (dirname "koans"))
+  (load-all-koans dirname)
   (execute-koans)
-  (output-advice))
+  (output-advice dirname))

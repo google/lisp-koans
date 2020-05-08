@@ -22,15 +22,15 @@
         (c (copy-seq "I am Tom.")))
     ;; A place may be a variable.
     (setf a 1000)
-    (assert-equal ____ a)
+    (assert-equal 1000 a)
     ;; A place may be a part of some list.
     (setf (first b) 10)
-    (assert-equal ____ b)
+    (assert-equal '(10 20 30 40 50) b)
     ;; A place may be a character in a string.
     ;; The #\x syntax denotes a single character, 'x'.
     (setf (char c 5) #\B
           (char c 7) #\b)
-    (assert-equal ____ c)
+    (assert-equal "I am Bob." c)
     ;; There are other kinds of places that we will explore in the future.
     ))
 
@@ -43,22 +43,22 @@
               (3 :three)
               (4 :four)
               (5 :five))))
-    (assert-equal ____ b))
+    (assert-equal :four b))
   ;; CASE can accept a group of keys.
   (let* ((c 4)
          (d (case c
               ((0 2 4 6 8) :even-digit)
               ((1 3 5 7 9) :odd-digit))))
-    (assert-equal ____ d)))
+    (assert-equal :even-digit d)))
 
 (defun match-special-cases (thing)
   ;; T or OTHERWISE passed as the key matches any value.
   ;; NIL passed as the key matches no values.
   ;; These symbols need to passed in parentheses.
   (case thing
-    (____ :found-a-t)
-    (____ :found-a-nil)
-    (____ :something-else)))
+    ((t) :found-a-t)
+    ((nil) :found-a-nil)
+    (t :something-else)))
 
 (define-test special-cases-of-case
   ;; You need to fill in the blanks in MATCH-SPECIAL-CASES.
@@ -71,9 +71,9 @@
   (flet ((cartoon-dads (input)
            (case input
              ;; Fill in the blanks with proper cases.
-             ____
-             ____
-             ____
+             (:bart :homer)
+             (:stewie :peter)
+             (:stan :randy)
              (:this-one-doesnt-happen :fancy-cat)
              (t :unknown))))
     (assert-equal (cartoon-dads :bart) :homer)
@@ -91,14 +91,14 @@
          (string-copy (copy-seq string)))
     ;; The above means that two distinct strings will not be the same under EQL,
     ;; even if they have the same contents.
-    (true-or-false? ____ (eql string string-copy))
-    (true-or-false? ____ (equal string string-copy))
+    (true-or-false? nil (eql string string-copy))
+    (true-or-false? t (equal string string-copy))
     ;; The above also means that CASE might give surprising results when used on
     ;; strings.
     (let ((match (case string
                    ("A string" :matched)
                    (t :not-matched))))
-      (assert-equal ____ match))
+      (assert-equal :not-matched match))
     ;; We will explore this topic further in the EQUALITY-DISTINCTIONS lesson.
     ))
 
@@ -109,4 +109,4 @@
          (result (cond ((> number 0) :positive)
                        ((< number 0) :negative)
                        (t :zero))))
-    (assert-equal ____ result)))
+    (assert-equal :positive result)))

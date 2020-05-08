@@ -30,12 +30,12 @@
 (define-test make-struct
   (let ((player (make-basketball-player :name "Larry" :team :celtics
                                         :number 33)))
-    (true-or-false? ____ (basketball-player-p player))
-    (assert-equal ____ (basketball-player-name player))
-    (assert-equal ____ (basketball-player-team player))
-    (assert-equal ____ (basketball-player-number player))
+    (true-or-false? t (basketball-player-p player))
+    (assert-equal "Larry" (basketball-player-name player))
+    (assert-equal :celtics (basketball-player-team player))
+    (assert-equal 33 (basketball-player-number player))
     (setf (basketball-player-team player) :retired)
-    (assert-equal ____ (basketball-player-team player))))
+    (assert-equal :retired (basketball-player-team player))))
 
 ;;; Structure fields can have default values.
 
@@ -46,8 +46,8 @@
   (let ((player (make-baseball-player)))
     ;; We have not specified a default value for NAME, therefore we cannot
     ;; read it here - it would invoke undefined behaviour.
-    (assert-equal ____ (baseball-player-team player))
-    (assert-equal ____ (baseball-player-position player))))
+    (assert-equal :red-sox (baseball-player-team player))
+    (assert-equal :outfield (baseball-player-position player))))
 
 ;;; The accessor names can get pretty long. It's possible to specify a different
 ;;; prefix with the :CONC-NAME option.
@@ -58,9 +58,9 @@
 (define-test struct-access
   (let ((player (make-american-football-player
                  :name "Drew Brees" :position :qb :team "Saints")))
-    (assert-equal ____ (nfl-guy-name player))
-    (assert-equal ____ (nfl-guy-team player))
-    (assert-equal ____ (nfl-guy-position player))))
+    (assert-equal "Drew Brees" (nfl-guy-name player))
+    (assert-equal "Saints" (nfl-guy-team player))
+    (assert-equal :qb (nfl-guy-position player))))
 
 ;;; Structs can be defined to include other structure definitions.
 ;;; This form of inheritance allows composition of objects.
@@ -73,14 +73,14 @@
                                      :start-year 2004 :end-year 2011
                                      :name "Kobe Bryant"
                                      :team :lakers :number 24)))
-    (assert-equal ____ (nba-contract-start-year contract))
-    (assert-equal ____ (type-of contract))
+    (assert-equal 2004 (nba-contract-start-year contract))
+    (assert-equal 'nba-contract (type-of contract))
     ;; Inherited structures follow the rules of type hierarchy.
-    (true-or-false? ____ (typep contract 'basketball-player))
+    (true-or-false? t (typep contract 'basketball-player))
     ;; One can access structure fields both with the structure's own accessors
     ;; and with the inherited accessors.
-    (assert-equal ____ (nba-contract-team contract))
-    (assert-equal ____ (basketball-player-team contract))))
+    (assert-equal :lakers (nba-contract-team contract))
+    (assert-equal :lakers (basketball-player-team contract))))
 
 ;;; Copying a structure named FOO is handled with the COPY-FOO function.
 ;;; All such copies are shallow.
@@ -91,21 +91,21 @@
         (manning-2 (make-american-football-player
                     :name "Manning" :team (list "Colts" "Broncos"))))
     ;; MANNING-1 and MANNING-2 are different objects...
-    (true-or-false? ____ (eq manning-1 manning-2))
+    (true-or-false? nil (eq manning-1 manning-2))
     ;;...but they contain the same information.
-    (true-or-false? ____ (equalp manning-1 manning-2))
+    (true-or-false? t (equalp manning-1 manning-2))
     (let ((manning-3 (copy-american-football-player manning-1)))
-      (true-or-false? ____ (eq manning-1 manning-3))
-      (true-or-false? ____ (equalp manning-1 manning-3))
+      (true-or-false? nil (eq manning-1 manning-3))
+      (true-or-false? t (equalp manning-1 manning-3))
       ;; Setting the slot of one instance does not modify the others...
       (setf (nfl-guy-name manning-1) "Rogers")
-      (true-or-false? ____ (string= (nfl-guy-name manning-1)
-                                    (nfl-guy-name manning-3)))
-      (assert-equal ____ (nfl-guy-name manning-1))
-      (assert-equal ____ (nfl-guy-name manning-3))
+      (true-or-false? nil (string= (nfl-guy-name manning-1)
+                                   (nfl-guy-name manning-3)))
+      (assert-equal "Rogers" (nfl-guy-name manning-1))
+      (assert-equal "Manning" (nfl-guy-name manning-3))
       ;; ...but modifying shared structure may affect other instances.
       (setf (car (nfl-guy-team manning-1)) "Giants")
-      (true-or-false? ____ (string= (car (nfl-guy-team manning-1))
-                                    (car (nfl-guy-team manning-3))))
-      (assert-equal ____ (car (nfl-guy-team manning-1)))
-      (assert-equal ____ (car (nfl-guy-team manning-3))))))
+      (true-or-false? t (string= (car (nfl-guy-team manning-1))
+                                 (car (nfl-guy-team manning-3))))
+      (assert-equal "Giants" (car (nfl-guy-team manning-1)))
+      (assert-equal "Giants" (car (nfl-guy-team manning-3))))))

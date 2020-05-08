@@ -16,32 +16,32 @@
 
 (define-test make-hash-table
   (let ((my-hash-table (make-hash-table)))
-    (true-or-false? ____ (typep my-hash-table 'hash-table))
-    (true-or-false? ____ (hash-table-p my-hash-table))
-    (true-or-false? ____ (hash-table-p (make-array '(3 3 3))))
+    (true-or-false? t (typep my-hash-table 'hash-table))
+    (true-or-false? t (hash-table-p my-hash-table))
+    (true-or-false? nil (hash-table-p (make-array '(3 3 3))))
     ;; The function HASH-TABLE-COUNT returns the number of entries currently
     ;; contained in a hash table.
-    (assert-equal ____ (hash-table-count my-hash-table))))
+    (assert-equal 0 (hash-table-count my-hash-table))))
 
 (define-test gethash
   ;; The function GETHASH can be used to access hash table values.
   (let ((cube-roots (make-hash-table)))
     ;; We add the key-value pair 1 - "uno" to the hash table.
     (setf (gethash 1 cube-roots) "uno")
-    (assert-equal ____ (gethash 1 cube-roots))
-    (assert-equal ____ (hash-table-count cube-roots))
+    (assert-equal "uno" (gethash 1 cube-roots))
+    (assert-equal 1 (hash-table-count cube-roots))
     (setf (gethash 8 cube-roots) 2)
     (setf (gethash -3 cube-roots) -27)
-    (assert-equal ____ (gethash -3 cube-roots))
-    (assert-equal ____ (hash-table-count cube-roots))
+    (assert-equal -27 (gethash -3 cube-roots))
+    (assert-equal 3 (hash-table-count cube-roots))
     ;; GETHASH returns a secondary value that is true if the key was found in
     ;; the hash-table and false otherwise.
     (multiple-value-bind (value foundp) (gethash 8 cube-roots)
-      (assert-equal ____ value)
-      (assert-equal ____ foundp))
+      (assert-equal 2 value)
+      (assert-equal t foundp))
     (multiple-value-bind (value foundp) (gethash 125 cube-roots)
-      (assert-equal ____ value)
-      (assert-equal ____ foundp))))
+      (assert-equal nil value)
+      (assert-equal nil foundp))))
 
 (define-test hash-table-test
   ;; A hash table can be constructed with different test predicates.
@@ -62,10 +62,10 @@
         (dolist (hash-table (list eq-table eql-table equal-table equalp-table))
           (setf (gethash thing hash-table) t))))
     ;; How many entries does each hash table contain?
-    (assert-equal ____ (hash-table-count eq-table))
-    (assert-equal ____ (hash-table-count eql-table))
-    (assert-equal ____ (hash-table-count equal-table))
-    (assert-equal ____ (hash-table-count equalp-table))))
+    (assert-equal 3 (hash-table-count eq-table))
+    (assert-equal 3 (hash-table-count eql-table))
+    (assert-equal 2 (hash-table-count equal-table))
+    (assert-equal 1 (hash-table-count equalp-table))))
 
 (define-test hash-table-equality
   ;; EQUALP considers two hash tables to be equal if they have the same test and
@@ -76,9 +76,9 @@
     (setf (gethash "one" hash-table-2) "yat")
     (setf (gethash "two" hash-table-1) "yi")
     (setf (gethash "two" hash-table-2) "yi")
-    (true-or-false? ____ (eq hash-table-1 hash-table-2))
-    (true-or-false? ____ (equal hash-table-1 hash-table-2))
-    (true-or-false? ____ (equalp hash-table-1 hash-table-2))))
+    (true-or-false? nil (eq hash-table-1 hash-table-2))
+    (true-or-false? nil (equal hash-table-1 hash-table-2))
+    (true-or-false? t (equalp hash-table-1 hash-table-2))))
 
 (define-test i-will-make-it-equalp
   (let ((hash-table-1 (make-hash-table :test #'equal))
@@ -89,15 +89,18 @@
           (gethash "two" hash-table-2) "zwei")
     (assert-false (equalp hash-table-1 hash-table-2))
     ;; Change the first hash table to be EQUALP to the second one.
-    (setf (gethash ____ hash-table-1) ____
-          (gethash ____ hash-table-1) ____)
+    (setf (gethash "one" hash-table-1) "eins"
+          (gethash "two" hash-table-1) "zwei")
     (assert-true (equalp hash-table-1 hash-table-2))))
 
 (define-test make-your-own-hash-table
   ;; Make your own hash table that satisfies the test.
-  (let ((colors ____))
+  (let ((colors (make-hash-table :test #'equal)))
     ;; You will need to modify your hash table after you create it.
-    ____
+    (setf (gethash "blue" colors) '(0 0 1)
+          (gethash "green" colors) '(0 1 0)
+          (gethash "red" colors) '(1 0 0)
+          (gethash "black" colors) '(0 0 0))
     (assert-equal (hash-table-count colors) 4)
     (let ((values (list (gethash "blue" colors)
                         (gethash "green" colors)
