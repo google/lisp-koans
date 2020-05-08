@@ -1,177 +1,235 @@
-;;   Copyright 2013 Google Inc.
-;;
-;;   Licensed under the Apache License, Version 2.0 (the "License");
-;;   you may not use this file except in compliance with the License.
-;;   You may obtain a copy of the License at
-;;
-;;       http://www.apache.org/licenses/LICENSE-2.0
-;;
-;;   Unless required by applicable law or agreed to in writing, software
-;;   distributed under the License is distributed on an "AS IS" BASIS,
-;;   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;;   See the License for the specific language governing permissions and
-;;   limitations under the License.
+;;; Copyright 2013 Google Inc.
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
+;;; CLOS is a shorthand for Common Lisp Object System.
 
-;; CLOS stands for Common Lisp Object System.
-;; CLOS is common lisps' object oriented framework.
+(defclass racecar ()
+  ;; A class definition lists all the slots of every instance.
+  (color speed))
 
-(defclass racecar () (color speed))
+(define-test defclass
+  ;; Class instances are constructed via MAKE-INSTANCE.
+  (let ((car-1 (make-instance 'racecar))
+        (car-2 (make-instance 'racecar)))
+    ;; Slot values can be set via SLOT-VALUE.
+    (setf (slot-value car-1 'color) :red)
+    (setf (slot-value car-1 'speed) 220)
+    (setf (slot-value car-2 'color) :blue)
+    (setf (slot-value car-2 'speed) 240)
+    (assert-equal ____ (slot-value car-1 'color))
+    (assert-equal ____ (slot-value car-2 'speed))))
 
-(define-test test-defclass
-    (let ((car-1 (make-instance 'racecar))
-          (car-2 (make-instance 'racecar)))
-      (setf (slot-value car-1 'color) :red)
-      (setf (slot-value car-1 'speed) 220)
-      (setf (slot-value car-2 'color) :blue)
-      (setf (slot-value car-2 'speed) 240)
-      (assert-equal ____ (slot-value car-1 'color))
-      (assert-equal ____ (slot-value car-2 'speed))))
-
-;; CLOS provides functionality for creating getters / setters
-;; for defined objects
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass spaceship ()
-  ((color :reader get-color :writer set-color)
-   (speed :reader get-speed :writer set-speed)))
+  ;; It is possible to define reader, writer, and accessor functions for slots.
+  ((color :reader color :writer (setf color))
+   (speed :accessor color)))
 
-(define-test test-clos-getters-and-setters
-    (let ((ship-1 (make-instance 'spaceship)))
-      (set-color :orange ship-1)
-      (assert-equal ____ (get-color ship-1))
-      (set-speed 1000 ship-1)
-      (assert-equal ____ (get-speed ship-1))))
+;;; Specifying a reader function named COLOR is equivalent to
+;;; (DEFMETHOD COLOR ((OBJECT SPACECSHIP)) ...)
+;;; Specifying a writer function named (SETF COLOR) is equivalent to
+;;; (DEFMETHOD (SETF COLOR) (NEW-VALUE (OBJECT SPACECSHIP)) ...)
+;;; Specifying an accessor function performs both of the above.
 
-;; CLOS also provides functionality to create accessors
-;; to object data.
+(define-test accessors
+  (let ((ship (make-instance 'spaceship)))
+    (setf (color ship) :orange
+          (speed ship) 1000)
+    (assert-equal ____ (color ship))
+    (assert-equal ____ (speed ship))))
 
-;; stores a value, and a counter which tallies accesses, read or write,
-;; to that value
-(defclass value-with-access-counter ()
-  ((value :reader get-value :writer set-value :initform 0)
-   (access-count :reader how-many-value-queries :initform 0)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod get-value ((object value-with-access-counter))
-           (incf (slot-value object 'access-count))
-           (slot-value object 'value))
+(defclass bike ()
+  ;; It is also possible to define initial arguments for slots.
+  ((color :reader color :initarg :color)
+   (speed :reader color :initarg :color)))
 
-(defmethod set-value (new-value (object value-with-access-counter))
-           (incf (slot-value object 'access-count))
-           (setf (slot-value object 'value) new-value))
+(define-test initargs
+  (let ((bike (make-instance 'bike :color :blue :speed 30)))
+    (assert-equal ____ (color bike))
+    (assert-equal ____ (speed bike))))
 
-(define-test test-access-counter
-    (let ((x (make-instance 'value-with-access-counter)))
-      ; check that no one has ever looked at the x value yet.
-      (assert-equal ____ (how-many-value-queries x))
-      ; check that the default value is zero.
-      (assert-equal ___ (get-value x))
-      ; now that we've looked at it, there is a single access.
-      (assert-equal ___ (how-many-value-queries x))
-      ; check that we can set and read the value
-      (set-value 33 x)
-      (assert-equal 33 (get-value x))
-      (assert-equal ___ (how-many-value-queries x))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defclass access-counter ()
+  ((value :reader value :initform :value)
+   (access-count :reader access-count :initform 0)))
 
-; countdowner has a value which goes down every time you look at it
-; and returns "bang" when it hits zero.
-(defclass countdowner ()
-  ((value :initform 4)))
+;;; The generated reader, writer, and accessor functions are generic functions.
+;;; This allows us to define :BEFORE and :AFTER methods whose code is executed
+;;; before or after the primary method, and whose return values are discarded.
 
-;; Write the get-value for the countdowner
-;; to satisfy the test-countdowner tests.
-;; you may be interested in the 'decf function.
-(defmethod get-value ((object countdowner))
-  :WRITE-ME)
+(defmethod value :after ((object access-counter))
+  (incf (slot-value object 'access-count)))
 
+(defmethod (setf value) :after ((object access-counter))
+  (incf (slot-value object 'access-count)))
 
-(define-test test-countdowner
-    (let ((c (make-instance 'countdowner)))
-      (assert-equal 3 (get-value c))
-      (assert-equal 2 (get-value c))
-      (assert-equal 1 (get-value c))
-      (assert-equal "bang" (get-value c))
-      (assert-equal "bang" (get-value c))))
+(define-test defmethod-after
+  (let ((counter (make-instance 'access-counter :value 42)))
+    (assert-equal ____ (access-count counter))
+    (assert-equal ____ (value counter))
+    (assert-equal ____ (access-count counter))
+    (setf (value counter) 24)
+    (assert-equal ____ (access-count counter))
+    (assert-equal ____ (value counter))
+    (assert-equal ____ (access-count counter))
+    ;; We read the value three more times and discard the result.
+    (value counter)
+    (value counter)
+    (value counter)
+    (assert-equal ____ (access-count counter))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Classes can inherit data and methods from other classes.
-;; Here, the specific CIRCLE class extends the generic SHAPE class
-(defclass shape ()
-  ((kind :reader get-kind :writer set-kind :initform :default-shape-kind)
-   (pos :reader get-pos :writer set-pos :initform '(0 0))))
+(defclass countdown ()
+  ;; The countdown object represents an ongoing countdown. Each time the
+  ;; REMAINING-TIME function is called, it should return a number one less than
+  ;; the previous time that it returned. If the countdown hits zero, :BANG
+  ;; should be returned instead.
+  ((remaining-time :reader remaining-time :initarg :value)))
 
-(defclass circle (shape)
-  ((radius :reader get-radius :writer set-radius :initform 0)))
+;;; In addition to :BEFORE and :AFTER methods is also possible to write :AROUND
+;;; methods, whose code executes around the primary method. In such context, it
+;;; is possible to call the primary method via CALL-NEXT-METHOD.
 
-(define-test test-inheritance
-    (let ((circle-1 (make-instance 'circle))
-          (shape-1 (make-instance 'shape)))
-      (assert-equal ____ (type-of shape-1))
-      (assert-equal ____ (type-of circle-1))
-      (true-or-false? ____ (typep circle-1 'circle))
-      (true-or-false? ____ (typep circle-1 'shape))
-      (set-kind :circle circle-1)
-      (set-pos '(3 4) circle-1)
-      (set-radius 5 circle-1)
-      (assert-equal ____ (get-pos circle-1))
-      (assert-equal ____ (get-radius circle-1))))
+(defmethod remaining-time :around ((object countdown))
+  (let ((value (call-next-method)))
+    (if (<= 0 value)
+        ;; DECF is similar to INCF. It decreases the value stored in the place
+        ;; and returns the decreased value.
+        (decf value)
+        :bang)))
 
-;; Classes may also inherit from more than one base class.
-;; This is known as multiple inheritance.
+(define-test countdown
+  (let ((countdown (make-instance 'countdown :value 4)))
+    (assert-equal 3 (remaining-time countdown))
+    (assert-equal 2 (remaining-time countdown))
+    (assert-equal 1 (remaining-time countdown))
+    (assert-equal :bang (remaining-time countdown))
+    (assert-equal :bang (remaining-time countdown))))
 
-;; Color holds an rgb triplet and a transparency alpha value.
-;; The RGB stands for the amount of red, green, and blue.
-;; the alpha (transparency) value is 0 for completely opaque.
-;; Note that color also has a kind, like shape.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass color ()
-  ((rgb :reader get-rgb :writer set-rgb :initform '(0 0 0))
-   (alpha :reader get-alpha :writer set-alpha :initform 0)
-   (kind :reader get-kind :writer set-kind :initform :default-color-kind)))
+;;; Lisp classes can inherit from one another.
 
-;; The COLORED-CIRCLE class extends both CIRCLE and COLOR.
-;; Of particular interest is which "kind" slot will COLORED-CIRCLE get,
-;; since both CIRCLE and COLOR provide the "kind" slot.
+(defclass person ()
+  ((name :initarg :name :accessor person-name)))
 
-(defclass colored-circle (color circle) ())
-(defclass circled-color (circle color) ())
+(defclass lisp-programmer (person)
+  ((favorite-lisp-implementation :initarg :favorite-lisp-implementation
+                                 :accessor favorite-lisp-implementation)))
 
-(define-test test-multiple-inheritance
-    (let ((my-colored-circle (make-instance 'colored-circle))
-          (my-circled-color (make-instance 'circled-color)))
-      (assert-equal ____ (get-kind my-colored-circle))
-      (assert-equal ____ (get-kind my-circled-color))))
+(defclass c-programmer (person)
+  (favorite-c-compiler :initarg :favorite-c-compiler
+                       :accessor favorite-c-compiler))
 
+(define-test inheritance
+  (let ((jack (make-instance 'person :name :jack))
+        (bob (make-instance 'lisp-programmer
+                            :name :bob
+                            :favorite-lisp-implementation :sbcl))
+        (adam (make-instance 'c-programmer
+                             :name :adam
+                             :favorite-c-compiler :llvm)))
+    (assert-equal ____ (person-name jack))
+    (assert-equal ____ (person-name bob))
+    (assert-equal ____ (favorite-lisp-implementation bob))
+    (assert-equal ____ (person-name adam))
+    (assert-equal ____ (favorite-c-compiler adam))
+    (true-or-false? ____ (typep bob 'person))
+    (true-or-false? ____ (typep bob 'lisp-programmer))
+    (true-or-false? ____ (typep bob 'c-programmer))))
 
-(defvar *last-kind-accessor* nil)
+;;; This includes multiple inheritance.
 
-(defmethod get-kind ((object shape))
-           (setf *last-kind-accessor* :shape)
-           (slot-value object 'kind))
+(defclass clisp-programmer (lisp-programmer c-programmer) ())
 
-(defmethod get-kind ((object circle))
-           (setf *last-kind-accessor* :circle)
-           (slot-value object 'kind))
+(define-test multiple-inheritance
+  (let ((zenon (make-instance 'clisp-programmer
+                              :name :zenon
+                              :favorite-lisp-implementation :clisp
+                              :favorite-c-compiler :gcc)))
+    (assert-equal ____ (person-name zenon))
+    (assert-equal ____ (favorite-lisp-implementation zenon))
+    (assert-equal ____ (favorite-c-compiler zenon))
+    (true-or-false? ____ (typep zenon 'person))
+    (true-or-false? ____ (typep zenon 'lisp-programmer))
+    (true-or-false? ____ (typep zenon 'c-programmer))
+    (true-or-false? ____ (typep zenon 'embeddable-common-lisp-programmer))))
 
-(defmethod get-kind ((object color))
-           (setf *last-kind-accessor* :color)
-           (slot-value object 'kind))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Precedence order is similarly a depth first search for methods.
+;;; Multiple inheritance makes it possible to work with mixin classes.
 
-(define-test test-multiple-inheritance-method-order
-    (let ((my-colored-circle (make-instance 'colored-circle))
-          (my-circled-color (make-instance 'circled-color))
-          (my-shape (make-instance 'shape))
-          (my-circle (make-instance 'circle))
-          (my-color (make-instance 'color)))
-      (get-kind my-shape)
-      (assert-equal ____ *last-kind-accessor*)
-      (get-kind my-circle)
-      (assert-equal ____ *last-kind-accessor*)
-      (get-kind my-color)
-      (assert-equal ____ *last-kind-accessor*)
-      (get-kind my-colored-circle)
-      (assert-equal ____ *last-kind-accessor*)
-      (get-kind my-circled-color)
-      (assert-equal ____ *last-kind-accessor*)))
+(defclass greeting-mixin ()
+  ((greeted-people :accessor greeted-people :initform '())))
+
+(defgeneric greet (greeter greetee))
+
+(defmethod greet ((object greeting-mixin) name)
+  ;; PUSHNEW is similar to PUSH, but it does not modify the place if the object
+  ;; we want to push is already found on the list in the place.
+  (pushnew name (greeted-people object) :test #'equal)
+  (format nil "Hello, ~A." name))
+
+(defclass chatbot ()
+  ((version :reader version :initarg :version)))
+
+(defclass greeting-chatbot (greeting-mixin chatbot) ())
+
+(define-test greeting-chatbot ()
+  (let ((chatbot (make-instance 'greeting-chatbot :version "1.0.0")))
+    (true-or-false? ____ (typep chatbot 'greeting-mixin))
+    (true-or-false? ____ (typep chatbot 'chatbot))
+    (true-or-false? ____ (typep chatbot 'greeting-chatbot))
+    (assert-equal ____ (greet chatbot "Tom"))
+    (assert-equal ____ (greeted-people chatbot))
+    (assert-equal ____ (greet chatbot "Sue"))
+    (assert-equal ____ (greet chatbot "Mark"))
+    (assert-equal ____ (greet chatbot "Kate"))
+    (assert-equal ____ (greet chatbot "Mark"))
+    (assert-equal ____ (greeted-people chatbot))
+    (assert-equal ____ (version chatbot))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass american (person) ())
+
+(defclass italian (person) ())
+
+(defgeneric stereotypical-food (person)
+  ;; We can use :METHOD options to DEFGENERIC to define methods for that
+  ;; function.
+  (:method ((person italian)) :pasta)
+  (:method ((person american)) :burger))
+
+;;; When methods or slot definitions of superclasses overlap with each other,
+;;; the order of superclasses is used to resolve the conflict.
+
+(defclass stereotypical-person (american italian) ())
+
+(defclass another-stereotypical-person (italian american) ())
+
+(define-test stereotypes
+  (let ((james (make-instance 'american))
+        (antonio (make-instance 'italian))
+        (roy (make-instance 'stereotypical-person))
+        (mary (make-instance 'another-stereotypical-person)))
+    (assert-equal ____ (stereotypical-food james))
+    (assert-equal ____ (stereotypical-food antonio))
+    (assert-equal ____ (stereotypical-food roy))
+    (assert-equal ____ (stereotypical-food mary))))
