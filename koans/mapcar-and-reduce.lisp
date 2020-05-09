@@ -26,7 +26,7 @@
     (assert-equal ____ (mapcar #'stringp numbers))
     ;; MAPCAR can work on multiple lists. The function will receive one argument
     ;; from each list.
-    (let (other-numbers '(4 8 15 16 23 42))
+    (let ((other-numbers '(4 8 15 16 23 42)))
       (assert-equal ____ (mapcar #'+ numbers other-numbers))
       (assert-equal ____ (mapcar #'* numbers other-numbers))
       ;; The function MOD performs modulo division.
@@ -48,7 +48,7 @@
     (assert-equal ____ (map 'string #'char-upcase string))
     (assert-equal ____ (map 'list #'char-upcase string))
     ;; Not all vectors containing characters are strings.
-    (assert-equal ____ (map '(vector t) #'char-upcase string))))
+    (assert-equalp ____ (map '(vector t) #'char-upcase string))))
 
 (define-test transposition
   ;; MAPCAR gives the function as many arguments as there are lists.
@@ -58,12 +58,12 @@
                   (7 8 9)))
           (transposed-list '((1 4 7)
                              (2 5 8)
-                             (3 6 9)))))
-    (assert-equal transposed-list (transpose list))
-    (assert-equal ____ (transpose (transpose list))))
-  (assert-equal ____ (transpose '(("these" "making")
-                                  ("pretzels" "me")
-                                  ("are" "thirsty")))))
+                             (3 6 9))))
+      (assert-equal transposed-list (transpose list))
+      (assert-equal ____ (transpose (transpose list))))
+    (assert-equal ____ (transpose '(("these" "making")
+                                    ("pretzels" "me")
+                                    ("are" "thirsty"))))))
 
 (define-test reduce
   ;; The function REDUCE combines the elements of a list by applying a binary

@@ -59,10 +59,10 @@
          (result-cdr (loop for letter in letters by #'cdr collect letter))
          (result-cddr (loop for letter in letters by #'cddr collect letter))
          (result-cdddr (loop for letter in letters by #'cdddr collect letter)))
-    (assert-equal ____ result-in)
-    (assert-equal ____ result-in-cdr)
-    (assert-equal ____ result-in-cddr)
-    (assert-equal ____ result-in-cdddr)))
+    (assert-equal ____ result)
+    (assert-equal ____ result-cdr)
+    (assert-equal ____ result-cddr)
+    (assert-equal ____ result-cdddr)))
 
 (define-test loop-across
   ;; LOOP can iterate over a vector with the ACROSS keyword.
@@ -75,14 +75,14 @@
     ;; LOOP can be combined with ROW-MAJOR-AREF to iterate over the contents of
     ;; a multidimensional array.
     (let* ((result (loop for i from 0 below (array-total-size array)
-                         collect (row-major-aref my-array i))))
+                         collect (row-major-aref array i))))
       (assert-equal ____ result))
     ;; It is always possible to resort to nested loops.
     (let* ((result (loop with max-i = (array-dimension array 0)
                          for i from 0 below max-i
                          collect (loop with max-j = (array-dimension array 1)
                                        for j from 0 below max-j
-                                       collect (expt (aref my-array i j) 2)))))
+                                       collect (expt (aref array i j) 2)))))
       (assert-equal ____ result))))
 
 (define-test loop-hash-table
@@ -92,9 +92,9 @@
           (gethash "The Wizard Of Oz" book-heroes) "Dorothy"
           (gethash "The Great Gatsby" book-heroes) "James Gatz")
     ;; LOOP can iterate over hash tables.
-    (let (pairs-in-table (loop for key being the hash-key of book-heroes
-                                 using (hash-value value)
-                               collect (list key value)))
+    (let ((pairs-in-table (loop for key being the hash-key of book-heroes
+                                  using (hash-value value)
+                                collect (list key value))))
       (assert-equal ____ (length pairs-in-table))
       (true-or-false? ____ (find '("The Hobbit" "Bilbo") pairs-in-table
                                  :test #'equal)))))
@@ -125,7 +125,7 @@
     (assert-equal ____ count)
     (assert-equal ____ result)))
 
-(define-test conditional-execution
+(define-test loop-conditional-execution
   (let ((numbers '(1 1 2 3 5 8 13 21)))
     ;; LOOP can execute some actions conditionally.
     (let ((result (loop for x in numbers
@@ -136,5 +136,5 @@
       (assert-equal ____ result))
     (flet ((greater-than-10-p (x) (> x 10)))
       (let ((result (loop for x in numbers
-                          when (greater-than-10-p 10) sum x)))
+                          when (greater-than-10-p x) sum x)))
         (assert-equal ____ result)))))

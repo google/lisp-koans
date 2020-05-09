@@ -50,10 +50,10 @@
   (assert-equal ____
                 (let ((x 0))
                   (and
-                   (setf x (+ 1 x))
-                   (setf x (+ 1 x))
+                   (setf x (+ 2 x))
+                   (setf x (+ 3 x))
                    nil
-                   (setf x (+ 1 x)))
+                   (setf x (+ 4 x)))
                   x)))
 
 (define-test or-short-circuit
@@ -61,8 +61,8 @@
   (assert-equal ____
                 (let ((x 0))
                   (or
-                   (setf x (+ 1 x))
-                   (setf x (+ 1 x))
+                   (setf x (+ 2 x))
+                   (setf x (+ 3 x))
                    nil
-                   (setf x (+ 1 x)))
+                   (setf x (+ 4 x)))
                   x)))

@@ -64,12 +64,12 @@
     (loop (incf counter)
           (when (>= counter 100)
             (return counter)))
-    (assert-equal ___ loop-counter))
+    (assert-equal ____ counter))
   ;; The RETURN special form can return a value out of a LOOP.
-  (let ((loop-counter 0))
-    (assert-equal ___ (loop (incf counter)
-                            (when (>= counter 100)
-                              (return counter)))))
+  (let ((counter 0))
+    (assert-equal ____ (loop (incf counter)
+                             (when (>= counter 100)
+                               (return counter)))))
   ;; The extended form of LOOP will be contemplated in a future koan.
   )
 

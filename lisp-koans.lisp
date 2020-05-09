@@ -90,7 +90,7 @@
         (t (format nil "[1mLast koan status: ~A.[0m" koan-status))))
 
 (defun print-next-suggestion-message (dirname)
-  (let ((filename (caar *collected-results*))
+  (let ((filename (caar (last *collected-results*)))
         (koan-name (caaadr (car (last (last *collected-results*)))))
         (koan-status (reverse (cadaar (cdar (last (last *collected-results*)))))))
     (format t "~&You have not yet reached enlightenment.
