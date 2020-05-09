@@ -48,9 +48,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; In addition to :BEFORE and :AFTER methods is also possible to write :AROUND
-;;; methods, whose code executes around the primary method. In such context, it
+;;; methods, which execute instead of the primary methods. In such context, it
 ;;; is possible to call the primary method via CALL-NEXT-METHOD.
-;;; In the standard method combination, the :AFTER method, if one exists, is
+;;; In the standard method combination, the :AROUND method, if one exists, is
 ;;; executed first, and it may choose whether and how to call next methods.
 
 (defgeneric grab-lollipop ()
