@@ -12,12 +12,12 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-(defpackage #:com.google.lisp-koans
+(defpackage #:lisp-koans.core
   (:use #:common-lisp
-        #:com.google.lisp-koans.test)
+        #:lisp-koans.test)
   (:export #:main))
 
-(in-package :com.google.lisp-koans)
+(in-package :lisp-koans.core)
 
 (defvar *all-koan-groups*
   (with-open-file (in #p".koans")
@@ -28,7 +28,7 @@
 ;;; Functions for loading koans
 
 (defun package-name-from-group-name (group-name)
-  (format nil "COM.GOOGLE.LISP-KOANS.KOANS.~A" group-name))
+  (format nil "LISP-KOANS.KOANS.~A" group-name))
 
 (defun load-koan-group-named (dirname koan-group-name)
   (let* ((koan-name (string-downcase (string koan-group-name)))
@@ -36,7 +36,7 @@
          (koan-package-name (package-name-from-group-name koan-group-name)))
     (unless (find-package koan-package-name)
       (make-package koan-package-name
-                    :use '(#:common-lisp #:com.google.lisp-koans.test)))
+                    :use '(#:common-lisp #:lisp-koans.test)))
     (let ((*package* (find-package koan-package-name)))
       (load (concatenate 'string dirname "/" koan-file-name)))))
 

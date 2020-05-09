@@ -26,4 +26,4 @@
 
 #+quicklisp (ql:quickload :bordeaux-threads)
 
-(com.google.lisp-koans:main "koans-solved")
+(lisp-koans.core:main "koans-solved")
