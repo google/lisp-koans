@@ -50,7 +50,7 @@
 ;;; Your goal is to write the scoring function for Greed.
 
 (defun score (&rest dice)
-  ____)
+  )
 
 (define-test score-of-an-empty-list-is-zero
   (assert-equal 0 (score)))
