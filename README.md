@@ -4,18 +4,18 @@
 
 ### One-time Method
 
-From a terminal, execute your lisp interpreter on the file 'contemplate.lsp' e.g.
+From a terminal, execute your lisp interpreter on the file 'contemplate.lisp' e.g.
 
-    abcl --noinform --noinit --load contemplate.lsp --eval '(quit)'
-    ccl -n -l contemplate.lsp -e '(quit)'
-    clisp -q -norc -ansi contemplate.lsp
-    ecl -norc -load contemplate.lsp -eval '(quit)'
-    sbcl --script contemplate.lsp
+    abcl --noinform --noinit --load contemplate.lisp --eval '(quit)'
+    ccl -n -l contemplate.lisp -e '(quit)'
+    clisp -q -norc -ansi contemplate.lisp
+    ecl -norc -load contemplate.lisp -eval '(quit)'
+    sbcl --script contemplate.lisp
 
 ### Watching the Koans
 
 On Linux and MacOS systems, the shell scripts `meditate-linux.sh` and
-`meditate-macos.sh` can be used to automatically evaluate 'contemplate.lsp'
+`meditate-macos.sh` can be used to automatically evaluate 'contemplate.lisp'
 whenever the koan files are modified, providing immediate feedback on changes
 to the koans. To run the MacOS version you need to have
 [`fswatch`](https://github.com/emcrisostomo/fswatch) installed. From a terminal:
@@ -30,33 +30,56 @@ Running on a fresh version should output the following:
 
 ```
 Thinking about ASSERTS
-    ASSERT-TRUE requires more meditation.
+    FILL-IN-THE-BLANKS requires more meditation.
 
-You have not yet reached enlightenment ...
-  A koan is incomplete.
-
+You have not yet reached enlightenment.
+    A koan is incomplete.
 Please meditate on the following code:
-   File "koans/asserts.lsp"
-   Koan "ASSERT-TRUE"
-   Current koan assert status is "(INCOMPLETE)"
+    File "koans/asserts.lisp"
+    Koan "FILL-IN-THE-BLANKS"
+    Current koan assert status is "(INCOMPLETE INCOMPLETE INCOMPLETE)"
 
-You are now 0/169 koans and 0/25 lessons closer to reaching enlightenment
+You are now 0/198 koans and 0/31 lessons closer to reaching enlightenment.
 ```
 
 This indicates that the script has completed, and that the learner should look
-to asserts.lsp to locate and fix the problem.  The problem will be within
+to asserts.lisp to locate and fix the problem.  The problem will be within
 a define-test expression such as
 
-    (define-test assert-true
-        "t is true.  Replace the blank with a t"
-        (assert-true ___))
+```lisp
+;;; In order to progress, fill in the blanks, denoted via ____ in source code.
+;;; Sometimes, you will be asked to provide values that are equal to something.
+
+(define-test fill-in-the-blanks
+  (assert-equal ____ 2)
+  (assert-equal ____ 3.14)
+  (assert-equal ____ "Hello World"))
+
+;;; Sometimes, you will be asked to say whether something is true or false,
+;;; In Common Lisp, the canonical values for truth and falsehood are T and NIL.
+
+(define-test assert-true
+  (assert-true ____))
+
+(define-test assert-false
+  (assert-false ____))
+```
 
 In this case, the test is incomplete, and the student should fill
-in the blank (____) with appropriate lisp code to make the assert pass.
-
+in the blank (\_\_\_\_) with appropriate lisp code to make the assert pass.
 
 In order to test code, or evaluate tests interactively, students may copy
 and paste code into the lisp command line REPL.
+
+### Testing
+
+To test the koans, execute your lisp interpreter on the file 'contemplate.lisp' e.g.
+
+    abcl --noinform --noinit --load test.lisp --eval '(quit)'
+    ccl -n -l test.lisp -e '(quit)'
+    clisp -q -norc -ansi test.lisp
+    ecl -norc -load test.lisp -eval '(quit)'
+    sbcl --script test.lisp
 
 ## Quoting the Ruby Koans instructions
 
@@ -81,5 +104,5 @@ For information and instructions on installing Quicklisp
 please see:
 https://www.quicklisp.org/beta/
 The user can either remove #+quicklisp and uncomment
-(load "~/.quicklisp/setup.lisp") in threads.lsp, or  if they know
-quicklisp will be loaded while running contemplate.lsp do nothing.
+(load "~/.quicklisp/setup.lisp") in threads.lisp, or  if they know
+quicklisp will be loaded while running contemplate.lisp do nothing.

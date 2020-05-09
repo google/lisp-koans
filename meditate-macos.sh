@@ -9,19 +9,19 @@ fi
 choose_command_line() {
     case "$1" in
         'abcl' )
-            echo "abcl --noinform --noinit --load contemplate.lsp --eval '(quit)'"
+            echo "abcl --noinform --noinit --load contemplate.lisp --eval '(quit)'"
         ;;
         'ccl' )
-            echo "ccl -n -l contemplate.lsp -e '(quit)'"
+            echo "ccl -n -l contemplate.lisp -e '(quit)'"
         ;;
         'clisp' )
-            echo "clisp -q -norc -ansi contemplate.lsp"
+            echo "clisp -q -norc -ansi contemplate.lisp"
         ;;
         'ecl' )
-            echo "ecl -norc -load contemplate.lsp -eval '(quit)'"
+            echo "ecl -norc -load contemplate.lisp -eval '(quit)'"
         ;;
         'sbcl' )
-            echo "sbcl --script contemplate.lsp"
+            echo "sbcl --script contemplate.lisp"
         ;;
         * )
             echo ""
