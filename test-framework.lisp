@@ -44,7 +44,7 @@
 ;;;   4) Rename the system to not collide with the original LISP-UNIT.
 
 ;;; Packages
-(defpackage #:com.google.lisp-koans.test
+(defpackage #:lisp-koans.test
   (:use #:common-lisp)
   ;; Assertions
   (:export #:assert-eq #:assert-eql #:assert-equal #:assert-equalp #:true-or-false?
@@ -54,7 +54,7 @@
   ;; Test blank
   (:export #:____))
 
-(in-package #:com.google.lisp-koans.test)
+(in-package #:lisp-koans.test)
 
 ;; The self-evaluating test blank allows many Lisp forms in the koans to compile
 ;; without errors.
