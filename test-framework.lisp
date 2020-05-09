@@ -91,7 +91,7 @@
 
 (defun test-passed-p (type expected actual test)
   (ecase type
-    (:error (or (eql (car actual) (car expected)) (typep (car actual) (car expected))))
+    (:error (or (eql (car actual) (car expected)) (subtypep (car actual) (car expected))))
     (:equal (and (>= (length expected) (length actual)) (every test expected actual)))
     (:macro (equal (car actual) (car expected)))
     (:result (eql (not (car actual)) (not (car expected))))))

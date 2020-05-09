@@ -81,6 +81,9 @@
     (true-or-false? ____ (equalp hash-table-1 hash-table-2))))
 
 (define-test i-will-make-it-equalp
+  ;; Disabled on ECL due to a conformance bug.
+  ;; See https://gitlab.com/embeddable-common-lisp/ecl/-/issues/587
+  #-ecl
   (let ((hash-table-1 (make-hash-table :test #'equal))
         (hash-table-2 (make-hash-table :test #'equal)))
     (setf (gethash "one" hash-table-1) "uno"

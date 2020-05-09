@@ -192,8 +192,15 @@
 
 (define-test accessors-division-by-zero
   (let ((condition (handler-case (divide 6 0) (division-by-zero (c) c))))
+    ;; Disabled on CLISP and ABCL due to conformance bugs.
+    ;; See https://gitlab.com/gnu-clisp/clisp/-/issues/22
+    ;; See https://github.com/armedbear/abcl/issues/177
+    #-(or clisp abcl)
     (assert-equal ____ (arithmetic-error-operands condition))
     (let ((operation (arithmetic-error-operation condition)))
+      ;; Disabled on ABCL due to a conformance bug.
+      ;; See https://github.com/armedbear/abcl/issues/177
+      #-abcl
       (assert-equal ____ (funcall operation 12 4)))))
 
 (define-test accessors-type-error
