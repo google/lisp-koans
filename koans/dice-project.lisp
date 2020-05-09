@@ -20,6 +20,9 @@
   ;; Fill in the blank with a proper slot definition.
   (____))
 
+;;; This method might be unnecessary, depending on how you define the slots of
+;;; DICE-SET.
+
 (defmethod dice-values ((object dice-set))
   ____)
 
@@ -28,7 +31,7 @@
 
 (define-test make-dice-set
   (let ((dice (make-instance 'dice-set)))
-    (assert-true (type-of dice 'dice-set))))
+    (assert-true (typep dice 'dice-set))))
 
 (define-test dice-are-six-sided
   (let ((dice (make-instance 'dice-set)))
@@ -80,12 +83,12 @@
                (let* ((condition (dice-failure value))
                       (expected-type (type-error-expected-type condition)))
                  (assert-true (typep condition 'type-error))
-                 (assert-equal value (type-error-datum))
+                 (assert-equal value (type-error-datum condition))
                  (assert-true (subtypep expected-type '(integer 1 6)))
                  (assert-true (subtypep '(integer 1 6) expected-type)))))
-      (test-dice-failure 0)
-      (test-dice-failure "0")
-      (test-dice-failure :zero)
-      (test-dice-failure 18.0)
-      (test-dice-failure -7)
-      (test-dice-failure '(6 6 6)))))
+      (dice-failure 0)
+      (dice-failure "0")
+      (dice-failure :zero)
+      (dice-failure 18.0)
+      (dice-failure -7)
+      (dice-failure '(6 6 6)))))

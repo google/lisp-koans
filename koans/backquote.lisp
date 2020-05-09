@@ -53,7 +53,7 @@
         (word 'dolphin))
     (true-or-false? ____ (equal '(1 3 5) `(1 3 5)))
     (true-or-false? ____ (equal '(1 3 5) `(1 3 number)))
-    (assert-equal _____ `(1 3 ,number))
+    (assert-equal ____ `(1 3 ,number))
     (assert-equal _____ `(word ,word ,word word))))
 
 (define-test splicing

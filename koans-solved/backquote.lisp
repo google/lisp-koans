@@ -19,23 +19,25 @@
   (let ((x '(123))
         (z '(7 8 9)))
     ;; ' quotes an expression normally.
-    (assert-equal ____ '(x 45 6 z))
+    (assert-equal '(x 45 6 z) '(x 45 6 z))
     ;; ` backquotes an expression; without any unquotes, it is equivalent to
     ;; using the normal quote.
-    (assert-equal ____ `(x 45 6 z))
+    (assert-equal '(x 45 6 z) `(x 45 6 z))
     ;; , unquotes a part of the expression.
-    (assert-equal ____ `(,x 45 6 z))
-    (assert-equal ____ `(,x 45 6 ,z))
+    (assert-equal '((123) 45 6 z) `(,x 45 6 z))
+    (assert-equal '((123) 45 6 (7 8 9)) `(,x 45 6 ,z))
     ;; ,@ splices an expression into the into the list surrounding it.
-    (assert-equal ____ `(,x 45 6 ,@z))
-    (assert-equal ____ `(,@x 45 6 ,@z))))
+    (assert-equal '((123) 45 6 7 8 9) `(,x 45 6 ,@z))
+    (assert-equal '(123 45 6 7 8 9) `(,@x 45 6 ,@z))))
 
 (define-test backquote-forms
   ;; Because of its properties, backquote is useful for constructing Lisp forms
   ;; that are macroexpansions or parts of macroexpansions.
   (let ((variable 'x))
     ;; Fill in the blank without without using backquote/unquote notation.
-    (assert-equal ____
+    (assert-equal '(if (typep x 'string)
+                    (format nil "The value of ~A is ~A" 'x x)
+                    (error 'type-error :datum x :expected-type 'string))
                   `(if (typep ,variable 'string)
                        (format nil "The value of ~A is ~A" ',variable ,variable)
                        (error 'type-error :datum ,variable
@@ -43,7 +45,9 @@
   (let ((error-type 'type-error)
         (error-arguments '(:datum x :expected-type 'string)))
     ;; Fill in the blank without without using backquote/unquote notation.
-    (assert-equal ____
+    (assert-equal '(if (typep x 'string)
+                    (format nil "The value of ~A is ~A" 'x x)
+                    (error 'type-error :datum x :expected-type 'string))
                   `(if (typep x 'string)
                        (format nil "The value of ~A is ~A" 'x x)
                        (error ',error-type ,@error-arguments)))))
@@ -51,15 +55,17 @@
 (define-test numbers-and-words
   (let ((number 5)
         (word 'dolphin))
-    (true-or-false? ____ (equal '(1 3 5) `(1 3 5)))
-    (true-or-false? ____ (equal '(1 3 5) `(1 3 number)))
-    (assert-equal _____ `(1 3 ,number))
-    (assert-equal _____ `(word ,word ,word word))))
+    (true-or-false? t (equal '(1 3 5) `(1 3 5)))
+    (true-or-false? nil (equal '(1 3 5) `(1 3 number)))
+    (assert-equal '(1 3 5) `(1 3 ,number))
+    (assert-equal '(word dolphin dolphin word) `(word ,word ,word word))))
 
 (define-test splicing
   (let ((axis '(x y z)))
-    (assert-equal '(the axis are ____) `(the axis are ,axis))
-    (assert-equal '(the axis are ____) `(the axis are ,@axis)))
+    (assert-equal '(the axis are (x y z)) `(the axis are ,axis))
+    (assert-equal '(the axis are x y z) `(the axis are ,@axis)))
   (let ((coordinates '((43.15 77.6) (42.36 71.06))))
-    (assert-equal ____ `(the coordinates are ,coordinates))
-    (assert-equal ____ `(the coordinates are ,@coordinates))))
+    (assert-equal '(the coordinates are ((43.15 77.6) (42.36 71.06)))
+                  `(the coordinates are ,coordinates))
+    (assert-equal '(the coordinates are (43.15 77.6) (42.36 71.06))
+                  `(the coordinates are ,@coordinates))))

@@ -172,8 +172,8 @@
   ;; ASSERT-ERROR is a Lisp Koans macro which verifies that the correct error
   ;; type is signaled.
   (assert-equal 3 (divide 6 2))
-  (assert-error 'division-by-zero (divide 6 0))
-  (assert-error 'type-error (divide 6 :zero)))
+  (assert-error (divide 6 0) 'division-by-zero)
+  (assert-error (divide 6 :zero) 'type-error))
 
 (define-test error-signaling-handler-case
   (flet ((try-to-divide (numerator denominator)
@@ -218,9 +218,9 @@
   ;; The macro CHECK-TYPE signals a TYPE-ERROR if the object is not of the
   ;; specified type.
   (check-type line string)
-  (cond ((= 0 (search "TIMESTAMP" line)) :timestamp)
-        ((= 0 (search "HTTP" line)) :http)
-        ((= 0 (search "LOGIN" line)) :login)
+  (cond ((eql 0 (search "TIMESTAMP" line)) :timestamp)
+        ((eql 0 (search "HTTP" line)) :http)
+        ((eql 0 (search "LOGIN" line)) :login)
         ;; The function ERROR should be used for signaling serious conditions
         ;; and errors: if the condition is not handled, it halts program
         ;; execution and starts the Lisp debugger.

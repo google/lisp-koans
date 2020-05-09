@@ -102,13 +102,14 @@
             (koan-status-message koan-status) dirname filename koan-name koan-status)))
 
 (defun print-completion-message ()
-  (format t "*********************************************************
+  (format t "
+*********************************************************
 That was the last one, well done! ENLIGHTENMENT IS YOURS!
 *********************************************************
 
 If you demand greater challenge, take a look at extra-credit.lisp
 Or, let the student become the teacher:
-Write and submit your own improvements to https://github.com/google/lisp-koans!
+Write and submit your own improvements to https://github.com/google/lisp-koans!~%
 "))
 
 (defun print-progress-message ()

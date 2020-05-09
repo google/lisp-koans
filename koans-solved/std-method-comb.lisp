@@ -13,7 +13,7 @@
 ;;; limitations under the License.
 
 (defclass access-counter ()
-  ((value :reader value :initform :value)
+  ((value :accessor value :initarg :value)
    (access-count :reader access-count :initform 0)))
 
 ;;; The generated reader, writer, and accessor functions are generic functions.
@@ -27,23 +27,23 @@
 (defmethod value :after ((object access-counter))
   (incf (slot-value object 'access-count)))
 
-(defmethod (setf value) :after ((object access-counter))
+(defmethod (setf value) :after (new-value (object access-counter))
   (incf (slot-value object 'access-count)))
 
 (define-test defmethod-after
   (let ((counter (make-instance 'access-counter :value 42)))
-    (assert-equal ____ (access-count counter))
-    (assert-equal ____ (value counter))
-    (assert-equal ____ (access-count counter))
+    (assert-equal 0 (access-count counter))
+    (assert-equal 42 (value counter))
+    (assert-equal 1 (access-count counter))
     (setf (value counter) 24)
-    (assert-equal ____ (access-count counter))
-    (assert-equal ____ (value counter))
-    (assert-equal ____ (access-count counter))
+    (assert-equal 2 (access-count counter))
+    (assert-equal 24 (value counter))
+    (assert-equal 3 (access-count counter))
     ;; We read the value three more times and discard the result.
     (value counter)
     (value counter)
     (value counter)
-    (assert-equal ____ (access-count counter))))
+    (assert-equal 6 (access-count counter))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -61,9 +61,9 @@
   (:method (was-nice-p) (declare (ignore was-nice-p)) :lollipop))
 
 (define-test lollipop
-  (assert-equal ____ (grab-lollipop))
-  (assert-equal ____ (grab-lollipop-while-mom-is-nearby t))
-  (assert-equal ____ (grab-lollipop-while-mom-is-nearby nil)))
+  (assert-equal :lollipop (grab-lollipop))
+  (assert-equal :lollipop (grab-lollipop-while-mom-is-nearby t))
+  (assert-equal :no-lollipop (grab-lollipop-while-mom-is-nearby nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -72,21 +72,22 @@
   ;; REMAINING-TIME function is called, it should return a number one less than
   ;; the previous time that it returned. If the countdown hits zero, :BANG
   ;; should be returned instead.
-  ((remaining-time :reader remaining-time :initarg :value)))
+  ((remaining-time :reader remaining-time :initarg :time)))
 
 (defmethod remaining-time :around ((object countdown))
-  (let ((value (call-next-method)))
-    (if (<= 0 value)
+  (let ((time (call-next-method)))
+    (if (< 0 time)
         ;; DECF is similar to INCF. It decreases the value stored in the place
         ;; and returns the decreased value.
-        (decf value)
+        (decf (slot-value object 'remaining-time))
         :bang)))
 
 (define-test countdown
-  (let ((countdown (make-instance 'countdown :value 4)))
+  (let ((countdown (make-instance 'countdown :time 4)))
     (assert-equal 3 (remaining-time countdown))
     (assert-equal 2 (remaining-time countdown))
     (assert-equal 1 (remaining-time countdown))
+    (assert-equal 0 (remaining-time countdown))
     (assert-equal :bang (remaining-time countdown))
     (assert-equal :bang (remaining-time countdown))))
 
@@ -124,10 +125,10 @@
 (define-test multiple-methods
   (let ((object (make-instance 'object)))
     (frobnicate object)
-    (assert-equal ____ (counter object)))
+    (assert-equal 2305070 (counter object)))
   (let ((object (make-instance 'bigger-object)))
     (frobnicate object)
-    (assert-equal ____ (counter object))))
+    (assert-equal 12345678 (counter object))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -161,10 +162,10 @@
 (define-test standard-method-combination-order
   (let ((object (make-instance 'object)))
     (calculate object)
-    (assert-equal ____ (counter object)))
+    (assert-equal -1/94 (counter object)))
   (let ((object (make-instance 'bigger-object)))
     (calculate object)
-    (assert-equal ____ (counter object))))
+    (assert-equal 197/99 (counter object))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -190,13 +191,13 @@
 
 (define-test salary-at-company-a
   (let ((programmer (make-instance 'programmer)))
-    (assert-equal ____ (salary-at-company-a programmer)))
+    (assert-equal 120000 (salary-at-company-a programmer)))
   (let ((programmer (make-instance 'senior-programmer)))
-    (assert-equal ____ (salary-at-company-a programmer)))
+    (assert-equal 320000 (salary-at-company-a programmer)))
   (let ((programmer (make-instance 'full-stack-programmer)))
-    (assert-equal ____ (salary-at-company-a programmer)))
+    (assert-equal 168000 (salary-at-company-a programmer)))
   (let ((programmer (make-instance 'senior-full-stack-programmer)))
-    (assert-equal ____ (salary-at-company-a programmer))))
+    (assert-equal 368000 (salary-at-company-a programmer))))
 
 ;;; It is also possible to define custom method combinations.
 
@@ -210,10 +211,10 @@
 
 (define-test salary-at-company-b
   (let ((programmer (make-instance 'programmer)))
-    (assert-equal ____ (salary-at-company-b programmer)))
+    (assert-equal 120000 (salary-at-company-b programmer)))
   (let ((programmer (make-instance 'senior-programmer)))
-    (assert-equal ____ (salary-at-company-b programmer)))
+    (assert-equal 240000 (salary-at-company-b programmer)))
   (let ((programmer (make-instance 'full-stack-programmer)))
-    (assert-equal ____ (salary-at-company-b programmer)))
+    (assert-equal 168000 (salary-at-company-b programmer)))
   (let ((programmer (make-instance 'senior-full-stack-programmer)))
-    (assert-equal ____ (salary-at-company-b programmer))))
+    (assert-equal 336000 (salary-at-company-b programmer))))
