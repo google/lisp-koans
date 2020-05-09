@@ -26,7 +26,7 @@
 (defmethod dice-values ((object dice-set))
   ____)
 
-(defmethod roll ((count integer) (object dice-set))
+(defmethod roll (count (object dice-set))
   ____)
 
 (define-test make-dice-set
@@ -76,7 +76,7 @@
 (define-test junk-as-dice-count
   (let ((dice (make-instance 'dice-set)))
     (labels ((dice-failure (count)
-               (handler-case (progn (roll-dice count dice)
+               (handler-case (progn (roll count dice)
                                     (error "Test failure"))
                  (error (condition) condition)))
              (test-dice-failure (value)
@@ -84,11 +84,10 @@
                       (expected-type (type-error-expected-type condition)))
                  (assert-true (typep condition 'type-error))
                  (assert-equal value (type-error-datum condition))
-                 (assert-true (subtypep expected-type '(integer 1 6)))
                  (assert-true (subtypep '(integer 1 6) expected-type)))))
-      (dice-failure 0)
-      (dice-failure "0")
-      (dice-failure :zero)
-      (dice-failure 18.0)
-      (dice-failure -7)
-      (dice-failure '(6 6 6)))))
+      (test-dice-failure 0)
+      (test-dice-failure "0")
+      (test-dice-failure :zero)
+      (test-dice-failure 18.0)
+      (test-dice-failure -7)
+      (test-dice-failure '(6 6 6)))))
