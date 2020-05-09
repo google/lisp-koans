@@ -90,7 +90,7 @@
 
 (defun test-total-count ()
   "Returns the total number of tests."
-  (loop for table being the hash-value of *test-db*
+  (loop for table being the hash-values of *test-db*
         sum (length table)))
 
 ;;; Test passed predicate.

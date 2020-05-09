@@ -92,7 +92,7 @@
           (gethash "The Wizard Of Oz" book-heroes) "Dorothy"
           (gethash "The Great Gatsby" book-heroes) "James Gatz")
     ;; LOOP can iterate over hash tables.
-    (let ((pairs-in-table (loop for key being the hash-key of book-heroes
+    (let ((pairs-in-table (loop for key being the hash-keys of book-heroes
                                   using (hash-value value)
                                 collect (list key value))))
       (assert-equal ____ (length pairs-in-table))
