@@ -49,8 +49,23 @@
 ;;;
 ;;; Your goal is to write the scoring function for Greed.
 
+(defun score-once (&rest dice)
+  (let ((sorted (sort (copy-list dice) #'<)))
+    (cond ((search '(1 1 1) sorted) (list 1000 (remove 1 sorted :count 3)))
+          ((search '(2 2 2) sorted) (list 200 (remove 2 sorted :count 3)))
+          ((search '(3 3 3) sorted) (list 300 (remove 3 sorted :count 3)))
+          ((search '(4 4 4) sorted) (list 400 (remove 4 sorted :count 3)))
+          ((search '(5 5 5) sorted) (list 500 (remove 5 sorted :count 3)))
+          ((search '(6 6 6) sorted) (list 600 (remove 6 sorted :count 3)))
+          ((find 5 sorted) (list 50 (remove 5 sorted :count 1)))
+          ((find 1 sorted) (list 100 (remove 1 sorted :count 1)))
+          (t (list 0 '())))))
+
 (defun score (&rest dice)
-  ____)
+  (loop for current-dice = dice then remaining-dice
+        for (score remaining-dice) = (apply #'score-once current-dice)
+        sum score
+        while remaining-dice))
 
 (define-test score-of-an-empty-list-is-zero
   (assert-equal 0 (score)))
