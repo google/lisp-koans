@@ -67,4 +67,6 @@
     (dotimes (i (* 2 2 2 2))
       (setf (row-major-aref my-array i) i))
     (assert-equal 0 (aref my-array 0 0 0 0))
+    (assert-equal 2 (aref my-array 0 0 1 0))
+    (assert-equal 4 (aref my-array 0 1 0 0))
     (assert-equal 15 (aref my-array 1 1 1 1))))
