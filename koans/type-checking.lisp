@@ -54,7 +54,7 @@
         (integer-2 most-positive-fixnum)
         (integer-3 (1+ most-positive-fixnum))
         (integer-4 (1- most-negative-fixnum)))
-    (true-or-false? ____ (typep integer-1 'fixunm))
+    (true-or-false? ____ (typep integer-1 'fixnum))
     (true-or-false? ____ (typep integer-1 'bignum))
     (true-or-false? ____ (typep integer-2 'fixnum))
     (true-or-false? ____ (typep integer-2 'bignum))
@@ -77,8 +77,9 @@
   ;; The function SUBTYPEP attempts to answer whether one type specifier
   ;; represents a subtype of the other type specifier.
   (true-or-false? ____ (subtypep 'bit 'integer))
-  (true-or-false? ____ (subtypep (type-of 1) (type-of 2)))
-  (true-or-false? ____ (subtypep (type-of 2) (type-of 1))))
+  (true-or-false? ____ (subtypep 'vector 'array))
+  (true-or-false? ____ (subtypep 'string 'vector))
+  (true-or-false? ____ (subtypep 'null 'list)))
 
 (define-test list-type-specifiers
   ;; Some type specifiers are lists; this way, they carry more information than
@@ -96,7 +97,7 @@
   (true-or-false? ____ (subtypep '(vector double-float 100) '(vector * 100)))
   (true-or-false? ____ (subtypep '(vector double-float 100) '(vector double-float *)))
   (true-or-false? ____ (subtypep '(vector double-float 100) '(vector * *)))
-  (true-or-false? ____ (subtypep '(vector double-float 100) '(array number *)))
+  (true-or-false? ____ (subtypep '(vector double-float 100) '(array * *)))
   (true-or-false? ____ (subtypep '(vector double-float 100) t)))
 
 (define-test type-coercion
@@ -145,8 +146,8 @@
 (define-test guess-that-type
   ;; Fill in the blank with a type specifier that satisfies the following tests.
   (let ((type ____))
-    (assert-true (subtypep type '(simple-array t (* 3 *))))
-    (assert-true (subtypep type '(simple-array t (5 * *))))
+    (assert-true (subtypep type '(simple-array * (* 3 *))))
+    (assert-true (subtypep type '(simple-array * (5 * *))))
     (assert-true (subtypep type '(simple-array array *)))
     (assert-true (typep (make-array '(5 3 9) :element-type 'string) type))
     (assert-true (typep (make-array '(5 3 33) :element-type 'vector) type))))

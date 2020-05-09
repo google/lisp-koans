@@ -154,7 +154,7 @@
 
 (defmacro assert-true (form)
   "Assert whether the form is true."
-  `(expand-assert :result ,form ,(notnot form) t))
+  `(expand-assert :result ,form (notnot ,form) t))
 
 ;;; Run the tests
 

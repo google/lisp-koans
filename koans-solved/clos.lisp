@@ -27,15 +27,22 @@
     (setf (slot-value car-1 'speed) 220)
     (setf (slot-value car-2 'color) :blue)
     (setf (slot-value car-2 'speed) 240)
-    (assert-equal ____ (slot-value car-1 'color))
-    (assert-equal ____ (slot-value car-2 'speed))))
+    (assert-equal :red (slot-value car-1 'color))
+    (assert-equal 240 (slot-value car-2 'speed))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Common Lisp predefines the symbol SPEED in the COMMON-LISP package, which
+;;; means that we cannot define a function named after it. The function SHADOW
+;;; creates a new symbol with the same name in the current package and shadows
+;;; the predefined one within the current package.
+
+(shadow 'speed)
 
 (defclass spaceship ()
   ;; It is possible to define reader, writer, and accessor functions for slots.
   ((color :reader color :writer (setf color))
-   (speed :accessor color)))
+   (speed :accessor speed)))
 
 ;;; Specifying a reader function named COLOR is equivalent to
 ;;; (DEFMETHOD COLOR ((OBJECT SPACECSHIP)) ...)
@@ -47,20 +54,20 @@
   (let ((ship (make-instance 'spaceship)))
     (setf (color ship) :orange
           (speed ship) 1000)
-    (assert-equal ____ (color ship))
-    (assert-equal ____ (speed ship))))
+    (assert-equal :orange (color ship))
+    (assert-equal 1000 (speed ship))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass bike ()
   ;; It is also possible to define initial arguments for slots.
   ((color :reader color :initarg :color)
-   (speed :reader color :initarg :color)))
+   (speed :reader speed :initarg :speed)))
 
 (define-test initargs
   (let ((bike (make-instance 'bike :color :blue :speed 30)))
-    (assert-equal ____ (color bike))
-    (assert-equal ____ (speed bike))))
+    (assert-equal :blue (color bike))
+    (assert-equal 30 (speed bike))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -84,15 +91,15 @@
                             :favorite-lisp-implementation :sbcl))
         (adam (make-instance 'c-programmer
                              :name :adam
-                             :favorite-c-compiler :llvm)))
-    (assert-equal ____ (person-name jack))
-    (assert-equal ____ (person-name bob))
-    (assert-equal ____ (favorite-lisp-implementation bob))
-    (assert-equal ____ (person-name adam))
-    (assert-equal ____ (favorite-c-compiler adam))
-    (true-or-false? ____ (typep bob 'person))
-    (true-or-false? ____ (typep bob 'lisp-programmer))
-    (true-or-false? ____ (typep bob 'c-programmer))))
+                             :favorite-c-compiler :clang)))
+    (assert-equal :jack (person-name jack))
+    (assert-equal :bob (person-name bob))
+    (assert-equal :sbcl (favorite-lisp-implementation bob))
+    (assert-equal :adam (person-name adam))
+    (assert-equal :clang (favorite-c-compiler adam))
+    (true-or-false? t (typep bob 'person))
+    (true-or-false? t (typep bob 'lisp-programmer))
+    (true-or-false? nil (typep bob 'c-programmer))))
 
 ;;; This includes multiple inheritance.
 
@@ -103,13 +110,13 @@
                               :name :zenon
                               :favorite-lisp-implementation :clisp
                               :favorite-c-compiler :gcc)))
-    (assert-equal ____ (person-name zenon))
-    (assert-equal ____ (favorite-lisp-implementation zenon))
-    (assert-equal ____ (favorite-c-compiler zenon))
-    (true-or-false? ____ (typep zenon 'person))
-    (true-or-false? ____ (typep zenon 'lisp-programmer))
-    (true-or-false? ____ (typep zenon 'c-programmer))
-    (true-or-false? ____ (typep zenon 'embeddable-common-lisp-programmer))))
+    (assert-equal :zenon (person-name zenon))
+    (assert-equal :clisp (favorite-lisp-implementation zenon))
+    (assert-equal :gcc (favorite-c-compiler zenon))
+    (true-or-false? t (typep zenon 'person))
+    (true-or-false? t (typep zenon 'lisp-programmer))
+    (true-or-false? t (typep zenon 'c-programmer))
+    (true-or-false? t (typep zenon 'clisp-programmer))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -133,17 +140,17 @@
 
 (define-test greeting-chatbot ()
   (let ((chatbot (make-instance 'greeting-chatbot :version "1.0.0")))
-    (true-or-false? ____ (typep chatbot 'greeting-mixin))
-    (true-or-false? ____ (typep chatbot 'chatbot))
-    (true-or-false? ____ (typep chatbot 'greeting-chatbot))
-    (assert-equal ____ (greet chatbot "Tom"))
-    (assert-equal ____ (greeted-people chatbot))
-    (assert-equal ____ (greet chatbot "Sue"))
-    (assert-equal ____ (greet chatbot "Mark"))
-    (assert-equal ____ (greet chatbot "Kate"))
-    (assert-equal ____ (greet chatbot "Mark"))
-    (assert-equal ____ (greeted-people chatbot))
-    (assert-equal ____ (version chatbot))))
+    (true-or-false? t (typep chatbot 'greeting-mixin))
+    (true-or-false? t (typep chatbot 'chatbot))
+    (true-or-false? t (typep chatbot 'greeting-chatbot))
+    (assert-equal "Hello, Tom." (greet chatbot "Tom"))
+    (assert-equal '("Tom") (greeted-people chatbot))
+    (assert-equal "Hello, Sue." (greet chatbot "Sue"))
+    (assert-equal "Hello, Mark." (greet chatbot "Mark"))
+    (assert-equal "Hello, Kate." (greet chatbot "Kate"))
+    (assert-equal "Hello, Mark." (greet chatbot "Mark"))
+    (assert-equal '("Kate" "Mark" "Sue" "Tom") (greeted-people chatbot))
+    (assert-equal "1.0.0" (version chatbot))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -168,7 +175,7 @@
         (antonio (make-instance 'italian))
         (roy (make-instance 'stereotypical-person))
         (mary (make-instance 'another-stereotypical-person)))
-    (assert-equal ____ (stereotypical-food james))
-    (assert-equal ____ (stereotypical-food antonio))
-    (assert-equal ____ (stereotypical-food roy))
-    (assert-equal ____ (stereotypical-food mary))))
+    (assert-equal :burger (stereotypical-food james))
+    (assert-equal :pasta (stereotypical-food antonio))
+    (assert-equal :burger (stereotypical-food roy))
+    (assert-equal :pasta (stereotypical-food mary))))

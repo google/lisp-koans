@@ -32,10 +32,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; Common Lisp predefines the symbol SPEED in the COMMON-LISP package, which
+;;; means that we cannot define a function named after it. The function SHADOW
+;;; creates a new symbol with the same name in the current package and shadows
+;;; the predefined one within the current package.
+
+(shadow 'speed)
+
 (defclass spaceship ()
   ;; It is possible to define reader, writer, and accessor functions for slots.
   ((color :reader color :writer (setf color))
-   (speed :accessor color)))
+   (speed :accessor speed)))
 
 ;;; Specifying a reader function named COLOR is equivalent to
 ;;; (DEFMETHOD COLOR ((OBJECT SPACECSHIP)) ...)
@@ -55,7 +62,7 @@
 (defclass bike ()
   ;; It is also possible to define initial arguments for slots.
   ((color :reader color :initarg :color)
-   (speed :reader color :initarg :color)))
+   (speed :reader speed :initarg :speed)))
 
 (define-test initargs
   (let ((bike (make-instance 'bike :color :blue :speed 30)))
@@ -84,7 +91,7 @@
                             :favorite-lisp-implementation :sbcl))
         (adam (make-instance 'c-programmer
                              :name :adam
-                             :favorite-c-compiler :llvm)))
+                             :favorite-c-compiler :clang)))
     (assert-equal ____ (person-name jack))
     (assert-equal ____ (person-name bob))
     (assert-equal ____ (favorite-lisp-implementation bob))
@@ -109,7 +116,7 @@
     (true-or-false? ____ (typep zenon 'person))
     (true-or-false? ____ (typep zenon 'lisp-programmer))
     (true-or-false? ____ (typep zenon 'c-programmer))
-    (true-or-false? ____ (typep zenon 'embeddable-common-lisp-programmer))))
+    (true-or-false? ____ (typep zenon 'clisp-programmer))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
