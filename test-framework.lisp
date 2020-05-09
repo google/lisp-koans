@@ -66,13 +66,19 @@
 (defparameter *test-db* (make-hash-table :test #'eq))
 
 (defun package-table (package)
-  (or (gethash (find-package package) *test-db*)
-      (setf (gethash package *test-db*) (make-hash-table))))
+  (multiple-value-bind (value foundp) (gethash (find-package package) *test-db*)
+    (if foundp
+        value
+        (setf (gethash package *test-db*) '()))))
+
+(defun (setf package-table) (new-value package)
+  (setf (gethash (find-package package) *test-db*) new-value))
 
 (defmacro define-test (name &body body)
   "Store the test in the test database."
   `(progn
-     (setf (gethash ',name (package-table *package*)) ',body)
+     (pushnew (list ',name ',body) (package-table *package*)
+              :test (lambda (x y) (eq (car x) (car y))))
      ',name))
 
 ;;; Test statistics
@@ -80,12 +86,12 @@
 (defun test-count (&optional (package *package*))
   "Returns the number of tests for a package."
   (let ((table (package-table package)))
-    (if table (hash-table-count table) 0)))
+    (length table)))
 
 (defun test-total-count ()
   "Returns the total number of tests."
   (loop for table being the hash-value of *test-db*
-        sum (hash-table-count table)))
+        sum (length table)))
 
 ;;; Test passed predicate.
 
@@ -169,8 +175,7 @@
 (defun run-koans (package)
   "Run all koans for a given package."
   (loop with results = nil
-        for test-name being each hash-key in (package-table package)
-          using (hash-value unit-test)
+        for (test-name unit-test) in (reverse (package-table package))
         for koan-result = (run-koan unit-test)
         do (push (list test-name koan-result) results)
         while (every (lambda (x) (eq x :pass)) koan-result)
