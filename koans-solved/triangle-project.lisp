@@ -14,11 +14,20 @@
 
 (define-condition triangle-error (error)
   ;; Fill in the blank with a suitable slot definition.
-  (____))
+  ((triangle-error-sides :reader triangle-error-sides :initarg :sides)))
 
 (defun triangle (a b c)
-  ;;;Fill in the blank with a function that satisfies the below tests.
-  ____)
+  (check-type a (real (0)))
+  (check-type b (real (0)))
+  (check-type c (real (0)))
+  ;; Fill in the blank with a function that satisfies the below tests.
+  (let* ((min (min a b c))
+         (max (max a b c))
+         (mid (car (remove min (remove max (list a b c) :count 1) :count 1))))
+    (cond ((<= (+ min mid) max) (error 'triangle-error :sides (list a b c)))
+          ((= max mid min) :equilateral)
+          ((= max mid) :isosceles)
+          (t :scalene))))
 
 (define-test equilateral-triangles
   ;; Equilateral triangles have three sides of equal length,
@@ -45,7 +54,7 @@
              (error (condition) condition))))
     (let ((condition (triangle-failure 0 0 0)))
       (assert-true (typep condition 'type-error))
-      (assert-equal 0 (type-error-datum))
+      (assert-equal 0 (type-error-datum condition))
       ;; The type (REAL (0)) represents all positive numbers.
       (assert-true (subtypep (type-error-expected-type condition) '(real (0))))
       ;; If two type specifiers are SUBTYPEP of one another, then they represent
@@ -53,7 +62,7 @@
       (assert-true (subtypep '(real (0)) (type-error-expected-type condition))))
     (let ((condition (triangle-failure 3 4 -5)))
       (assert-true (typep condition 'type-error))
-      (assert-equal -5 (type-error-datum))
+      (assert-equal -5 (type-error-datum condition))
       (assert-true (subtypep (type-error-expected-type condition) '(real (0))))
       (assert-true (subtypep '(real (0)) (type-error-expected-type condition))))
     (let ((condition (triangle-failure 1 1 3)))

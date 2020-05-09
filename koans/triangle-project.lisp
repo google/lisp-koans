@@ -17,7 +17,7 @@
   (____))
 
 (defun triangle (a b c)
-  ;;;Fill in the blank with a function that satisfies the below tests.
+  ;; Fill in the blank with a function that satisfies the below tests.
   ____)
 
 (define-test equilateral-triangles
@@ -45,7 +45,7 @@
              (error (condition) condition))))
     (let ((condition (triangle-failure 0 0 0)))
       (assert-true (typep condition 'type-error))
-      (assert-equal 0 (type-error-datum))
+      (assert-equal 0 (type-error-datum condition))
       ;; The type (REAL (0)) represents all positive numbers.
       (assert-true (subtypep (type-error-expected-type condition) '(real (0))))
       ;; If two type specifiers are SUBTYPEP of one another, then they represent
@@ -53,7 +53,7 @@
       (assert-true (subtypep '(real (0)) (type-error-expected-type condition))))
     (let ((condition (triangle-failure 3 4 -5)))
       (assert-true (typep condition 'type-error))
-      (assert-equal -5 (type-error-datum))
+      (assert-equal -5 (type-error-datum condition))
       (assert-true (subtypep (type-error-expected-type condition) '(real (0))))
       (assert-true (subtypep '(real (0)) (type-error-expected-type condition))))
     (let ((condition (triangle-failure 1 1 3)))

@@ -30,7 +30,7 @@
   ;; ASSERT-EXPANDS macroexpands the first form once and checks if it is equal
   ;; to the second form.
   (assert-expands (my-and (= 0 (random 6)) (error "Bang!"))
-                  (when (= 0 (random 6)) (error "Bang!")))
+                  '(when (= 0 (random 6)) (error "Bang!")))
   (assert-expands (my-and (= 0 (random 6))
                           (= 0 (random 6))
                           (= 0 (random 6))
@@ -50,8 +50,8 @@
     (let ((limit 10)
           (result '()))
       (for (i 0 3)
-        (push i result)
-        (assert-equal ____ limit))
+           (push i result)
+           (assert-equal ____ limit))
       (assert-equal ____ (nreverse result)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

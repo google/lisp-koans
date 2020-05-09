@@ -13,7 +13,7 @@
 ;;; limitations under the License.
 
 (defclass access-counter ()
-  ((value :reader value :initform :value)
+  ((value :accessor value :initarg :value)
    (access-count :reader access-count :initform 0)))
 
 ;;; The generated reader, writer, and accessor functions are generic functions.
@@ -27,7 +27,7 @@
 (defmethod value :after ((object access-counter))
   (incf (slot-value object 'access-count)))
 
-(defmethod (setf value) :after ((object access-counter))
+(defmethod (setf value) :after (new-value (object access-counter))
   (incf (slot-value object 'access-count)))
 
 (define-test defmethod-after
@@ -72,23 +72,24 @@
   ;; REMAINING-TIME function is called, it should return a number one less than
   ;; the previous time that it returned. If the countdown hits zero, :BANG
   ;; should be returned instead.
-  ((remaining-time :reader remaining-time :initarg :value)))
+  ((remaining-time :reader remaining-time :initarg :time)))
 
 (defmethod remaining-time :around ((object countdown))
-  (let ((value (call-next-method)))
-    (if (<= 0 value)
+  (let ((time (call-next-method)))
+    (if (< 0 time)
         ;; DECF is similar to INCF. It decreases the value stored in the place
         ;; and returns the decreased value.
-        (decf value)
+        (decf (slot-value object 'remaining-time))
         :bang)))
 
 (define-test countdown
-  (let ((countdown (make-instance 'countdown :value 4)))
+  (let ((countdown (make-instance 'countdown :time 4)))
     (assert-equal 3 (remaining-time countdown))
-    (assert-equal 2 (remaining-time countdown))
-    (assert-equal 1 (remaining-time countdown))
-    (assert-equal :bang (remaining-time countdown))
-    (assert-equal :bang (remaining-time countdown))))
+    (assert-equal ____ (remaining-time countdown))
+    (assert-equal ____ (remaining-time countdown))
+    (assert-equal ____ (remaining-time countdown))
+    (assert-equal ____ (remaining-time countdown))
+    (assert-equal ____ (remaining-time countdown))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
