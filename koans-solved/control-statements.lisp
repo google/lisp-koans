@@ -57,7 +57,7 @@
                   x)))
 
 (define-test or-short-circuit
-  ;; AND only evaluates forms until one evaluates to non-NIL.
+  ;; OR only evaluates forms until one evaluates to non-NIL.
   (assert-equal 2
                 (let ((x 0))
                   (or
