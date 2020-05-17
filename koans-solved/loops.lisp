@@ -17,7 +17,7 @@
 
 (define-test loop-collect
   ;; LOOP can collect the results in various ways.
-  (let* ((result-1 (loop for letter in '(#\a \b #\c #\d) collect letter))
+  (let* ((result-1 (loop for letter in '(#\a #\b #\c #\d) collect letter))
          (result-2 (loop for number in '(1 2 3 4 5) sum number))
          (result-3 (loop for list in '((foo) (bar) (baz)) append list)))
     (assert-equal '(#\a \b #\c #\d) result-1)
