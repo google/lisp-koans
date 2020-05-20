@@ -64,64 +64,70 @@
 
 (defvar *list*)
 
-(defun handle-my-error (condition)
-  (declare (ignore condition))
-  (push :my-error *list*))
+(define-condition foo () ())
 
-(defun handle-error (condition)
-  (declare (ignore condition))
-  (push :error *list*))
+(define-condition bar (foo) ())
 
-(defun handle-my-serious-condition (condition)
+(define-condition baz (bar) ())
+
+(defun handle-foo (condition)
   (declare (ignore condition))
-  (push :my-serious-condition *list*))
+  (push :foo *list*))
+
+(defun handle-bar (condition)
+  (declare (ignore condition))
+  (push :bar *list*))
+
+(defun handle-baz (condition)
+  (declare (ignore condition))
+  (push :baz *list*))
 
 (define-test handler-bind
   ;; When a condition is signaled, all handlers whose type matches the
   ;; condition's type are allowed to execute.
   (let ((*list* '()))
-    (handler-bind ((my-error #'handle-my-error)
-                   (error #'handle-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (signal (make-condition 'my-error)))
+    (handler-bind ((bar #'handle-bar)
+                   (foo #'handle-foo)
+                   (baz #'handle-baz))
+      (signal (make-condition 'baz)))
     (assert-equal ____ *list*)))
 
 (define-test handler-order
   ;; The order of binding handlers matters.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (my-error #'handle-my-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (signal (make-condition 'my-error)))
+    (handler-bind ((foo #'handle-foo)
+                   (bar #'handle-bar)
+                   (baz #'handle-baz))
+      (signal (make-condition 'baz)))
     (assert-equal ____ *list*)))
 
 (define-test multiple-handler-binds
   ;; It is possible to bind handlers in steps.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (handler-bind ((my-error #'handle-my-error))
-        (signal (make-condition 'my-error))))
+    (handler-bind ((foo #'handle-foo)
+                   (baz #'handle-baz))
+      (handler-bind ((bar #'handle-bar))
+        (signal (make-condition 'baz))))
     (assert-equal ____ *list*)))
 
 (define-test same-handler
   ;; The same handler may be bound multiple times.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (error #'handle-error))
-      (handler-bind ((my-error #'handle-my-error)
-                     (error #'handle-error)
-                     (my-error #'handle-my-error))
-        (signal (make-condition 'my-error))))
+    (handler-bind ((foo #'handle-foo)
+                   (foo #'handle-foo))
+      (handler-bind ((bar #'handle-bar)
+                     (foo #'handle-foo)
+                     (bar #'handle-bar))
+        (signal (make-condition 'baz))))
     (assert-equal ____ *list*)))
 
 (define-test handler-types
   ;; A handler is not executed if it does not match the condition type.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (my-error #'handle-my-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (signal (make-condition 'my-serious-condition)))
+    (handler-bind ((foo #'handle-foo)
+                   (bar #'handle-bar)
+                   (baz #'handle-baz))
+      (signal (make-condition 'bar)))
     (assert-equal ____ *list*)))
 
 (define-test handler-transfer-of-control
@@ -129,15 +135,25 @@
   ;; or it may handle the condition by transferring control elsewhere.
   (let ((*list* '()))
     (block my-block
-      (handler-bind ((error #'handle-error)
-                     (error (lambda (condition)
-                              (declare (ignore condition))
-                              (return-from my-block)))
-                     (error #'handle-error))
-        (signal (make-condition 'my-error))))
+      (handler-bind ((foo #'handle-foo)
+                     (foo (lambda (condition)
+                            (declare (ignore condition))
+                            (return-from my-block)))
+                     (foo #'handle-foo))
+        (signal (make-condition 'foo))))
     (assert-equal ____ *list*)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun handle-error (condition)
+  (declare (ignore condition))
+  (push :error *list*))
+
+(define-condition my-error (error) ())
+
+(defun handle-my-error (condition)
+  (declare (ignore condition))
+  (push :my-error *list*))
 
 (define-test handler-case
   ;; HANDLER-CASE always transfers control before executing the case forms.
