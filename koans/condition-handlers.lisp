@@ -64,64 +64,70 @@
 
 (defvar *list*)
 
-(defun handle-my-error (condition)
-  (declare (ignore condition))
-  (push :my-error *list*))
+(define-condition silly-condition () ())
 
-(defun handle-error (condition)
-  (declare (ignore condition))
-  (push :error *list*))
+(define-condition very-silly-condition (silly-condition) ())
 
-(defun handle-my-serious-condition (condition)
+(define-condition most-silly-condition (very-silly-condition) ())
+
+(defun handle-silly-condition (condition)
   (declare (ignore condition))
-  (push :my-serious-condition *list*))
+  (push :silly-condition *list*))
+
+(defun handle-very-silly-condition (condition)
+  (declare (ignore condition))
+  (push :very-silly-condition *list*))
+
+(defun handle-most-silly-condition (condition)
+  (declare (ignore condition))
+  (push :most-silly-condition *list*))
 
 (define-test handler-bind
   ;; When a condition is signaled, all handlers whose type matches the
   ;; condition's type are allowed to execute.
   (let ((*list* '()))
-    (handler-bind ((my-error #'handle-my-error)
-                   (error #'handle-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (signal (make-condition 'my-error)))
+    (handler-bind ((very-silly-condition #'handle-very-silly-condition)
+                   (silly-condition #'handle-silly-condition)
+                   (most-silly-condition #'handle-most-silly-condition))
+      (signal (make-condition 'most-silly-condition)))
     (assert-equal ____ *list*)))
 
 (define-test handler-order
   ;; The order of binding handlers matters.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (my-error #'handle-my-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (signal (make-condition 'my-error)))
+    (handler-bind ((silly-condition #'handle-silly-condition)
+                   (very-silly-condition #'handle-very-silly-condition)
+                   (most-silly-condition #'handle-most-silly-condition))
+      (signal (make-condition 'most-silly-condition)))
     (assert-equal ____ *list*)))
 
 (define-test multiple-handler-binds
   ;; It is possible to bind handlers in steps.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (handler-bind ((my-error #'handle-my-error))
-        (signal (make-condition 'my-error))))
+    (handler-bind ((silly-condition #'handle-silly-condition)
+                   (most-silly-condition #'handle-most-silly-condition))
+      (handler-bind ((very-silly-condition #'handle-very-silly-condition))
+        (signal (make-condition 'most-silly-condition))))
     (assert-equal ____ *list*)))
 
 (define-test same-handler
   ;; The same handler may be bound multiple times.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (error #'handle-error))
-      (handler-bind ((my-error #'handle-my-error)
-                     (error #'handle-error)
-                     (my-error #'handle-my-error))
-        (signal (make-condition 'my-error))))
+    (handler-bind ((silly-condition #'handle-silly-condition)
+                   (silly-condition #'handle-silly-condition))
+      (handler-bind ((very-silly-condition #'handle-very-silly-condition)
+                     (silly-condition #'handle-silly-condition)
+                     (very-silly-condition #'handle-very-silly-condition))
+        (signal (make-condition 'most-silly-condition))))
     (assert-equal ____ *list*)))
 
 (define-test handler-types
   ;; A handler is not executed if it does not match the condition type.
   (let ((*list* '()))
-    (handler-bind ((error #'handle-error)
-                   (my-error #'handle-my-error)
-                   (my-serious-condition #'handle-my-serious-condition))
-      (signal (make-condition 'my-serious-condition)))
+    (handler-bind ((silly-condition #'handle-silly-condition)
+                   (very-silly-condition #'handle-very-silly-condition)
+                   (most-silly-condition #'handle-most-silly-condition))
+      (signal (make-condition 'very-silly-condition)))
     (assert-equal ____ *list*)))
 
 (define-test handler-transfer-of-control
@@ -129,15 +135,25 @@
   ;; or it may handle the condition by transferring control elsewhere.
   (let ((*list* '()))
     (block my-block
-      (handler-bind ((error #'handle-error)
-                     (error (lambda (condition)
-                              (declare (ignore condition))
-                              (return-from my-block)))
-                     (error #'handle-error))
-        (signal (make-condition 'my-error))))
+      (handler-bind ((silly-condition #'handle-silly-condition)
+                     (silly-condition (lambda (condition)
+                                        (declare (ignore condition))
+                                        (return-from my-block)))
+                     (silly-condition #'handle-silly-condition))
+        (signal (make-condition 'silly-condition))))
     (assert-equal ____ *list*)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun handle-error (condition)
+  (declare (ignore condition))
+  (push :error *list*))
+
+(define-condition my-error (error) ())
+
+(defun handle-my-error (condition)
+  (declare (ignore condition))
+  (push :my-error *list*))
 
 (define-test handler-case
   ;; HANDLER-CASE always transfers control before executing the case forms.
