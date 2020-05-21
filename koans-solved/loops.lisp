@@ -20,7 +20,7 @@
   (let* ((result-1 (loop for letter in '(#\a #\b #\c #\d) collect letter))
          (result-2 (loop for number in '(1 2 3 4 5) sum number))
          (result-3 (loop for list in '((foo) (bar) (baz)) append list)))
-    (assert-equal '(#\a \b #\c #\d) result-1)
+    (assert-equal '(#\a #\b #\c #\d) result-1)
     (assert-equal 15 result-2)
     (assert-equal '(foo bar baz) result-3)))
 
