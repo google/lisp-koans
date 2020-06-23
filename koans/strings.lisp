@@ -26,7 +26,7 @@
   (let ((string "this is
                  a multi
                  line string"))
-    (true-or-false? ___ (typep string 'string))))
+    (true-or-false? ____ (typep string 'string))))
 
 (define-test escapes-in-strings
   ;; Quotes and backslashes in Lisp strings must be escaped.
