@@ -122,8 +122,8 @@
     (assert-equal ____ (funcall (fourth functions) 2 33))))
 
 (define-test lambda-with-optional-parameters
-  (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10 9))
-  (assert-equal ___ ((lambda (a &optional (b 100)) (+ a b)) 10)))
+  (assert-equal ____ ((lambda (a &optional (b 100)) (+ a b)) 10 9))
+  (assert-equal ____ ((lambda (a &optional (b 100)) (+ a b)) 10)))
 
 (defun make-adder (x)
   ;; MAKE-ADDER will create a function that closes over the parameter X.
