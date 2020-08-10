@@ -34,7 +34,7 @@
   ;; Because of its properties, backquote is useful for constructing Lisp forms
   ;; that are macroexpansions or parts of macroexpansions.
   (let ((variable 'x))
-    ;; Fill in the blank without without using backquote/unquote notation.
+    ;; Fill in the blank without using backquote/unquote notation.
     (assert-equal ____
                   `(if (typep ,variable 'string)
                        (format nil "The value of ~A is ~A" ',variable ,variable)
