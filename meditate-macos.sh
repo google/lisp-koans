@@ -39,6 +39,6 @@ else
 fi
 
 $CONTEMPLATE
-while fswatch --exclude '#.*#' -r1 koans; do
+while fswatch --exclude '#.*#' -r1 koans | grep .; do
     $CONTEMPLATE
 done
