@@ -17,14 +17,14 @@
   ;; created: a symbol that names a variable becomes bound to a value.
   (let ((x 10)
         (y 20))
-    (assert-equal (+ x y) ____)
+    (assert-equal ____ (+ x y))
     ;; It is possible to shadow previously visible bindings.
     (let ((y 30))
-      (assert-equal (+ x y) ____))
-    (assert-equal (+ x y) ____))
+      (assert-equal ____ (+ x y)))
+    (assert-equal ____ (+ x y)))
   ;; Variables bound by LET have a default value of NIL.
   (let (x)
-    (assert-equal x ____)))
+    (assert-equal ____ x)))
 
 (define-test let-versus-let*
   ;; LET* is similar to LET, except the bindings are established sequentially,
