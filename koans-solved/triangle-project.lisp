@@ -40,6 +40,7 @@
   (assert-equal :isosceles (triangle 3 4 4))
   (assert-equal :isosceles (triangle 4 3 4))
   (assert-equal :isosceles (triangle 4 4 3))
+  (assert-equal :isosceles (triangle 2 2 3))
   (assert-equal :isosceles (triangle 10 10 2)))
 
 (define-test scalene-triangles
