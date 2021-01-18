@@ -27,6 +27,7 @@
     (cond ((<= (+ min mid) max) (error 'triangle-error :sides (list a b c)))
           ((= max mid min) :equilateral)
           ((= max mid) :isosceles)
+          ((= mid min) :isosceles)
           (t :scalene))))
 
 (define-test equilateral-triangles
