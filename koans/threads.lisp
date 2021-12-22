@@ -121,14 +121,18 @@
 (defun wait-on-our-semaphore ()
   (bt:wait-on-semaphore *semaphore* :timeout 100))
 
-(define-test semaphore
-  (assert-equal 1 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
-  (assert-equal 2 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore))))
+
+;; Commented out as there is no thread count function in bordeaux-thread
+;; Waiting for resolution of https://github.com/sionescu/bordeaux-threads/issues/70
+
+;; (define-test semaphore
+;;   (assert-equal 1 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+;;   (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+;;   (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+;;   (assert-equal 2 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+;;   (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+;;   (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+;;   (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
