@@ -50,7 +50,7 @@
     (assert-equal ____ result))
   ;; The epilogue of DO can return a value.
   (let ((result (do ((i 0 (1+ i))
-                     ;; A variable bound by DO noes not need to be updated on
+                     ;; A variable bound by DO does not need to be updated on
                      ;; each iteration.
                      (result '()))
                     ((> i 5) (nreverse result))
