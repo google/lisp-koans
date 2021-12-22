@@ -86,9 +86,10 @@
   ;; Looping and renegade threads can usually be killed via BT:DESTROY-THREAD.
   ;; It is the last measure, since doing so might leave the Lisp system in an
   ;; unpredictable state if the thread was doing something complex.
-  (let ((thread (bt:make-thread (lambda () (loop (sleep 1))))))
+  (let ((thread (bt:make-thread (lambda () (loop (sleep 10))))))
     (true-or-false? ____ (bt:thread-alive-p thread))
     (bt:destroy-thread thread)
+    (sleep 1)
     (true-or-false? ____ (bt:thread-alive-p thread))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
