@@ -116,10 +116,10 @@
 (defvar *semaphore* (bt:make-semaphore))
 
 (defun signal-our-semaphore ()
-  (bt:signal-semaphore semaphore))
+  (bt:signal-semaphore *semaphore*))
 
 (defun wait-on-our-semaphore ()
-  (bt:wait-on-semaphore semaphore :timeout 100))
+  (bt:wait-on-semaphore *semaphore* :timeout 100))
 
 (define-test semaphore
   (assert-equal 1 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
