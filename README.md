@@ -97,12 +97,17 @@ The Common Lisp koans are based on the Python koans and Ruby koans projects.
 Additionally, many of the tests are based on new material that is special
 to Common Lisp.
 
+
+### Threads
+
 Note that the unit on threads uses bordeaux-threads and bt-semaphore.
 The user must have Quicklisp installed and loaded or a reader macro
 will remove the instructions to run :threads.
 For information and instructions on installing Quicklisp
 please see:
 https://www.quicklisp.org/beta/
-The user can either remove #+quicklisp and uncomment
-(load "~/.quicklisp/setup.lisp") in threads.lisp, or  if they know
-quicklisp will be loaded while running contemplate.lisp do nothing.
+
+The user can either remove #+quicklisp in '.koans' and add `(load
+"~/quicklisp/setup.lisp")` in 'contemplate.lisp', or  if they know quicklisp
+will be loaded while running contemplate.lisp do nothing.
+
