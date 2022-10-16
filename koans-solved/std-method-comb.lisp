@@ -87,7 +87,7 @@
     (assert-equal 3 (remaining-time countdown))
     (assert-equal 2 (remaining-time countdown))
     (assert-equal 1 (remaining-time countdown))
-    (assert-equal 0 (remaining-time countdown))
+    (assert-equal :bang (remaining-time countdown))
     (assert-equal :bang (remaining-time countdown))
     (assert-equal :bang (remaining-time countdown))))
 
