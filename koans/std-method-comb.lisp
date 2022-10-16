@@ -76,7 +76,7 @@
 
 (defmethod remaining-time :around ((object countdown))
   (let ((time (call-next-method)))
-    (if (< 0 time)
+    (if (< 1 time)
         ;; DECF is similar to INCF. It decreases the value stored in the place
         ;; and returns the decreased value.
         (decf (slot-value object 'remaining-time))
