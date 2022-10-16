@@ -76,18 +76,21 @@
 
 (defmethod remaining-time :around ((object countdown))
   (let ((time (call-next-method)))
-    (if (< 1 time)
+    (if (< 0 time)
         ;; DECF is similar to INCF. It decreases the value stored in the place
         ;; and returns the decreased value.
-        (decf (slot-value object 'remaining-time))
+        ;; PROG1 returns the value of the first expression in the sequence.
+        (prog1
+          (slot-value object 'remaining-time)
+          (decf (slot-value object 'remaining-time)))
         :bang)))
 
 (define-test countdown
   (let ((countdown (make-instance 'countdown :time 4)))
+    (assert-equal 4 (remaining-time countdown))
     (assert-equal 3 (remaining-time countdown))
     (assert-equal 2 (remaining-time countdown))
     (assert-equal 1 (remaining-time countdown))
-    (assert-equal :bang (remaining-time countdown))
     (assert-equal :bang (remaining-time countdown))
     (assert-equal :bang (remaining-time countdown))))
 
