@@ -26,7 +26,7 @@
     ;; , unquotes a part of the expression.
     (assert-equal '((123) 45 6 z) `(,x 45 6 z))
     (assert-equal '((123) 45 6 (7 8 9)) `(,x 45 6 ,z))
-    ;; ,@ splices an expression into the into the list surrounding it.
+    ;; ,@ splices an expression into the list surrounding it.
     (assert-equal '((123) 45 6 7 8 9) `(,x 45 6 ,@z))
     (assert-equal '(123 45 6 7 8 9) `(,@x 45 6 ,@z))))
 
@@ -34,7 +34,7 @@
   ;; Because of its properties, backquote is useful for constructing Lisp forms
   ;; that are macroexpansions or parts of macroexpansions.
   (let ((variable 'x))
-    ;; Fill in the blank without without using backquote/unquote notation.
+    ;; Fill in the blank without using backquote/unquote notation.
     (assert-equal '(if (typep x 'string)
                     (format nil "The value of ~A is ~A" 'x x)
                     (error 'type-error :datum x :expected-type 'string))
@@ -44,7 +44,7 @@
                                           :expected-type 'string))))
   (let ((error-type 'type-error)
         (error-arguments '(:datum x :expected-type 'string)))
-    ;; Fill in the blank without without using backquote/unquote notation.
+    ;; Fill in the blank without using backquote/unquote notation.
     (assert-equal '(if (typep x 'string)
                     (format nil "The value of ~A is ~A" 'x x)
                     (error 'type-error :datum x :expected-type 'string))

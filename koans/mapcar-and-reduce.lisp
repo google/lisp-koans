@@ -16,7 +16,7 @@
 
 (define-test mapcar
   (let ((numbers '(1 2 3 4 5 6)))
-    ;; Inside MAPCAR, he function 1+ will be applied to each element of NUMBERS.
+    ;; Inside MAPCAR, the function 1+ will be applied to each element of NUMBERS.
     ;; A new list will be collected from the results.
     (assert-equal '(2 3 4 5 6 7) (mapcar #'1+ numbers))
     (assert-equal ____ (mapcar #'- numbers))
