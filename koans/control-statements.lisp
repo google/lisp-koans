@@ -16,7 +16,7 @@
   ;; IF only evaluates and returns one branch of a conditional expression.
   (assert-equal ____ (if t :true :false))
   (assert-equal ____ (if nil :true :false))
-  ;; This also applies to side effects that migh or might not be evaluated.
+  ;; This also applies to side effects that might or might not be evaluated.
   (let ((result))
     (if t
         (setf result :true)

@@ -46,7 +46,7 @@
 
 (define-test or
   ;; The logical operator OR can also take multiple arguments.
-  (true-or-false? t  (or nil nil nil t nil))
+  (true-or-false? t (or nil nil nil t nil))
   ;; OR returns the first non-NIL value it encounters, or NIL if there are none.
   (assert-equal nil (or nil nil nil))
   (assert-equal 1 (or 1 2 3 4 5)))

@@ -172,7 +172,7 @@
     (assert-equal ____ *list*)))
 
 (define-test handler-case-type
-  ;; A handler cases is not executed if it does not match the condition type.
+  ;; A handler case is not executed if it does not match the condition type.
   (let ((*list* '()))
     (handler-case (signal (make-condition 'error))
       (my-error (condition) (handle-my-error condition))
