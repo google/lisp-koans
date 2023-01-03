@@ -12,7 +12,7 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
-;;; Lists in lisp are forms beginning and ending with rounded parentheses.
+;;; Lists in Lisp are forms beginning and ending with rounded parentheses.
 ;;; Atoms are symbols, numbers, or other forms usually separated by whitespace
 ;;; or parentheses.
 

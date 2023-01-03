@@ -92,7 +92,7 @@
                     :name "Manning" :team (list "Colts" "Broncos"))))
     ;; MANNING-1 and MANNING-2 are different objects...
     (true-or-false? ____ (eq manning-1 manning-2))
-    ;;...but they contain the same information.
+    ;; ... but they contain the same information.
     (true-or-false? ____ (equalp manning-1 manning-2))
     (let ((manning-3 (copy-american-football-player manning-1)))
       (true-or-false? ____ (eq manning-1 manning-3))
@@ -103,7 +103,7 @@
                                     (nfl-guy-name manning-3)))
       (assert-equal ____ (nfl-guy-name manning-1))
       (assert-equal ____ (nfl-guy-name manning-3))
-      ;; ...but modifying shared structure may affect other instances.
+      ;; ... but modifying shared structure may affect other instances.
       (setf (car (nfl-guy-team manning-1)) "Giants")
       (true-or-false? ____ (string= (car (nfl-guy-team manning-1))
                                     (car (nfl-guy-team manning-3))))

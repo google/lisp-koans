@@ -69,7 +69,7 @@
 
 (define-test hash-table-equality
   ;; EQUALP considers two hash tables to be equal if they have the same test and
-  ;; if its key-value pairs are the same under that test.
+  ;; if their key-value pairs are the same under that test.
   (let ((hash-table-1 (make-hash-table :test #'equal))
         (hash-table-2 (make-hash-table :test #'equal)))
     (setf (gethash "one" hash-table-1) "yat")

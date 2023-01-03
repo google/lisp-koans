@@ -132,7 +132,7 @@
 (defun make-adder (x)
   ;; MAKE-ADDER will create a function that closes over the parameter X.
   ;; The parameter will be remembered as a part of the environment of the
-  ;; returned function, which will continue refering to it.
+  ;; returned function, which will continue referring to it.
   (lambda (y) (+ x y)))
 
 (define-test lexical-closures

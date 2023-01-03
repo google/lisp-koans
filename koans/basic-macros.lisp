@@ -54,7 +54,7 @@
 (defun match-special-cases (thing)
   ;; T or OTHERWISE passed as the key matches any value.
   ;; NIL passed as the key matches no values.
-  ;; These symbols need to passed in parentheses.
+  ;; These symbols need to be passed in parentheses.
   (case thing
     (____ :found-a-t)
     (____ :found-a-nil)
@@ -85,8 +85,8 @@
   ;; So far, we have been comparing objects using EQUAL, one of the Lisp
   ;; comparison functions. CASE compares the keys using EQL, which is distinct
   ;; from EQUAL.
-  ;; EQL is suitable for comparing numbers, characters, and objects for whom we
-  ;; want to check verify they are the same object.
+  ;; EQL is suitable for comparing numbers, characters, and objects when we
+  ;; want to verify they are the same object.
   (let* ((string "A string")
          (string-copy (copy-seq string)))
     ;; The above means that two distinct strings will not be the same under EQL,

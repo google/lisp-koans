@@ -23,7 +23,7 @@
   (true-or-false? t (not '())))
 
 (define-test in-lisp-many-things-are-true
-  ;; In Common Lisp, the canonical values for truth is T.
+  ;; In Common Lisp, the canonical value for truth is T.
   ;; However, everything that is non-NIL is true, too.
   (true-or-false? t 5)
   (true-or-false? nil (not 5))
