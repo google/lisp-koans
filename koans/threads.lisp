@@ -109,13 +109,15 @@
 
 ;;; We can further orchestrate threads by using semaphores.
 
-(defvar *semaphore* (bt:make-semaphore))
+(defvar *semaphore* (bt-sem:make-semaphore))
 
 (defun signal-our-semaphore ()
-  (bt:signal-semaphore semaphore))
+  (bt-sem:signal-semaphore *semaphore*)
+  (bt-sem:semaphore-count *semaphore*)
 
 (defun wait-on-our-semaphore ()
-  (bt:wait-on-semaphore semaphore :timeout 100))
+  (bt-sem:wait-on-semaphore *semaphore* :timeout 100)
+  (bt-sem:semaphore-count *semaphore))
 
 (define-test semaphore
   (assert-equal 1 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
