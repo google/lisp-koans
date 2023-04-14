@@ -26,7 +26,7 @@
          ;; When the thread's function finishes, its return value becomes the
          ;; return value of BT:JOIN-THREAD.
          (value (bt:join-thread thread)))
-    (assert-equal ____ value)))
+    (assert-equal 4 value)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -40,7 +40,7 @@
                                     (setf *variable* 24)
                                     t)))))
     (assert-true (bt:join-thread thread))
-    (assert-equal ____ *variable*)))
+    (assert-equal 24 *variable*)))
 
 (define-test thread-local-bindings
   ;; Newly established local bindings of a variable are visible only in the
@@ -50,7 +50,7 @@
                                   (let ((*variable* 42))
                                     (setf *variable* 24))))))
     (bt:join-thread thread)
-    (assert-equal ____ *variable*)))
+    (assert-equal 42 *variable*)))
 
 (define-test thread-initial-bindings
   ;; Initial dynamic bindings may be passed to the new thread.
@@ -58,15 +58,15 @@
   (let ((thread (bt:make-thread (lambda () (setf *variable* 24))
                                 :initial-bindings '((*variable* . 42)))))
     (bt:join-thread thread)
-    (assert-equal ____ *variable*)))
+    (assert-equal 42 *variable*)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-test thread-name
   ;; Threads can have names.
   (let ((thread (bt:make-thread #'+ :name "Summing thread")))
-    (assert-equal ____ (bt:thread-name thread))
-    (assert-equal ____ (bt:join-thread thread))))
+    (assert-equal "Summing thread" (bt:thread-name thread))
+    (assert-equal 0 (bt:join-thread thread))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -75,7 +75,7 @@
   (let* ((x 240)
          (y 18)
          (thread (bt:make-thread (lambda () (* x y)))))
-    (assert-equal ____ (bt:join-thread thread))))
+    (assert-equal 4320 (bt:join-thread thread))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -84,9 +84,9 @@
   ;; It is the last measure, since doing so might leave the Lisp system in an
   ;; unpredictable state if the thread was doing something complex.
   (let ((thread (bt:make-thread (lambda () (loop (sleep 1))))))
-    (true-or-false? ____ (bt:thread-alive-p thread))
+    (true-or-false? t (bt:thread-alive-p thread))
     (bt:destroy-thread thread)
-    (true-or-false? ____ (bt:thread-alive-p thread))))
+    (true-or-false? t (bt:thread-alive-p thread))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -103,28 +103,30 @@
     (loop repeat 100
           collect (bt:make-thread #'increaser) into threads
           finally (loop until (notany #'bt:thread-alive-p threads))
-                  (assert-equal ____ *another-variable*))))
+                  (assert-equal 100 *another-variable*))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; We can further orchestrate threads by using semaphores.
 
-(defvar *semaphore* (bt:make-semaphore))
+(defvar *semaphore* (bt-sem:make-semaphore))
 
 (defun signal-our-semaphore ()
-  (bt:signal-semaphore semaphore))
+  (bt-sem:signal-semaphore *semaphore*)
+  (bt-sem:semaphore-count *semaphore*))
 
 (defun wait-on-our-semaphore ()
-  (bt:wait-on-semaphore semaphore :timeout 100))
+  (bt-sem:wait-on-semaphore *semaphore* :timeout 100)
+  (bt-sem:semaphore-count *semaphore*))
 
 (define-test semaphore
   (assert-equal 1 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+  (assert-equal 2 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
+  (assert-equal 3 (bt:join-thread (bt:make-thread #'signal-our-semaphore)))
   (assert-equal 2 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
-  (assert-equal ____ (bt:join-thread (bt:make-thread #'wait-on-our-semaphore))))
+  (assert-equal 1 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+  (assert-equal 0 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore)))
+  (assert-equal 0 (bt:join-thread (bt:make-thread #'wait-on-our-semaphore))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -153,6 +155,6 @@
   (let ((bar-pusher (bt:make-thread #'bar-pusher))
         (foo-pusher (bt:make-thread #'foo-pusher)))
     (bt:join-thread foo-pusher))
-  (assert-equal ____ (nth 0 *foobar-list*))
-  (assert-equal ____ (nth 1 *foobar-list*))
-  (assert-equal ____ (nth 5 *foobar-list*)))
+  (assert-equal '(:FOO :BAR 0) (nth 0 *foobar-list*))
+  (assert-equal '(:FOO :BAR 1) (nth 1 *foobar-list*))
+  (assert-equal '(:FOO :BAR 5) (nth 5 *foobar-list*)))
